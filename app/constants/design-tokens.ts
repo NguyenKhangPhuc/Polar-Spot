@@ -1,52 +1,49 @@
 /**
  * Polar-Spot Design Tokens
- * Centralized color palette, borders, background styles, typography accents, and glassmorphism definitions.
+ * Blue-White Ice theme elements & hovers while preserving dark ocean background.
  */
 
 export const colors = {
-  // Backgrounds
+  // Backgrounds (Preserved dark ocean background)
   bgDeep: "#050b14",
   bgDark: "#0b172a",
-  surfaceGlass: "rgba(15, 30, 56, 0.65)",
-  surfaceGlassHover: "rgba(23, 46, 82, 0.75)",
+  surfaceGlass: "rgba(11, 23, 42, 0.75)",
+  surfaceGlassHover: "rgba(20, 38, 66, 0.85)",
   
-  // Borders & Glows
-  borderIce: "rgba(148, 216, 255, 0.18)",
-  borderIceHover: "rgba(56, 189, 248, 0.45)",
-  glowCyan: "rgba(56, 189, 248, 0.25)",
+  // Blue & White Elements & Borders
+  borderIce: "rgba(255, 255, 255, 0.15)",
+  borderIceHover: "rgba(255, 255, 255, 0.45)",
   
-  // Brand / Accents
-  primary: "#0284c7",
-  primaryHover: "#0369a1",
-  cyanGlow: "#38bdf8",
-  tealAurora: "#14b8a6",
-  purpleAurora: "#818cf8",
+  // Blue-White Elements & Accent Colors
+  white: "#ffffff",
+  iceBlueLight: "#f0f9ff",
+  iceBlueMedium: "#bae6fd",
+  skyBlue: "#38bdf8",
   
   // Text Colors
-  textBright: "#f0f9ff",
-  textMuted: "#94a3b8",
-  textSubtle: "#64748b",
+  textBright: "#ffffff",
+  textIce: "#e0f2fe",
+  textMuted: "#cbd5e1",
+  textSubtle: "#94a3b8",
 } as const;
 
 export const tw = {
   bg: {
     main: "bg-[#050b14]",
-    card: "bg-[#0b172a]/70 backdrop-blur-md",
-    cardHover: "hover:bg-[#13233f]/80 transition-all duration-300",
-    buttonPrimary: "bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 shadow-lg shadow-cyan-500/20 hover:shadow-cyan-400/40",
-    buttonSecondary: "bg-slate-800/80 hover:bg-slate-700/80 text-cyan-200 border border-cyan-500/30",
-    badge: "bg-cyan-950/60 border border-cyan-500/30 text-cyan-300",
+    card: "bg-[#0b172a]/80 backdrop-blur-md",
+    cardHover: "hover:bg-[#142847] hover:border-white/40 transition-all duration-300",
+    buttonPrimary: "bg-white text-slate-950 font-bold hover:bg-sky-100 hover:text-slate-900 transition-colors shadow-lg shadow-white/10",
+    buttonSecondary: "bg-slate-800 text-white border border-white/20 hover:bg-slate-700 hover:border-white/40",
   },
   border: {
-    ice: "border border-cyan-500/20 hover:border-cyan-400/40 transition-colors",
-    glow: "border border-cyan-400/30 shadow-[0_0_15px_rgba(56,189,248,0.15)]",
+    ice: "border border-white/15 hover:border-white/40 transition-colors",
   },
   text: {
-    gradientHeading: "bg-gradient-to-r from-white via-cyan-100 to-cyan-400 bg-clip-text text-transparent",
-    gradientBrand: "bg-gradient-to-r from-cyan-300 via-sky-200 to-blue-400 bg-clip-text text-transparent",
+    heading: "text-white font-extrabold",
+    brand: "text-white font-bold",
     primary: "text-slate-100",
-    muted: "text-slate-400",
-    accent: "text-cyan-400",
+    muted: "text-slate-300",
+    accent: "text-sky-200",
   },
   radius: {
     card: "rounded-2xl",

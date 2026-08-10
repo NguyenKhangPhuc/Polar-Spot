@@ -16,11 +16,11 @@ export default function SnowEffect() {
   const [snowflakes, setSnowflakes] = useState<SnowflakeData[]>([]);
 
   useEffect(() => {
-    // Generate 35 realistic random snowflakes
+    // Generate 35 realistic random falling snow particles
     const flakes: SnowflakeData[] = Array.from({ length: 35 }).map((_, i) => ({
       id: i,
       left: Math.random() * 100,
-      size: Math.random() * 12 + 6, // 6px - 18px
+      size: Math.random() * 8 + 4, // 4px - 12px
       duration: Math.random() * 10 + 8, // 8s - 18s
       delay: Math.random() * 8, // 0s - 8s
       opacity: Math.random() * 0.7 + 0.3,
@@ -34,10 +34,11 @@ export default function SnowEffect() {
       {snowflakes.map((flake) => (
         <div
           key={flake.id}
-          className="snowflake absolute text-sky-100/70 drop-shadow-[0_0_8px_rgba(56,189,248,0.6)]"
+          className="snowflake absolute rounded-full bg-cyan-100/80 shadow-[0_0_8px_rgba(56,189,248,0.7)]"
           style={{
             left: `${flake.left}%`,
-            fontSize: `${flake.size}px`,
+            width: `${flake.size}px`,
+            height: `${flake.size}px`,
             opacity: flake.opacity,
             animationName: flake.animationType === "slow" ? "snowfall-slow" : "snowfall-medium",
             animationDuration: `${flake.duration}s`,
@@ -45,9 +46,7 @@ export default function SnowEffect() {
             animationIterationCount: "infinite",
             animationDelay: `${flake.delay}s`,
           }}
-        >
-          ❄
-        </div>
+        />
       ))}
     </div>
   );

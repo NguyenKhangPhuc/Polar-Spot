@@ -1,8 +1,8 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
-import { tw } from "../constants/design-tokens";
 
 interface NavItem {
   name: string;
@@ -44,17 +44,23 @@ export default function NavigationBarClient() {
   const pathname = usePathname();
 
   return (
-    <aside className="hidden lg:flex lg:flex-col fixed top-0 left-0 bottom-0 w-64 frost-card border-r border-cyan-500/20 z-30 p-6">
+    <aside className="hidden lg:flex lg:flex-col fixed top-0 left-0 bottom-0 w-64 frost-card border-r border-white/15 z-30 p-6">
       {/* Brand Logo & Name */}
-      <div className="flex items-center gap-3 pb-8 border-b border-cyan-500/15">
-        <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-cyan-400 to-blue-600 flex items-center justify-center shadow-lg shadow-cyan-500/30 ring-1 ring-cyan-300/40">
-          <span className="text-xl select-none">🐻‍❄️</span>
+      <div className="flex items-center gap-3 pb-8 border-b border-white/15">
+        <div className="relative w-10 h-10 rounded-xl bg-slate-900 p-1 border border-white/30 flex items-center justify-center">
+          <Image
+            src="/polarbear-logo.png"
+            alt="Polar Bear Pitching Logo"
+            width={32}
+            height={32}
+            className="object-contain"
+          />
         </div>
         <div>
-          <h1 className="text-xl font-bold tracking-tight bg-gradient-to-r from-white via-cyan-100 to-cyan-300 bg-clip-text text-transparent">
+          <h1 className="text-xl font-bold tracking-tight text-white">
             Polar-Spot
           </h1>
-          <p className="text-xs text-cyan-400/80 font-medium">Polar Bear Pitching</p>
+          <p className="text-xs text-sky-200 font-medium">Polar Bear Pitching</p>
         </div>
       </div>
 
@@ -69,26 +75,26 @@ export default function NavigationBarClient() {
               href={item.href}
               className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 text-sm font-medium ${
                 isActive
-                  ? "bg-cyan-500/20 text-cyan-200 border border-cyan-400/40 shadow-[0_0_15px_rgba(56,189,248,0.2)]"
-                  : "text-slate-300 hover:text-white hover:bg-slate-800/50 hover:border hover:border-cyan-500/20"
+                  ? "bg-white/15 text-white border border-white/40 shadow-[0_0_15px_rgba(255,255,255,0.15)]"
+                  : "text-slate-300 hover:text-white hover:bg-white/10 hover:border hover:border-white/20"
               }`}
             >
-              <Icon className={`w-5 h-5 ${isActive ? "text-cyan-300" : "text-slate-400"}`} />
+              <Icon className={`w-5 h-5 ${isActive ? "text-white" : "text-slate-400"}`} />
               <span>{item.name}</span>
               {isActive && (
-                <span className="ml-auto w-1.5 h-1.5 rounded-full bg-cyan-400 shadow-[0_0_8px_#38bdf8]" />
+                <span className="ml-auto w-1.5 h-1.5 rounded-full bg-white shadow-[0_0_8px_#ffffff]" />
               )}
             </Link>
           );
         })}
       </nav>
 
-      {/* Arctic Pitching Badge */}
-      <div className="mt-auto p-4 rounded-xl bg-cyan-950/40 border border-cyan-500/20">
-        <div className="flex items-center gap-2 text-xs text-cyan-300 font-semibold mb-1">
-          <span>❄️ Oulu, Finland</span>
+      {/* Arctic Pitching Info Card */}
+      <div className="mt-auto p-4 rounded-xl bg-slate-900/60 border border-white/15">
+        <div className="text-xs text-white font-semibold mb-1">
+          Oulu, Finland
         </div>
-        <p className="text-[11px] text-slate-400 leading-relaxed">
+        <p className="text-[11px] text-slate-300 leading-relaxed">
           Home of the freezing ice-hole startup pitches!
         </p>
       </div>

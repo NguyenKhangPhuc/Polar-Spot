@@ -6,6 +6,7 @@ interface Organizer {
   role: string;
   email: string;
   initials: string;
+  image: string;
 }
 
 const organizers: Organizer[] = [
@@ -15,6 +16,7 @@ const organizers: Organizer[] = [
     role: "Head of Polar Bear Pitching",
     email: "shefat.islam@businessoulu.com",
     initials: "SI",
+    image: "/teams/shefat.jpeg",
   },
   {
     id: "org-2",
@@ -22,6 +24,7 @@ const organizers: Organizer[] = [
     role: "Head of Investor Relations",
     email: "virpi.martikainen@businessoulu.com",
     initials: "VM",
+    image: "/teams/Virpi.jpeg",
   },
   {
     id: "org-3",
@@ -29,6 +32,7 @@ const organizers: Organizer[] = [
     role: "Head of Startup Relations",
     email: "anne.r.ryynanen@businessoulu.com",
     initials: "AR",
+    image: "/teams/anne.jpeg",
   },
   {
     id: "org-4",
@@ -36,6 +40,7 @@ const organizers: Organizer[] = [
     role: "Head of Day Conference",
     email: "sari.kauppila@businessoulu.com",
     initials: "SK",
+    image: "/teams/1597916012941.jpeg",
   },
   {
     id: "org-5",
@@ -43,64 +48,64 @@ const organizers: Organizer[] = [
     role: "Head of Media Relations",
     email: "marko.pyhahuhta@businessoulu.com",
     initials: "MP",
+    image: "/teams/Marko.jpeg",
   },
 ];
 
 export default function OrganizersSection() {
   return (
     <section className="w-full py-16 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-6xl mx-auto space-y-10">
+      <div className="max-w-6xl mx-auto space-y-12">
         {/* Section Header */}
         <div className="flex flex-col items-center text-center space-y-2">
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-cyan-950/60 border border-cyan-500/25 text-cyan-300 text-xs font-semibold">
-            <span>👥 Leadership Team</span>
-          </div>
           <h2 className="text-3xl sm:text-4xl font-extrabold text-white">
-            Polar Bear Pitching <span className="bg-gradient-to-r from-cyan-300 to-blue-400 bg-clip-text text-transparent">Organizers</span>
+            Polar Bear Pitching <span className="text-sky-200">Organizers</span>
           </h2>
-          <p className="text-sm sm:text-base text-slate-400 max-w-2xl">
+          <p className="text-sm sm:text-base text-slate-300 max-w-2xl">
             The dedicated BusinessOulu team behind the world&apos;s coolest startup event.
           </p>
         </div>
 
         {/* Organizers Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 justify-items-center">
           {organizers.map((org) => (
             <div
               key={org.id}
-              className="frost-card rounded-2xl p-6 border border-cyan-500/20 hover:border-cyan-400/40 transition-all duration-300 flex flex-col items-center text-center group"
+              className="frost-card rounded-2xl p-6 border border-white/15 hover:border-white/45 transition-all duration-300 flex flex-col items-center text-center w-full max-w-sm group"
             >
-              {/* Image / Avatar Placeholder */}
-              <div className="relative w-28 h-28 rounded-2xl bg-gradient-to-br from-slate-800 via-slate-900 to-cyan-950 border border-cyan-400/30 flex flex-col items-center justify-center mb-4 group-hover:scale-105 transition-transform duration-300 shadow-lg shadow-cyan-950/50">
-                <div className="w-12 h-12 rounded-xl bg-cyan-500/20 border border-cyan-400/30 flex items-center justify-center text-cyan-300 text-lg font-bold">
-                  {org.initials}
-                </div>
-                <span className="text-[10px] text-slate-400 mt-1 font-mono">
-                  [ Photo Placeholder ]
-                </span>
+              {/* 1. Large User Image */}
+              <div className="relative w-48 h-48 sm:w-56 sm:h-56 rounded-2xl bg-slate-900 border border-white/30 mb-6 group-hover:scale-105 group-hover:border-white/60 transition-all duration-300 shadow-xl shadow-slate-950/80 overflow-hidden shrink-0">
+                <Image
+                  src={org.image}
+                  alt={org.name}
+                  fill
+                  sizes="(max-width: 640px) 192px, 224px"
+                  className="object-cover object-top hover:scale-110 transition-transform duration-500"
+                />
               </div>
 
-              {/* Name & Title */}
-              <div className="space-y-1 w-full">
-                <h3 className="text-lg font-bold text-white group-hover:text-cyan-300 transition-colors">
+              {/* 2. Info Below Image: Name -> Email -> Role */}
+              <div className="space-y-2 w-full flex flex-col items-center">
+                {/* Name */}
+                <h3 className="text-xl sm:text-2xl font-bold text-white group-hover:text-sky-200 transition-colors">
                   {org.name}
                 </h3>
-                <p className="text-xs font-semibold text-cyan-400">
-                  {org.role}
-                </p>
-              </div>
 
-              {/* Email Contact Link */}
-              <div className="mt-4 pt-4 border-t border-cyan-500/15 w-full flex items-center justify-center">
+                {/* Email */}
                 <a
                   href={`mailto:${org.email}`}
-                  className="inline-flex items-center gap-2 text-xs text-slate-300 hover:text-cyan-300 hover:underline transition-colors break-all"
+                  className="inline-flex items-center gap-1.5 text-sm text-sky-200 hover:text-white hover:underline transition-colors font-medium break-all"
                 >
-                  <svg className="w-3.5 h-3.5 text-cyan-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <svg className="w-4 h-4 text-white shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                   </svg>
                   <span>{org.email}</span>
                 </a>
+
+                {/* Title / Role */}
+                <p className="text-xs sm:text-sm text-slate-300 font-medium pt-1">
+                  {org.role}
+                </p>
               </div>
             </div>
           ))}

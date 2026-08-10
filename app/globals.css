@@ -1,35 +1,30 @@
 @import "tailwindcss";
 
 @layer utilities {
-  /* Arctic Ocean background with snow animation */
+  /* Arctic Ocean background (Preserved dark background) */
   .polar-snow-bg {
     background-color: #050b14;
     background-image: 
-      radial-gradient(ellipse at 50% 0%, rgba(14, 165, 233, 0.15) 0%, transparent 60%),
-      radial-gradient(ellipse at 80% 50%, rgba(2, 132, 199, 0.1) 0%, transparent 50%),
-      radial-gradient(ellipse at 20% 80%, rgba(129, 140, 248, 0.08) 0%, transparent 50%);
+      radial-gradient(ellipse at 50% 0%, rgba(224, 242, 254, 0.12) 0%, transparent 60%),
+      radial-gradient(ellipse at 80% 50%, rgba(56, 189, 248, 0.08) 0%, transparent 50%),
+      radial-gradient(ellipse at 20% 80%, rgba(255, 255, 255, 0.05) 0%, transparent 50%);
     background-attachment: fixed;
     position: relative;
     overflow-x: hidden;
   }
 
-  /* Frost glassmorphism panel */
+  /* Frost glassmorphic card with Blue-White borders & hover */
   .frost-card {
-    background: rgba(11, 23, 42, 0.65);
+    background: rgba(11, 23, 42, 0.75);
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
-    border: 1px solid rgba(148, 216, 255, 0.15);
+    border: 1px solid rgba(255, 255, 255, 0.15);
     box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
   }
 
   .frost-card:hover {
-    border-color: rgba(56, 189, 248, 0.35);
-    box-shadow: 0 8px 32px 0 rgba(2, 132, 199, 0.25);
-  }
-
-  /* Ice glow border utility */
-  .ice-glow {
-    box-shadow: 0 0 25px -5px rgba(56, 189, 248, 0.3);
+    border-color: rgba(255, 255, 255, 0.45);
+    box-shadow: 0 8px 32px 0 rgba(224, 242, 254, 0.15);
   }
 }
 
@@ -71,7 +66,6 @@
 .snowflake {
   position: fixed;
   top: -20px;
-  color: #e0f2fe;
   user-select: none;
   pointer-events: none;
   z-index: 1;
