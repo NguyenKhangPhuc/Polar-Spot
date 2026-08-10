@@ -34,6 +34,30 @@ export type Database = {
   }
   public: {
     Tables: {
+      event_grading_criteria: {
+        Row: {
+          created_at: string
+          event_id: string | null
+          id: string
+          name: string | null
+          short_description: string | null
+        }
+        Insert: {
+          created_at?: string
+          event_id?: string | null
+          id?: string
+          name?: string | null
+          short_description?: string | null
+        }
+        Update: {
+          created_at?: string
+          event_id?: string | null
+          id?: string
+          name?: string | null
+          short_description?: string | null
+        }
+        Relationships: []
+      }
       events: {
         Row: {
           content: string | null
@@ -73,6 +97,27 @@ export type Database = {
         }
         Relationships: []
       }
+      group_members: {
+        Row: {
+          created_at: string
+          group_id: string | null
+          id: string
+          member_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          group_id?: string | null
+          id?: string
+          member_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          group_id?: string | null
+          id?: string
+          member_id?: string | null
+        }
+        Relationships: []
+      }
       groups: {
         Row: {
           avatar_url: string | null
@@ -97,6 +142,30 @@ export type Database = {
           group_name?: string | null
           id?: string
           short_description?: string | null
+        }
+        Relationships: []
+      }
+      invitations: {
+        Row: {
+          created_at: string
+          group_id: string | null
+          id: number
+          member_email: string | null
+          status: Database["public"]["Enums"]["INVITATION_STATUS"] | null
+        }
+        Insert: {
+          created_at?: string
+          group_id?: string | null
+          id?: number
+          member_email?: string | null
+          status?: Database["public"]["Enums"]["INVITATION_STATUS"] | null
+        }
+        Update: {
+          created_at?: string
+          group_id?: string | null
+          id?: number
+          member_email?: string | null
+          status?: Database["public"]["Enums"]["INVITATION_STATUS"] | null
         }
         Relationships: []
       }
@@ -160,6 +229,7 @@ export type Database = {
     }
     Enums: {
       EVENT_STATUS: "ongoing" | "finished"
+      INVITATION_STATUS: "pending" | "accepted" | "rejected"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -291,6 +361,7 @@ export const Constants = {
   public: {
     Enums: {
       EVENT_STATUS: ["ongoing", "finished"],
+      INVITATION_STATUS: ["pending", "accepted", "rejected"],
     },
   },
 } as const

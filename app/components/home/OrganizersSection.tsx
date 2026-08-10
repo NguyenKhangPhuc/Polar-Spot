@@ -61,20 +61,20 @@ export default function OrganizersSection() {
           <h2 className="text-3xl sm:text-4xl font-extrabold text-white">
             Polar Bear Pitching <span className="text-sky-200">Organizers</span>
           </h2>
-          <p className="text-sm sm:text-base text-slate-300 max-w-2xl">
+          <p className="text-sm sm:text-base text-slate-200 max-w-2xl">
             The dedicated BusinessOulu team behind the world&apos;s coolest startup event.
           </p>
         </div>
 
-        {/* Organizers Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 justify-items-center">
+        {/* Organizers Flex Grid (Centered Layout for incomplete rows) */}
+        <div className="flex flex-wrap justify-center gap-8">
           {organizers.map((org) => (
             <div
               key={org.id}
-              className="frost-card rounded-2xl p-6 border border-white/15 hover:border-white/45 transition-all duration-300 flex flex-col items-center text-center w-full max-w-sm group"
+              className="frost-card rounded-2xl p-6 border border-white/20 hover:border-white/50 transition-all duration-300 flex flex-col items-center text-center w-full sm:w-[340px] lg:w-[350px] shrink-0 group"
             >
               {/* 1. Large User Image */}
-              <div className="relative w-48 h-48 sm:w-56 sm:h-56 rounded-2xl bg-slate-900 border border-white/30 mb-6 group-hover:scale-105 group-hover:border-white/60 transition-all duration-300 shadow-xl shadow-slate-950/80 overflow-hidden shrink-0">
+              <div className="relative w-48 h-48 sm:w-56 sm:h-56 rounded-2xl bg-[#10243e] border border-white/30 mb-6 group-hover:scale-105 group-hover:border-white/60 transition-all duration-300 shadow-xl shadow-black/50 overflow-hidden shrink-0">
                 <Image
                   src={org.image}
                   alt={org.name}
@@ -103,7 +103,7 @@ export default function OrganizersSection() {
                 </a>
 
                 {/* Title / Role */}
-                <p className="text-xs sm:text-sm text-slate-300 font-medium pt-1">
+                <p className="text-xs sm:text-sm text-slate-200 font-medium pt-1">
                   {org.role}
                 </p>
               </div>

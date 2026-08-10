@@ -16,7 +16,7 @@ export default function HeroSection() {
             </p>
           </div>
 
-          <p className="text-base sm:text-lg text-slate-300 max-w-xl leading-relaxed">
+          <p className="text-base sm:text-lg text-slate-200 max-w-xl leading-relaxed">
             Welcome to the official event spot for Polar Bear Pitching — the world&apos;s most extreme startup pitching competition held in an ice-hole in Oulu, Finland. Test your limits, connect with global investors, and make an unforgettable splash!
           </p>
 
@@ -35,8 +35,8 @@ export default function HeroSection() {
 
         {/* Right Half: Polar Bear Pitching Image */}
         <div className="relative w-full flex justify-center items-center">
-          <div className="relative w-full max-w-xl rounded-2xl frost-card p-5 border border-white/25 hover:border-white/50 transition-colors shadow-2xl shadow-slate-950/80 overflow-hidden">
-            <div className="relative w-full aspect-[4/3] min-h-[320px] sm:min-h-[380px] rounded-xl overflow-hidden bg-slate-950/80 flex items-center justify-center p-4">
+          <div className="relative w-full max-w-xl rounded-2xl frost-card p-5 border border-white/25 hover:border-white/50 transition-colors shadow-2xl shadow-black/50 overflow-hidden">
+            <div className="relative w-full aspect-[4/3] min-h-[320px] sm:min-h-[380px] rounded-xl overflow-hidden bg-[#10243e] border border-white/25 flex items-center justify-center p-4">
               <Image
                 src="/polarbear-logo.png"
                 alt="Polar Bear Pitching"

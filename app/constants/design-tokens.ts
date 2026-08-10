@@ -1,24 +1,19 @@
 /**
  * Polar-Spot Design Tokens
- * Blue-White Ice theme elements & hovers while preserving dark ocean background.
+ * Refined Luminous Arctic Ice Blue palette for cards, navigation bar, and interactive surfaces.
  */
 
 export const colors = {
-  // Backgrounds (Preserved dark ocean background)
+  // Backgrounds
   bgDeep: "#050b14",
-  bgDark: "#0b172a",
-  surfaceGlass: "rgba(11, 23, 42, 0.75)",
-  surfaceGlassHover: "rgba(20, 38, 66, 0.85)",
+  bgDark: "#0c182b",
+  surfaceFrost: "rgba(22, 43, 72, 0.8)",
+  surfaceFrostHover: "rgba(31, 62, 104, 0.9)",
+  navFrost: "rgba(19, 35, 58, 0.85)",
   
-  // Blue & White Elements & Borders
-  borderIce: "rgba(255, 255, 255, 0.15)",
-  borderIceHover: "rgba(255, 255, 255, 0.45)",
-  
-  // Blue-White Elements & Accent Colors
-  white: "#ffffff",
-  iceBlueLight: "#f0f9ff",
-  iceBlueMedium: "#bae6fd",
-  skyBlue: "#38bdf8",
+  // Blue-White Elements & Borders
+  borderIce: "rgba(255, 255, 255, 0.2)",
+  borderIceHover: "rgba(255, 255, 255, 0.5)",
   
   // Text Colors
   textBright: "#ffffff",
@@ -30,13 +25,14 @@ export const colors = {
 export const tw = {
   bg: {
     main: "bg-[#050b14]",
-    card: "bg-[#0b172a]/80 backdrop-blur-md",
-    cardHover: "hover:bg-[#142847] hover:border-white/40 transition-all duration-300",
+    nav: "bg-[#13233a]/85 backdrop-blur-xl border-r border-white/20",
+    card: "bg-[#162b48]/80 backdrop-blur-lg border border-white/20 shadow-lg shadow-black/40",
+    cardHover: "hover:bg-[#1f3e68]/90 hover:border-white/50 transition-all duration-300",
+    imageHolder: "bg-[#0f2038] border border-white/25",
     buttonPrimary: "bg-white text-slate-950 font-bold hover:bg-sky-100 hover:text-slate-900 transition-colors shadow-lg shadow-white/10",
-    buttonSecondary: "bg-slate-800 text-white border border-white/20 hover:bg-slate-700 hover:border-white/40",
   },
   border: {
-    ice: "border border-white/15 hover:border-white/40 transition-colors",
+    ice: "border border-white/20 hover:border-white/50 transition-colors",
   },
   text: {
     heading: "text-white font-extrabold",
