@@ -1,68 +1,187 @@
-import { INVITATION_STATUS } from "../types/enum";
-import { RegisterGroupMember } from "../types/group_members";
-import { GroupInsert } from "../types/groups";
-import { InvitationInsert } from "../types/invitation";
+'use server';
+
+import { GroupInsert, GroupWithMembersAndEvent } from "../types/groups";
 import { createClient } from "../utils/supabase/server";
 
-export async function createGroup(registerGroupMemberData: RegisterGroupMember) {
-    const supabase = await createClient()
-    const filteredOutEmails = registerGroupMemberData.member_emails.filter((value) => value != null).splice(1)
-    const { data, error } = await supabase.from('profiles').select('email').in('email', filteredOutEmails);
-    if ((data?.length == 0 && filteredOutEmails.length != 0) || error) {
-        return { error: "Fail to verify member email" }
+/**
+ * PURPOSE:
+ * Fetches all group records joined with associated event details and group member profiles.
+ *
+ * CONTEXT/PARENT FILE:
+ * Called concurrently by app/groups-management/page.tsx Server Component.
+ *
+ * INPUTS / PARAMETERS:
+ * None.
+ */
+export async function getAllGroupsWithMembersWithEvent() {
+    /**
+     * BEHAVIORAL MECHANISM:
+     * Connects to Supabase client, queries 'groups' table joining 'events', fetches corresponding
+     * 'group_members' records and matches user 'profiles' by member_id.
+     *
+     * PARAMETERS:
+     * None.
+     *
+     * RETURNS:
+     * - Object: { data: GroupWithMembersAndEvent[] | null, error: string | null }
+     */
+    const supabase = await createClient();
+
+    // 1. Fetch groups with events relation
+    const { data: groupsData, error: groupsError } = await supabase
+        .from('groups')
+        .select(`
+            *,
+            events (
+                id,
+                short_description,
+                location
+            )
+        `)
+        .order('created_at', { ascending: false });
+
+    if (groupsError || !groupsData) {
+        return { data: null, error: "Fail to fetch groups" };
     }
 
-    const { data: createdGroup, error: groupError } = await supabase.from('groups').insert([{
-        group_name: registerGroupMemberData.title,
-        short_description: registerGroupMemberData.short_description,
-        event_id: registerGroupMemberData.event_id,
-    }]).select().single()
+    // 2. Fetch all group_members records
+    const { data: membersData, error: membersError } = await supabase
+        .from('group_members')
+        .select('id, group_id, member_id, created_at');
 
-    if (groupError) {
-        return { error: 'Fail to create group' }
+    if (membersError) {
+        return { data: null, error: "Fail to fetch group members" };
     }
 
-    const { data: createdMember, error: memberError } = await supabase.from('group_members').insert([{
-        group_id: createdGroup.id,
-        member_id: registerGroupMemberData.user_id
-    }])
+    // 3. Extract unique member IDs to fetch profiles
+    const memberIds = Array.from(
+        new Set(
+            (membersData || [])
+                .map((m) => m.member_id)
+                .filter((id): id is string => Boolean(id))
+        )
+    );
 
-    if (memberError) {
-        await supabase.from('groups').delete().eq('id', createdGroup.id);
-        return { error: 'Fail to add member to group' }
+    let profilesMap: Record<string, { id: string; email: string | null; full_name: string | null }> = {};
+
+    if (memberIds.length > 0) {
+        const { data: profilesData } = await supabase
+            .from('profiles')
+            .select('id, email, full_name')
+            .in('id', memberIds);
+
+        if (profilesData) {
+            profilesData.forEach((p) => {
+                profilesMap[p.id] = p;
+            });
+        }
     }
 
-    if (filteredOutEmails.length == 0) {
-        return { createdGroup, error: groupError }
-    }
+    // 4. Assemble joined result
+    const joinedGroups: GroupWithMembersAndEvent[] = groupsData.map((group) => {
+        const groupMembers = (membersData || [])
+            .filter((m) => m.group_id === group.id)
+            .map((m) => ({
+                id: m.id,
+                group_id: m.group_id || group.id,
+                member_id: m.member_id || "",
+                created_at: m.created_at,
+                profiles: m.member_id && profilesMap[m.member_id] ? profilesMap[m.member_id] : null,
+            }));
 
-    const invitations: Array<InvitationInsert> = filteredOutEmails.map((value) => {
-        return { group_id: createdGroup.id, member_email: value.toLowerCase().trim(), invitation_status: INVITATION_STATUS.PENDING }
-    })
+        return {
+            ...group,
+            events: group.events ? (group.events as any) : null,
+            group_members: groupMembers,
+        };
+    });
 
-    const { data: createdInvitation, error: invitationError } = await supabase.from('invitations').insert(invitations)
-
-    if (invitationError) {
-        return { error: 'Fail to send invitation' }
-    }
-    return { createdGroup, error: groupError }
+    return { data: joinedGroups, error: null };
 }
 
+/**
+ * PURPOSE:
+ * Inserts a new group record into the database.
+ *
+ * CONTEXT/PARENT FILE:
+ * Called by CreateGroupModal component in app/groups-management/components/CreateGroupModal.tsx.
+ *
+ * INPUTS / PARAMETERS:
+ * - group (GroupInsert, Required): Group payload to insert.
+ */
+export async function createGroup(group: GroupInsert) {
+    /**
+     * BEHAVIORAL MECHANISM:
+     * Inserts the group record into Supabase and returns the newly created record.
+     *
+     * PARAMETERS:
+     * - group (GroupInsert): Group insertion payload.
+     *
+     * RETURNS:
+     * - Object: { data: any, error: string | null }
+     */
+    const supabase = await createClient();
+    const { data, error } = await supabase.from('groups').insert(group).select().single();
+    if (error) {
+        return { data: null, error: "Fail to create group" };
+    }
+    return { data, error: null };
+}
+
+/**
+ * PURPOSE:
+ * Updates an existing group record in the database.
+ *
+ * CONTEXT/PARENT FILE:
+ * Called by EditGroupModal component in app/groups-management/components/EditGroupModal.tsx.
+ *
+ * INPUTS / PARAMETERS:
+ * - group (GroupInsert, Required): Group record update payload containing target ID.
+ */
 export async function updateGroup(group: GroupInsert) {
-    const supabase = await createClient()
-    const { data, error } = await supabase.from('groups').update(group).eq('id', group.id!)
+    /**
+     * BEHAVIORAL MECHANISM:
+     * Updates matching group record by ID in Supabase and returns the updated record.
+     *
+     * PARAMETERS:
+     * - group (GroupInsert): Group payload with valid ID.
+     *
+     * RETURNS:
+     * - Object: { data: any, error: string | null }
+     */
+    const supabase = await createClient();
+    const { data, error } = await supabase.from('groups').update(group).eq('id', group.id!).select().single();
     if (error) {
-        return { error: "Fail to update group" }
+        return { data: null, error: "Fail to update group" };
     }
-    return { data, error }
+    return { data, error: null };
 }
 
+/**
+ * PURPOSE:
+ * Deletes a group record from the database.
+ *
+ * CONTEXT/PARENT FILE:
+ * Called by delete action in GroupsTable.
+ *
+ * INPUTS / PARAMETERS:
+ * - groupId (string, Required): Unique identifier of the group to delete.
+ */
 export async function deleteGroup(groupId: string) {
-    const supabase = await createClient()
-    const { data, error } = await supabase.from('groups').delete().eq('id', groupId)
-
+    /**
+     * BEHAVIORAL MECHANISM:
+     * Removes the group record matching groupId from Supabase database.
+     *
+     * PARAMETERS:
+     * - groupId (string): Target group UUID.
+     *
+     * RETURNS:
+     * - Object: { data: any, error: string | null }
+     */
+    const supabase = await createClient();
+    const { data, error } = await supabase.from('groups').delete().eq('id', groupId);
     if (error) {
-        return { error: "Fail to delete group" }
+        return { data: null, error: "Fail to delete group" };
     }
-    return { data, error }
+    return { data, error: null };
 }

@@ -15,6 +15,7 @@ const navItems: NavItem[] = [
   { name: "About", href: "/about" },
   { name: "Events", href: "/events" },
   { name: "Events Management", href: "/events-management" },
+  { name: "Groups Management", href: "/groups-management" },
 ];
 
 export default function NavigationBarMobile() {
@@ -43,7 +44,7 @@ export default function NavigationBarMobile() {
         {/* Hamburger Toggle Button */}
         <button
           onClick={() => setIsOpen(!isOpen)}
-          className="p-2 rounded-lg text-slate-200 hover:text-white hover:bg-white/10 focus:outline-none"
+          className="p-2 rounded-lg text-slate-200 hover:text-white hover:bg-white/10 focus:outline-none cursor-pointer"
           aria-label="Toggle navigation menu"
         >
           {isOpen ? (
