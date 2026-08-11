@@ -60,7 +60,7 @@ export type Database = {
       }
       events: {
         Row: {
-          content: string | null
+          content: Json | null
           created_at: string
           end_date: string | null
           id: string
@@ -72,7 +72,7 @@ export type Database = {
           status: Database["public"]["Enums"]["EVENT_STATUS"] | null
         }
         Insert: {
-          content?: string | null
+          content?: Json | null
           created_at?: string
           end_date?: string | null
           id?: string
@@ -84,7 +84,7 @@ export type Database = {
           status?: Database["public"]["Enums"]["EVENT_STATUS"] | null
         }
         Update: {
-          content?: string | null
+          content?: Json | null
           created_at?: string
           end_date?: string | null
           id?: string

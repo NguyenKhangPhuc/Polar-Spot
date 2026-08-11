@@ -16,6 +16,7 @@ export async function createEvent(event: EventInsert) {
     const supabase = await createClient();
     const { data, error } = await supabase.from('events').insert(event).select().single();
     if (error) {
+        console.log(error)
         return { data: null, error: "Fail to create event" };
     }
     return { data, error: null };
