@@ -1,31 +1,40 @@
-import { EventInsert } from "../types/event";
+'use server';
+
+import { Event, EventInsert } from "../types/event";
 import { createClient } from "../utils/supabase/server";
 
+export async function getAllEvents() {
+    const supabase = await createClient();
+    const { data, error } = await supabase.from('events').select('*').order('created_at', { ascending: false });
+    if (error) {
+        return { data: null, error: "Fail to fetch events" };
+    }
+    return { data: data as Event[], error: null };
+}
 
 export async function createEvent(event: EventInsert) {
-    const supabase = await createClient()
-    const { data, error } = await supabase.from('events').insert(event)
+    const supabase = await createClient();
+    const { data, error } = await supabase.from('events').insert(event).select().single();
     if (error) {
-        return { error: "Fail to create the event" }
+        return { data: null, error: "Fail to create event" };
     }
-    return { data, error }
+    return { data, error: null };
 }
 
 export async function updateEvent(event: EventInsert) {
-    const supabase = await createClient()
-    const { data, error } = await supabase.from('events').update(event).eq('id', event.id!)
+    const supabase = await createClient();
+    const { data, error } = await supabase.from('events').update(event).eq('id', event.id!).select().single();
     if (error) {
-        return { error: "Failed to update the data" }
+        return { data: null, error: "Fail to update event" };
     }
-    return { data, error }
+    return { data, error: null };
 }
 
 export async function deleteEvent(eventId: string) {
-    const supabse = await createClient()
-    const { data, error } = await supabse.from("events").delete().eq('id', eventId)
+    const supabase = await createClient();
+    const { data, error } = await supabase.from("events").delete().eq('id', eventId);
     if (error) {
-        return { error: "Failed to update the event" }
+        return { data: null, error: "Fail to delete event" };
     }
-    return { data, error }
+    return { data, error: null };
 }
-

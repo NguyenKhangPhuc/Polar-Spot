@@ -14,6 +14,7 @@ const navItems: NavItem[] = [
   { name: "Home", href: "/" },
   { name: "About", href: "/about" },
   { name: "Events", href: "/events" },
+  { name: "Events Management", href: "/events-management" },
 ];
 
 export default function NavigationBarMobile() {

@@ -9,7 +9,7 @@ export async function createGroup(registerGroupMemberData: RegisterGroupMember) 
     const filteredOutEmails = registerGroupMemberData.member_emails.filter((value) => value != null).splice(1)
     const { data, error } = await supabase.from('profiles').select('email').in('email', filteredOutEmails);
     if ((data?.length == 0 && filteredOutEmails.length != 0) || error) {
-        return { error: "Incorrect member email" }
+        return { error: "Fail to verify member email" }
     }
 
     const { data: createdGroup, error: groupError } = await supabase.from('groups').insert([{
@@ -19,7 +19,7 @@ export async function createGroup(registerGroupMemberData: RegisterGroupMember) 
     }]).select().single()
 
     if (groupError) {
-        return { error: 'Failed to create the event, please try again later' }
+        return { error: 'Fail to create group' }
     }
 
     const { data: createdMember, error: memberError } = await supabase.from('group_members').insert([{
@@ -29,7 +29,7 @@ export async function createGroup(registerGroupMemberData: RegisterGroupMember) 
 
     if (memberError) {
         await supabase.from('groups').delete().eq('id', createdGroup.id);
-        return { error: 'Fail to insert the member to the group, please contact the staff' }
+        return { error: 'Fail to add member to group' }
     }
 
     if (filteredOutEmails.length == 0) {
@@ -43,7 +43,7 @@ export async function createGroup(registerGroupMemberData: RegisterGroupMember) 
     const { data: createdInvitation, error: invitationError } = await supabase.from('invitations').insert(invitations)
 
     if (invitationError) {
-        return { error: 'Fail to send the invitation to other members' }
+        return { error: 'Fail to send invitation' }
     }
     return { createdGroup, error: groupError }
 }
@@ -52,7 +52,7 @@ export async function updateGroup(group: GroupInsert) {
     const supabase = await createClient()
     const { data, error } = await supabase.from('groups').update(group).eq('id', group.id!)
     if (error) {
-        return { error: "Failed to update the group" }
+        return { error: "Fail to update group" }
     }
     return { data, error }
 }
@@ -62,7 +62,7 @@ export async function deleteGroup(groupId: string) {
     const { data, error } = await supabase.from('groups').delete().eq('id', groupId)
 
     if (error) {
-        return { error: "Failed to delete group" }
+        return { error: "Fail to delete group" }
     }
     return { data, error }
 }
