@@ -40,7 +40,7 @@ const Home = () => {
 
   /**
    * BEHAVIORAL MECHANISM:
-   * Triggers user sign-up action and reports existing account warnings.
+   * Triggers user sign-up action and handles verification navigation or error reports.
    *
    * PARAMETERS:
    * - signupInfo (SignupForm): Form values payload.
@@ -51,20 +51,25 @@ const Home = () => {
   const onSubmit = async (signupInfo: SignupForm): Promise<void> => {
     setIsOpenLoader(true);
     try {
-      const { error } = await signup(signupInfo, window.location.origin);
-      if (error) {
-        throw new Error(error);
-      }
-    } catch (error) {
-      if (error instanceof Error && error.message !== "NEXT_REDIRECT") {
-        if (error.message === AUTH_ERROR_CODE.EXISTED_USER) {
+      const res = await signup(signupInfo, window.location.origin);
+      if (res?.error) {
+        if (
+          res.error === AUTH_ERROR_CODE.EXISTED_USER ||
+          res.error === "user_already_exists"
+        ) {
           showNotification("User already existed");
         } else {
-          showNotification("Fail to sign up");
+          showNotification(res.error || "Fail to sign up");
         }
-      } else if (error instanceof Error && error.message === "NEXT_REDIRECT") {
-        showNotification("Sign up successfully, please verify your email");
+        setIsOpenLoader(false);
+        return;
       }
+
+      showNotification("Sign up successfully, please verify your email");
+      setIsOpenLoader(false);
+      router.push(`/sign-up/verify-account?email=${signupInfo.email}`);
+    } catch {
+      showNotification("Fail to sign up");
       setIsOpenLoader(false);
     }
   };

@@ -4,6 +4,7 @@ import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
 import { createClient } from '../utils/supabase/server'
 import { LoginForm, ResetPasswordForm, SignupForm, VerifyAccountForm } from '../types/authentication'
+import { AUTH_ERROR_CODE } from '../types/enum'
 
 export async function getUser() {
     const supabase = await createClient();
@@ -11,11 +12,10 @@ export async function getUser() {
     const { data, error } = await supabase.auth.getUser()
     return { data, error }
 }
+
 export async function login(formData: LoginForm) {
     const supabase = await createClient()
 
-    // type-casting here for convenience
-    // in practice, you should validate your inputs
     const data = {
         email: formData.email,
         password: formData.password,
@@ -24,39 +24,38 @@ export async function login(formData: LoginForm) {
     const { error } = await supabase.auth.signInWithPassword(data)
 
     if (error) {
-        return { error: error.code }
+        return { error: error.code || error.message }
     }
 
-    redirect('/dashboard')
+    return { success: true }
 }
 
 export async function signup(formData: SignupForm, origin: string) {
     const supabase = await createClient()
 
-    // type-casting here for convenience
-    // in practice, you should validate your inputs
-
-
     const { data, error } = await supabase.auth.signUp({
         email: formData.email,
         password: formData.password,
-        options: { data: { full_name: formData.fullName, email: formData.email }, emailRedirectTo: `${origin}/auth/callback`, }
+        options: {
+            data: { full_name: formData.fullName, email: formData.email },
+            emailRedirectTo: `${origin}/auth/callback`,
+        }
     })
 
     if (error) {
-        return { error: error.code }
+        return { error: error.code || error.message }
     }
-    // console.log("DATA", data)
-    // console.log("ERROR", error)
 
-    redirect(`/sign-up/verify-account?email=${formData.email}`)
+    if (data?.user && data.user.identities && data.user.identities.length === 0) {
+        return { error: AUTH_ERROR_CODE.EXISTED_USER }
+    }
+
+    return { success: true, email: formData.email }
 }
 
 export async function signout() {
     const supabase = await createClient()
 
-    // type-casting here for convenience
-    // in practice, you should validate your inputs
     const { error } = await supabase.auth.signOut()
 
     if (error) {
@@ -92,15 +91,13 @@ export async function verifySignUpAccount(verifyAccount: VerifyAccountForm) {
         }
     )
     if (error) {
-        // console.log(error)
         return { error: 'Fail to verify the OTP' }
     }
     if (data.session == null) {
         return { error: 'Fail to verify the OTP' }
     }
-    return { data, error }
+    return { data, error: null }
 }
-
 
 export async function resetPassword(resetPasswordData: ResetPasswordForm) {
     const supabase = await createClient()

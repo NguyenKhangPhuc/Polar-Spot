@@ -76,13 +76,12 @@ const Home = () => {
   const onSubmit = async (userInfo: LoginForm): Promise<void> => {
     setIsOpenLoader(true);
     try {
-      const { error } = await login(userInfo);
-      if (error) {
-        throw new Error(error);
-      }
-    } catch (error) {
-      if (error instanceof Error && error.message !== "NEXT_REDIRECT") {
-        if (error.message === AUTH_ERROR_CODE.EMAIL_NOT_CONFIRMED) {
+      const res = await login(userInfo);
+      if (res?.error) {
+        if (
+          res.error === AUTH_ERROR_CODE.EMAIL_NOT_CONFIRMED ||
+          res.error === "email_not_confirmed"
+        ) {
           try {
             await resendVerificationCode(userInfo.email, window.location.origin);
             showNotification("Please verify your email");
@@ -90,14 +89,23 @@ const Home = () => {
           } catch {
             showNotification("Failed to send verification code");
           }
-        } else if (error.message === AUTH_ERROR_CODE.INVALID_CREDENTIALS) {
+        } else if (
+          res.error === AUTH_ERROR_CODE.INVALID_CREDENTIALS ||
+          res.error === "invalid_credentials"
+        ) {
           showNotification("Invalid credentials");
         } else {
           showNotification("Failed to login");
         }
-      } else if (error instanceof Error && error.message === "NEXT_REDIRECT") {
-        showNotification("Login successfully");
+        setIsOpenLoader(false);
+        return;
       }
+
+      showNotification("Login successfully");
+      setIsOpenLoader(false);
+      router.push("/");
+    } catch {
+      showNotification("Failed to login");
       setIsOpenLoader(false);
     }
   };
@@ -112,7 +120,7 @@ const Home = () => {
         >
           {/* Header Title & Brand Logo */}
           <div className="flex flex-col items-center text-center gap-2 border-b border-white/12 pb-5">
-            <div className="w-12 h-12 rounded-2xl bg-[#0a1526] border border-white/20 p-2 flex items-center justify-center shadow-lg">
+            <div className="w-12 h-12 rounded-2xl bg-[#0a1526] border border-white/20 p-2 flex flex-col items-center justify-center shadow-lg">
               <Image
                 src="/polarbear-logo.png"
                 alt="Polar Bear Pitching Logo"

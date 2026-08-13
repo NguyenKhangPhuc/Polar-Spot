@@ -1,0 +1,1 @@
+GRANT SELECT, INSERT, UPDATE, DELETE on public.user_group_grading TO authenticated;

@@ -3,6 +3,9 @@
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
+import type { User } from "@supabase/supabase-js";
+import { signout } from "@/app/actions/authentication";
+import { useNotification } from "@/app/context/NotificationContext";
 
 interface NavItem {
   name: string;
@@ -59,8 +62,23 @@ const navItems: NavItem[] = [
   },
 ];
 
-export default function NavigationBarClient() {
+interface NavigationBarClientProps {
+  user?: User | null;
+}
+
+export default function NavigationBarClient({ user }: NavigationBarClientProps) {
   const pathname = usePathname();
+  const { showNotification } = useNotification();
+
+  const handleLogout = async (): Promise<void> => {
+    try {
+      await signout();
+    } catch (error) {
+      if (error instanceof Error && error.message !== "NEXT_REDIRECT") {
+        showNotification(error.message);
+      }
+    }
+  };
 
   return (
     <aside className="hidden lg:flex lg:flex-col fixed top-0 left-0 bottom-0 w-64 frost-nav border-r border-white/20 z-30 p-6">
@@ -109,28 +127,43 @@ export default function NavigationBarClient() {
         })}
       </nav>
 
-      {/* Auth Navigation Action Buttons */}
-      <div className="pt-4 border-t border-white/15 mb-4 flex items-center gap-2">
-        <Link
-          href="/login"
-          className={`flex-1 text-center py-2.5 px-3 rounded-xl text-xs font-bold uppercase tracking-wider transition-colors border ${
-            pathname === "/login"
-              ? "bg-white/20 text-white border-white/40"
-              : "bg-[#0f2038] text-slate-200 border-white/20 hover:bg-white/10 hover:text-white"
-          }`}
-        >
-          Sign In
-        </Link>
-        <Link
-          href="/sign-up"
-          className={`flex-1 text-center py-2.5 px-3 rounded-xl text-xs font-bold uppercase tracking-wider transition-colors shadow-md ${
-            pathname === "/sign-up"
-              ? "bg-cyan-300 text-slate-950 font-extrabold"
-              : "bg-white hover:bg-sky-100 text-slate-950"
-          }`}
-        >
-          Sign Up
-        </Link>
+      {/* Auth Navigation Action Section */}
+      <div className="pt-4 border-t border-white/15 mb-4">
+        {user ? (
+          <button
+            onClick={handleLogout}
+            type="button"
+            className="w-full text-center py-2.5 px-3 rounded-xl text-xs font-bold uppercase tracking-wider text-red-400 bg-red-950/40 border border-red-500/30 hover:bg-red-900/60 hover:text-white transition-colors cursor-pointer shadow-md flex items-center justify-center gap-2"
+          >
+            <svg className="w-4 h-4 text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+            </svg>
+            <span>Sign Out</span>
+          </button>
+        ) : (
+          <div className="flex items-center gap-2">
+            <Link
+              href="/login"
+              className={`flex-1 text-center py-2.5 px-3 rounded-xl text-xs font-bold uppercase tracking-wider transition-colors border ${
+                pathname === "/login"
+                  ? "bg-white/20 text-white border-white/40"
+                  : "bg-[#0f2038] text-slate-200 border-white/20 hover:bg-white/10 hover:text-white"
+              }`}
+            >
+              Sign In
+            </Link>
+            <Link
+              href="/sign-up"
+              className={`flex-1 text-center py-2.5 px-3 rounded-xl text-xs font-bold uppercase tracking-wider transition-colors shadow-md ${
+                pathname === "/sign-up"
+                  ? "bg-cyan-300 text-slate-950 font-extrabold"
+                  : "bg-white hover:bg-sky-100 text-slate-950"
+              }`}
+            >
+              Sign Up
+            </Link>
+          </div>
+        )}
       </div>
 
       {/* Arctic Pitching Info Card */}

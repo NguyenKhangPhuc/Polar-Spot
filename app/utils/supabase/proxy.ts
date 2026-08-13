@@ -1,14 +1,29 @@
 import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
+import { type SupabaseClient } from '@supabase/supabase-js'
+import { Database } from '../../types/database.types'
 
-export async function updateSession(request: NextRequest) {
+export type UpdateSessionResult = {
+    supabaseResponse: NextResponse
+    supabase: SupabaseClient<Database>
+}
+
+/**
+ * Refreshes the Supabase session cookie and returns the shared client.
+ * Uses getClaims() (JWT-local decode, no extra network round-trip) instead of
+ * getUser() so callers can call getUser() exactly once on the shared client.
+ *
+ * Returns { supabaseResponse, supabase } in all cases.
+ * Callers should check supabaseResponse.status !== 200 to detect redirects.
+ */
+export async function updateSession(request: NextRequest): Promise<UpdateSessionResult> {
     let supabaseResponse = NextResponse.next({
         request,
     })
 
     // With Fluid compute, don't put this client in a global environment
     // variable. Always create a new one on each request.
-    const supabase = createServerClient(
+    const supabase = createServerClient<Database>(
         process.env.NEXT_PUBLIC_SUPABASE_URL!,
         process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!,
         {
@@ -35,11 +50,18 @@ export async function updateSession(request: NextRequest) {
     // with the Supabase client, your users may be randomly logged out.
     const { data } = await supabase.auth.getClaims()
     const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
-    const user = data?.claims
+    const claims = data?.claims
     const pathname = request.nextUrl.pathname;
+    const isBaseProjectsPage = pathname === '/projects';
+    const pathParts = pathname.split('/')
+    const isProjectDetailPage =
+        pathParts.length === 3 &&
+        pathParts[1] === 'projects' &&
+        UUID_REGEX.test(pathParts[2]);
+    const isAccessingProjectSystem = isBaseProjectsPage || isProjectDetailPage;
 
     if (
-        !user &&
+        !claims &&
         !pathname.startsWith('/login') &&
         !pathname.startsWith('/sign-up') &&
         !pathname.startsWith('/auth/callback') &&
@@ -47,22 +69,22 @@ export async function updateSession(request: NextRequest) {
         !pathname.startsWith('/reset-password') &&
         !pathname.startsWith('/terms-and-conditions') &&
         !pathname.startsWith('/privacy-policy') &&
+        !pathname.startsWith('/about') &&
+        !isAccessingProjectSystem &&
         pathname !== '/'
     ) {
-        // no user, potentially respond by redirecting the user to the login page
         const url = request.nextUrl.clone()
         url.pathname = '/login'
-        return NextResponse.redirect(url)
+        return { supabaseResponse: NextResponse.redirect(url), supabase }
     }
 
     if (
-        user &&
+        claims &&
         (request.nextUrl.pathname.startsWith('/login') || request.nextUrl.pathname.startsWith('/sign-up'))
     ) {
         const url = request.nextUrl.clone()
         url.pathname = '/'
-        const response = NextResponse.redirect(url)
-        return response
+        return { supabaseResponse: NextResponse.redirect(url), supabase }
     }
 
     // IMPORTANT: You *must* return the supabaseResponse object as it is. If you're
@@ -78,5 +100,5 @@ export async function updateSession(request: NextRequest) {
     // If this is not done, you may be causing the browser and server to go out
     // of sync and terminate the user's session prematurely!
 
-    return supabaseResponse
+    return { supabaseResponse, supabase }
 }
