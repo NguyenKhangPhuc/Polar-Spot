@@ -80,6 +80,32 @@ export default function NavigationBarMobile() {
               </Link>
             );
           })}
+
+          {/* Auth Buttons Row */}
+          <div className="mt-3 pt-3 border-t border-white/15 flex items-center gap-2">
+            <Link
+              href="/login"
+              onClick={() => setIsOpen(false)}
+              className={`flex-1 text-center py-2.5 px-3 rounded-xl text-xs font-bold uppercase tracking-wider transition-colors border ${
+                pathname === "/login"
+                  ? "bg-white/20 text-white border-white/40"
+                  : "bg-[#0f2038] text-slate-200 border-white/20 hover:bg-white/10 hover:text-white"
+              }`}
+            >
+              Sign In
+            </Link>
+            <Link
+              href="/sign-up"
+              onClick={() => setIsOpen(false)}
+              className={`flex-1 text-center py-2.5 px-3 rounded-xl text-xs font-bold uppercase tracking-wider transition-colors shadow-md ${
+                pathname === "/sign-up"
+                  ? "bg-cyan-300 text-slate-950 font-extrabold"
+                  : "bg-white hover:bg-sky-100 text-slate-950"
+              }`}
+            >
+              Sign Up
+            </Link>
+          </div>
         </nav>
       )}
     </header>
