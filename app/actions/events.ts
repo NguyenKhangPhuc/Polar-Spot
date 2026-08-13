@@ -15,17 +15,6 @@ import { createClient } from "../utils/supabase/server";
  * None.
  */
 export async function getAllEvents() {
-    /**
-     * BEHAVIORAL MECHANISM:
-     * Connects to Supabase client, queries 'events' table ordered by created_at DESC,
-     * and returns the events array or sanitized error string.
-     *
-     * PARAMETERS:
-     * None.
-     *
-     * RETURNS:
-     * - Object: { data: Event[] | null, error: string | null }
-     */
     const supabase = await createClient();
     const { data, error } = await supabase.from('events').select('*').order('created_at', { ascending: false });
     if (error) {
@@ -45,18 +34,8 @@ export async function getAllEvents() {
  * - event (EventInsert, Required): The event payload to insert into the database.
  */
 export async function createEvent(event: EventInsert) {
-    /**
-     * BEHAVIORAL MECHANISM:
-     * Inserts the event record into Supabase and returns the created record.
-     *
-     * PARAMETERS:
-     * - event (EventInsert): Event insertion object.
-     *
-     * RETURNS:
-     * - Object: { data: Event | null, error: string | null }
-     */
     const supabase = await createClient();
-    const { data, error } = await supabase.from('events').insert(event).select().single();
+    const { data, error } = await supabase.from('events').insert(event as any).select().single();
     if (error) {
         return { data: null, error: "Fail to create event" };
     }
@@ -74,22 +53,17 @@ export async function createEvent(event: EventInsert) {
  * - event (EventInsert, Required): Event record data containing the target id.
  */
 export async function updateEvent(event: EventInsert) {
-    /**
-     * BEHAVIORAL MECHANISM:
-     * Updates matching event record by ID in Supabase and returns the updated record.
-     *
-     * PARAMETERS:
-     * - event (EventInsert): Event update payload containing valid id.
-     *
-     * RETURNS:
-     * - Object: { data: Event | null, error: string | null }
-     */
     const supabase = await createClient();
-    const { data, error } = await supabase.from('events').update(event).eq('id', event.id!).select().single();
+    const { data, error } = await supabase.from('events').update(event as any).eq('id', event.id!).select().single();
     if (error) {
         return { data: null, error: "Fail to update event" };
     }
     return { data: data as Event, error: null };
+}
+
+// Alias for compatibility with user example
+export async function updateEventInfo({ event }: { event: EventInsert }) {
+    return updateEvent(event);
 }
 
 /**
@@ -104,17 +78,6 @@ export async function updateEvent(event: EventInsert) {
  * - status (EVENT_STATUS, Required): Target status to update (e.g., ongoing, finished).
  */
 export async function updateEventStatus(eventId: string, status: EVENT_STATUS) {
-    /**
-     * BEHAVIORAL MECHANISM:
-     * Executes a targeted column update for 'status' on the matching event ID in Supabase.
-     *
-     * PARAMETERS:
-     * - eventId (string): Target event UUID.
-     * - status (EVENT_STATUS): New status enum value.
-     *
-     * RETURNS:
-     * - Object: { data: Event | null, error: string | null }
-     */
     const supabase = await createClient();
     const { data, error } = await supabase.from('events').update({ status }).eq('id', eventId).select().single();
     if (error) {
@@ -134,20 +97,90 @@ export async function updateEventStatus(eventId: string, status: EVENT_STATUS) {
  * - eventId (string, Required): Unique identifier of the event to delete.
  */
 export async function deleteEvent(eventId: string) {
-    /**
-     * BEHAVIORAL MECHANISM:
-     * Removes the event matching eventId from Supabase database.
-     *
-     * PARAMETERS:
-     * - eventId (string): Unique identifier of the event to delete.
-     *
-     * RETURNS:
-     * - Object: { data: any, error: string | null }
-     */
     const supabase = await createClient();
     const { data, error } = await supabase.from("events").delete().eq('id', eventId);
     if (error) {
         return { data: null, error: "Fail to delete event" };
     }
     return { data, error: null };
+}
+
+/**
+ * PURPOSE:
+ * Fetches single event record by ID.
+ *
+ * CONTEXT/PARENT FILE:
+ * Called by app/events/[id]/edit/page.tsx Server Component.
+ *
+ * INPUTS / PARAMETERS:
+ * - eventId (string, Required): Target event UUID.
+ */
+export async function getEventById(eventId: string) {
+    const supabase = await createClient();
+    const { data, error } = await supabase.from('events').select('*').eq('id', eventId).single();
+    if (error) {
+        return { data: null, error: "Failed to get event information by event id" };
+    }
+    return { data: data as Event, error: null };
+}
+
+/**
+ * PURPOSE:
+ * Updates or removes the event poster image in Supabase storage and updates poster_path on the event record.
+ *
+ * CONTEXT/PARENT FILE:
+ * Called by EditEventClient.tsx in app/events/[id]/edit/EditEventClient.tsx.
+ *
+ * INPUTS / PARAMETERS:
+ * - params (Object, Required): Object containing eventId, posterFile, and originalPath.
+ */
+export async function updateEventPoster({
+    eventId,
+    posterFile,
+    originalPath,
+}: {
+    eventId: string;
+    posterFile: File | null;
+    originalPath: string | null;
+}) {
+    const supabase = await createClient();
+    let posterPath: string | null = null;
+
+    if (posterFile != null) {
+        posterPath = `${eventId}/${Date.now()}-${posterFile.name}`;
+
+        if (originalPath) {
+            await supabase.storage.from('attachments').remove([originalPath]);
+        }
+        const { error: storageError } = await supabase.storage
+            .from('attachments')
+            .upload(posterPath, posterFile);
+
+        if (storageError) {
+            return { error: "Failed to upload to storage" };
+        }
+
+        const { error } = await supabase
+            .from('events')
+            .update({ poster_path: posterPath } as any)
+            .eq('id', eventId);
+
+        if (error) {
+            return { error: "Failed to update image, please contact staff" };
+        }
+        return { error: null };
+    }
+
+    if (originalPath) {
+        await supabase.storage.from('attachments').remove([originalPath]);
+    }
+    const { error } = await supabase
+        .from('events')
+        .update({ poster_path: null } as any)
+        .eq('id', eventId);
+
+    if (error) {
+        return { error: "Failed to update image, please contact staff" };
+    }
+    return { error: null };
 }
