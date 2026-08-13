@@ -14,6 +14,7 @@ export default function Footer() {
                 alt="Polar Bear Pitching Logo"
                 width={20}
                 height={20}
+                style={{ width: "auto", height: "auto" }}
                 className="object-contain"
               />
             </div>

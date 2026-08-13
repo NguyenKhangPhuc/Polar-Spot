@@ -66,12 +66,13 @@ export default function NavigationBarClient() {
     <aside className="hidden lg:flex lg:flex-col fixed top-0 left-0 bottom-0 w-64 frost-nav border-r border-white/20 z-30 p-6">
       {/* Brand Logo & Name */}
       <div className="flex items-center gap-3 pb-8 border-b border-white/15">
-        <div className="relative w-10 h-10 rounded-xl bg-[#0f2038] p-1 border border-white/30 flex items-center justify-center shadow-md">
+        <div className="relative w-10 h-10 rounded-xl bg-[#0f2038] p-1 border border-white/30 flex items-center justify-center">
           <Image
             src="/polarbear-logo.png"
             alt="Polar Bear Pitching Logo"
             width={32}
             height={32}
+            style={{ width: "auto", height: "auto" }}
             className="object-contain"
           />
         </div>

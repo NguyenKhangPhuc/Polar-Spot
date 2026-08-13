@@ -157,6 +157,7 @@ export async function updateEventPoster({
             .upload(posterPath, posterFile);
 
         if (storageError) {
+            console.log(storageError)
             return { error: "Failed to upload to storage" };
         }
 

@@ -33,6 +33,7 @@ export default function NavigationBarMobile() {
               alt="Polar Bear Pitching Logo"
               width={26}
               height={26}
+              style={{ width: "auto", height: "auto" }}
               className="object-contain"
             />
           </div>

@@ -9,6 +9,7 @@ import { updateEventPoster } from "@/app/actions/events";
 import { useLoader } from "@/app/context/LoaderContext";
 import { useNotification } from "@/app/context/NotificationContext";
 import { createClient } from "@/app/utils/supabase/client";
+import { handleGetUrl } from "@/app/helpers/file_url";
 import BackButton from "@/app/components/BackButton";
 import BasicInfoSection from "./components/BasicInfoSection";
 import CriteriaSection from "./components/CriteriaSection";
@@ -40,23 +41,8 @@ export default function EditEventClient({ event, criteria }: EditEventClientProp
 
   const [currentPage, setCurrentPage] = useState<ConfigPage>("basic");
 
-  /**
-   * BEHAVIORAL MECHANISM:
-   * Resolves the public URL for a given poster path stored in Supabase storage bucket 'attachments'.
-   *
-   * PARAMETERS:
-   * - imagePath (string): Relative storage path of the image.
-   *
-   * RETURNS:
-   * - string: Fully qualified public URL.
-   */
-  const handleGetInitialImage = (imagePath: string): string => {
-    const { data } = supabase.storage.from("attachments").getPublicUrl(imagePath);
-    return data.publicUrl;
-  };
-
   const [previewUrl, setPreviewUrl] = useState<string | null>(
-    event.poster_path ? handleGetInitialImage(event.poster_path) : null
+    event.poster_path ? handleGetUrl(supabase, event.poster_path) : null
   );
 
   /**
@@ -167,13 +153,14 @@ export default function EditEventClient({ event, criteria }: EditEventClientProp
                 <>
                   <Image
                     src={previewUrl}
-                    alt="Event Poster"
+                    alt={event.short_description || "Event Poster"}
                     fill
+                    unoptimized
                     sizes="(max-width: 768px) 100vw, 320px"
                     className="object-cover"
                   />
                   {/* Hover Overlay Text Info */}
-                  <div className="absolute inset-0 bg-slate-950/70 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center pointer-events-none">
+                  <div className="absolute inset-0 bg-slate-950/70 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center pointer-events-none z-10">
                     <span className="text-xs font-bold text-cyan-300 uppercase tracking-widest bg-slate-900/80 px-3 py-1.5 rounded-lg border border-cyan-500/40">
                       [+] CHANGE_POSTER
                     </span>
@@ -187,7 +174,7 @@ export default function EditEventClient({ event, criteria }: EditEventClientProp
                     }}
                     type="button"
                     title="Remove Poster Image"
-                    className="absolute top-3 right-3 w-8 h-8 rounded-xl bg-slate-900/90 border border-red-500/40 text-red-400 hover:text-white hover:bg-red-950 transition-all flex items-center justify-center cursor-pointer z-10 shadow-md"
+                    className="absolute top-3 right-3 w-8 h-8 rounded-xl bg-slate-900/90 border border-red-500/40 text-red-400 hover:text-white hover:bg-red-950 transition-all flex items-center justify-center cursor-pointer z-20 shadow-md"
                   >
                     <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
