@@ -1,16 +1,16 @@
 "use client";
 
-import React from "react";
-import { AnimatePresence } from "framer-motion";
+import React, { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import { GroupWithMembersAndEvent } from "../../types/groups";
-import MembersDropdown from "./MembersDropdown";
 
 /**
  * PURPOSE:
- * Tabular display component for rendering group records, member dropdowns, and group management actions.
+ * Tabular display component for rendering group records with expandable Framer Motion accordion rows.
+ * Allows administrators to click rows to expand detailed group members, add new members, and remove existing members.
  *
  * CONTEXT/PARENT FILE:
- * Extracted from app/groups-management/GroupManagementClient.tsx to isolate table structure and row action triggers.
+ * Extracted from app/groups-management/GroupManagementClient.tsx to isolate table structure and accordion dropdown interactions.
  *
  * INPUTS / PARAMETERS:
  * - groups (GroupWithMembersAndEvent[], Required): Array of groups joined with event and member details.
@@ -35,48 +35,79 @@ export function GroupsTable({
   onDeleteGroup,
   onMemberRemoved,
 }: GroupsTableProps) {
+  // Currently expanded group ID for row accordion
+  const [expandedGroupId, setExpandedGroupId] = useState<string | null>(null);
+
   /**
    * BEHAVIORAL MECHANISM:
-   * Maps over the groups array to display NO, GROUP NAME, EVENT NAME, SHORT DESCRIPTION, CREATED AT, MEMBERS & ACTIONS.
-   * Renders MembersDropdown and action buttons for adding members, editing groups, and deleting groups.
+   * Toggles the row expansion accordion for the target group ID.
    *
    * PARAMETERS:
-   * - props (GroupsTableProps): Table data and action handlers.
+   * - groupId (string): Unique identifier of the clicked group.
    *
    * RETURNS:
-   * - JSX.Element: Rendered HTML table component.
+   * - void
    */
+  const toggleExpandGroup = (groupId: string) => {
+    setExpandedGroupId((prev) => (prev === groupId ? null : groupId));
+  };
+
   return (
     <div className="bg-[#13243b]/90 border border-white/18 rounded-2xl overflow-x-auto shadow-xl">
-      <table className="w-full border-collapse text-sm text-slate-200 text-left min-w-[1000px]">
+      <table className="w-full border-collapse text-sm text-slate-200 text-left min-w-[950px]">
         <thead>
           <tr className="border-b border-white/15 bg-[#0a1526] text-slate-300 select-none text-xs uppercase tracking-wider font-bold">
             <th className="p-4 sm:p-5 text-center w-14">NO</th>
+            <th className="p-4 sm:p-5 text-center w-14">DETAILS</th>
             <th className="p-4 sm:p-5">GROUP_NAME</th>
             <th className="p-4 sm:p-5">EVENT_NAME</th>
-            <th className="p-4 sm:p-5">SHORT_DESCRIPTION</th>
+            <th className="p-4 sm:p-5 text-center w-32">MEMBERS</th>
             <th className="p-4 sm:p-5">CREATED_AT</th>
-            <th className="p-4 sm:p-5 text-center w-48">MEMBERS</th>
-            <th className="p-4 sm:p-5 text-center w-52">ACTIONS</th>
+            <th className="p-4 sm:p-5 text-center w-40">ACTIONS</th>
           </tr>
         </thead>
         <tbody>
-          <AnimatePresence mode="wait">
-            {groups.length > 0 ? (
-              groups.map((group, index) => {
-                const eventName =
-                  group.events?.short_description ||
-                  group.events?.location ||
-                  "UNASSIGNED_EVENT";
+          {groups.length > 0 ? (
+            groups.map((group, index) => {
+              const isExpanded = expandedGroupId === group.id;
+              const members = group.group_members || [];
+              const memberCount = members.length;
+              const eventName =
+                group.events?.short_description ||
+                group.events?.location ||
+                "UNASSIGNED_EVENT";
 
-                return (
+              return (
+                <React.Fragment key={group.id}>
+                  {/* Main Group Row */}
                   <tr
-                    key={group.id}
-                    className="border-b border-white/10 last:border-0 hover:bg-white/[0.04] transition-colors"
+                    onClick={() => toggleExpandGroup(group.id)}
+                    className={`border-b border-white/10 cursor-pointer transition-colors ${
+                      isExpanded ? "bg-white/[0.06]" : "hover:bg-white/[0.03]"
+                    }`}
                   >
                     {/* Index */}
                     <td className="p-4 sm:p-5 text-center font-bold text-slate-400">
                       {String(index + 1).padStart(3, "0")}
+                    </td>
+
+                    {/* Expand Details Icon */}
+                    <td className="p-4 sm:p-5 text-center">
+                      <svg
+                        className={`w-5 h-5 text-sky-400 mx-auto transition-transform duration-300 ${
+                          isExpanded ? "rotate-180" : ""
+                        }`}
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2.5}
+                          d="M19 9l-7 7-7-7"
+                        />
+                      </svg>
                     </td>
 
                     {/* Group Name */}
@@ -89,9 +120,11 @@ export function GroupsTable({
                       {eventName}
                     </td>
 
-                    {/* Short Description */}
-                    <td className="p-4 sm:p-5 text-slate-300 max-w-[240px] truncate">
-                      {group.short_description || "N/A"}
+                    {/* Member Count */}
+                    <td className="p-4 sm:p-5 text-center font-bold text-white">
+                      <span className="inline-block px-3 py-1 rounded-lg bg-slate-900/80 border border-white/15 text-xs">
+                        {memberCount}
+                      </span>
                     </td>
 
                     {/* Created At */}
@@ -101,32 +134,16 @@ export function GroupsTable({
                         : "N/A"}
                     </td>
 
-                    {/* Number of Members & Interactive Dropdown */}
-                    <td className="p-4 sm:p-5 text-center w-48">
-                      <MembersDropdown
-                        groupId={group.id}
-                        members={group.group_members || []}
-                        onMemberRemoved={onMemberRemoved}
-                      />
-                    </td>
-
-                    {/* Actions: Add Member, Edit Group, Delete Group */}
-                    <td className="p-4 sm:p-5 text-center w-52">
+                    {/* Actions: Edit Group, Delete Group */}
+                    <td className="p-4 sm:p-5 text-center w-40">
                       <div className="flex items-center justify-center gap-2">
-                        {/* Add Member Button */}
-                        <button
-                          type="button"
-                          onClick={() => onOpenAddMemberModal(group)}
-                          title="Add Member to Group"
-                          className="px-3 py-1.5 rounded-xl bg-sky-950/80 hover:bg-sky-900 text-sky-200 border border-sky-500/30 text-xs font-bold uppercase tracking-wider transition-colors cursor-pointer"
-                        >
-                          + MEMBER
-                        </button>
-
                         {/* Edit Group Button */}
                         <button
                           type="button"
-                          onClick={() => onOpenEditModal(group)}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            onOpenEditModal(group);
+                          }}
                           title="Edit Group Details"
                           className="px-3 py-1.5 rounded-xl bg-white/15 hover:bg-white/30 text-white border border-white/25 text-xs font-bold uppercase tracking-wider transition-colors cursor-pointer"
                         >
@@ -136,7 +153,10 @@ export function GroupsTable({
                         {/* Delete Group Button */}
                         <button
                           type="button"
-                          onClick={() => onDeleteGroup(group.id)}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            onDeleteGroup(group.id);
+                          }}
                           title="Delete Group"
                           className="p-1.5 rounded-xl bg-red-950/60 hover:bg-red-900/80 text-red-400 border border-red-500/30 transition-colors cursor-pointer"
                         >
@@ -147,19 +167,97 @@ export function GroupsTable({
                       </div>
                     </td>
                   </tr>
-                );
-              })
-            ) : (
-              <tr>
-                <td
-                  colSpan={7}
-                  className="p-16 text-center text-slate-400 select-none text-base"
-                >
-                  NO GROUP REGISTRY ENTRIES MATCHING ACTIVE FILTER PARAMETERS
-                </td>
-              </tr>
-            )}
-          </AnimatePresence>
+
+                  {/* Accordion Dropdown Section using Framer Motion */}
+                  <AnimatePresence>
+                    {isExpanded && (
+                      <motion.tr
+                        initial={{ opacity: 0, height: 0 }}
+                        animate={{ opacity: 1, height: "auto" }}
+                        exit={{ opacity: 0, height: 0 }}
+                        transition={{ duration: 0.25 }}
+                        className="bg-[#0b1626]/95 border-b border-white/15 overflow-hidden"
+                      >
+                        <td colSpan={7} className="p-6">
+                          <div className="flex flex-col gap-4 w-full">
+                            {/* Group Roster Subsection Header */}
+                            <div className="flex items-center justify-between border-b border-white/10 pb-3">
+                              <span className="text-xs font-bold text-sky-300 uppercase tracking-widest flex items-center gap-2">
+                                <span className="w-2 h-2 rounded-full bg-sky-400 shadow-[0_0_8px_#38bdf8]" />
+                                GROUP MEMBERS ({memberCount})
+                              </span>
+
+                              <button
+                                type="button"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  onOpenAddMemberModal(group);
+                                }}
+                                className="px-3.5 py-1.5 rounded-xl bg-sky-950/90 hover:bg-sky-900 text-sky-200 border border-sky-500/40 text-xs font-bold uppercase tracking-wider transition-colors cursor-pointer"
+                              >
+                                + ADD MEMBER
+                              </button>
+                            </div>
+
+                            {/* Group Members Grid or Centered Empty State */}
+                            {memberCount > 0 ? (
+                              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                {members.map((member) => {
+                                  const profile = member.profiles;
+                                  const displayName =
+                                    profile?.full_name || profile?.email || "UNNAMED_MEMBER";
+                                  const emailStr = profile?.email || "NO_EMAIL";
+
+                                  return (
+                                    <div
+                                      key={member.id}
+                                      className="bg-[#13243b] border border-white/12 rounded-xl p-3.5 flex items-center justify-between gap-3 shadow-md hover:border-white/25 transition-colors"
+                                    >
+                                      <div className="flex flex-col min-w-0">
+                                        <span className="text-sm font-bold text-white truncate">
+                                          {displayName}
+                                        </span>
+                                        <span className="text-xs text-slate-300 truncate">
+                                          {emailStr}
+                                        </span>
+                                      </div>
+                                      <button
+                                        type="button"
+                                        onClick={(e) => {
+                                          e.stopPropagation();
+                                          onMemberRemoved(group.id, member.id);
+                                        }}
+                                        className="px-3 py-1.5 bg-red-950/70 border border-red-500/40 hover:bg-red-900/90 text-red-300 text-xs uppercase font-bold tracking-wider rounded-xl transition-colors cursor-pointer shrink-0"
+                                      >
+                                        REMOVE
+                                      </button>
+                                    </div>
+                                  );
+                                })}
+                              </div>
+                            ) : (
+                              <div className="p-8 text-center text-sm font-medium text-slate-400 italic select-none">
+                                NO MEMBERS REGISTERED IN THIS GROUP
+                              </div>
+                            )}
+                          </div>
+                        </td>
+                      </motion.tr>
+                    )}
+                  </AnimatePresence>
+                </React.Fragment>
+              );
+            })
+          ) : (
+            <tr>
+              <td
+                colSpan={7}
+                className="p-16 text-center text-slate-400 select-none text-base"
+              >
+                NO GROUP REGISTRY ENTRIES MATCHING ACTIVE FILTER PARAMETERS
+              </td>
+            </tr>
+          )}
         </tbody>
       </table>
     </div>

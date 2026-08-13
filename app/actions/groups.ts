@@ -40,7 +40,8 @@ export async function getAllGroupsWithMembersWithEvent() {
         `)
         .order('created_at', { ascending: false });
 
-    if (groupsError || !groupsData) {
+    if (groupsError) {
+        console.log(groupsError)
         return { data: null, error: "Fail to fetch groups" };
     }
 
