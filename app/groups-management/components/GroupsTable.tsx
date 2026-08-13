@@ -1,16 +1,10 @@
 "use client";
 
-import React, { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { GroupWithMembersAndEvent } from "../../types/groups";
-import { deleteGroupMember } from "../../actions/group_members";
-import { useLoader } from "../../context/LoaderContext";
-import { useNotification } from "../../context/NotificationContext";
-
 /**
  * PURPOSE:
  * Tabular display component for rendering group records with expandable Framer Motion accordion rows.
- * Allows administrators to click rows to expand detailed group members, add new members, and remove existing members with Loader and Notification feedback.
+ * Allows administrators to click rows to expand detailed group members, navigate to group grading (`/groups/:id/grading`),
+ * add new members, and remove existing members with Loader and Notification feedback.
  *
  * CONTEXT/PARENT FILE:
  * Extracted from app/groups-management/GroupManagementClient.tsx to isolate table structure and accordion dropdown interactions.
@@ -22,6 +16,14 @@ import { useNotification } from "../../context/NotificationContext";
  * - onDeleteGroup (function, Required): Callback to delete a group by ID.
  * - onMemberRemoved (function, Required): Callback triggered when a member is removed from a group.
  */
+
+import React, { useState } from "react";
+import Link from "next/link";
+import { motion, AnimatePresence } from "framer-motion";
+import { GroupWithMembersAndEvent } from "../../types/groups";
+import { deleteGroupMember } from "../../actions/group_members";
+import { useLoader } from "../../context/LoaderContext";
+import { useNotification } from "../../context/NotificationContext";
 
 interface GroupsTableProps {
   groups: GroupWithMembersAndEvent[];
@@ -219,22 +221,37 @@ export function GroupsTable({
                         <td colSpan={7} className="p-6">
                           <div className="flex flex-col gap-4 w-full">
                             {/* Group Roster Subsection Header */}
-                            <div className="flex items-center justify-between border-b border-white/10 pb-3">
+                            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-white/10 pb-3">
                               <span className="text-xs font-bold text-sky-300 uppercase tracking-widest flex items-center gap-2">
                                 <span className="w-2 h-2 rounded-full bg-sky-400 shadow-[0_0_8px_#38bdf8]" />
                                 GROUP MEMBERS ({memberCount})
                               </span>
 
-                              <button
-                                type="button"
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  onOpenAddMemberModal(group);
-                                }}
-                                className="px-3.5 py-1.5 rounded-xl bg-sky-950/90 hover:bg-sky-900 text-sky-200 border border-sky-500/40 text-xs font-bold uppercase tracking-wider transition-colors cursor-pointer"
-                              >
-                                + ADD MEMBER
-                              </button>
+                              <div className="flex items-center gap-2">
+                                {/* Navigation button to Grading Page */}
+                                <Link
+                                  href={`/groups/${group.id}/grading`}
+                                  onClick={(e) => e.stopPropagation()}
+                                  className="px-3.5 py-1.5 rounded-xl bg-cyan-950/90 hover:bg-cyan-900 text-cyan-300 border border-cyan-500/40 text-xs font-bold uppercase tracking-wider transition-colors cursor-pointer flex items-center gap-1.5 shadow-sm"
+                                >
+                                  <svg className="w-4 h-4 text-cyan-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
+                                  </svg>
+                                  <span>GRADE GROUP</span>
+                                </Link>
+
+                                {/* Add Member Modal Trigger */}
+                                <button
+                                  type="button"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    onOpenAddMemberModal(group);
+                                  }}
+                                  className="px-3.5 py-1.5 rounded-xl bg-sky-950/90 hover:bg-sky-900 text-sky-200 border border-sky-500/40 text-xs font-bold uppercase tracking-wider transition-colors cursor-pointer"
+                                >
+                                  + ADD MEMBER
+                                </button>
+                              </div>
                             </div>
 
                             {/* Group Members Grid or Centered Empty State */}

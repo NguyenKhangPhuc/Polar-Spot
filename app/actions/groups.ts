@@ -102,6 +102,40 @@ export async function getAllGroupsWithMembersWithEvent() {
 
 /**
  * PURPOSE:
+ * Fetches a single group record by its unique group ID.
+ *
+ * CONTEXT/PARENT FILE:
+ * Called by app/groups/[id]/grading/page.tsx Server Component.
+ *
+ * INPUTS / PARAMETERS:
+ * - groupId (string, Required): Unique identifier of target group.
+ */
+export async function getGroupByGroupId(groupId: string) {
+    /**
+     * BEHAVIORAL MECHANISM:
+     * Queries Supabase 'groups' table filtering by id equal to groupId and returns single group record.
+     *
+     * PARAMETERS:
+     * - groupId (string): Target group UUID.
+     *
+     * RETURNS:
+     * - Object: { data: any, error: string | null }
+     */
+    const supabase = await createClient();
+    const { data, error } = await supabase
+        .from('groups')
+        .select('*')
+        .eq('id', groupId)
+        .single();
+
+    if (error) {
+        return { data: null, error: "Fail to fetch group" };
+    }
+    return { data, error: null };
+}
+
+/**
+ * PURPOSE:
  * Inserts a new group record into the database.
  *
  * CONTEXT/PARENT FILE:

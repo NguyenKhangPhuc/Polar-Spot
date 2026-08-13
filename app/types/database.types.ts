@@ -56,7 +56,15 @@ export type Database = {
           name?: string | null
           short_description?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "event_grading_criteria_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "events"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       events: {
         Row: {
@@ -67,6 +75,7 @@ export type Database = {
           location: string | null
           member_per_groups: number | null
           organized_date: string | null
+          poster_path: string | null
           short_description: string | null
           start_date: string | null
           status: Database["public"]["Enums"]["EVENT_STATUS"] | null
@@ -79,6 +88,7 @@ export type Database = {
           location?: string | null
           member_per_groups?: number | null
           organized_date?: string | null
+          poster_path?: string | null
           short_description?: string | null
           start_date?: string | null
           status?: Database["public"]["Enums"]["EVENT_STATUS"] | null
@@ -91,6 +101,7 @@ export type Database = {
           location?: string | null
           member_per_groups?: number | null
           organized_date?: string | null
+          poster_path?: string | null
           short_description?: string | null
           start_date?: string | null
           status?: Database["public"]["Enums"]["EVENT_STATUS"] | null
@@ -116,7 +127,22 @@ export type Database = {
           id?: string
           member_id?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "group_members_group_id_fkey"
+            columns: ["group_id"]
+            isOneToOne: false
+            referencedRelation: "groups"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "group_members_member_id_fkey"
+            columns: ["member_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       groups: {
         Row: {
@@ -143,7 +169,15 @@ export type Database = {
           id?: string
           short_description?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "groups_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "events"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       invitations: {
         Row: {
@@ -167,7 +201,15 @@ export type Database = {
           member_email?: string | null
           status?: Database["public"]["Enums"]["INVITATION_STATUS"] | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "invitations_group_id_fkey"
+            columns: ["group_id"]
+            isOneToOne: false
+            referencedRelation: "groups"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       profiles: {
         Row: {
@@ -219,6 +261,55 @@ export type Database = {
           year?: string | null
         }
         Relationships: []
+      }
+      user_group_grading: {
+        Row: {
+          created_at: string
+          criteria_id: string | null
+          grade: number | null
+          group_id: string | null
+          id: string
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          criteria_id?: string | null
+          grade?: number | null
+          group_id?: string | null
+          id?: string
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          criteria_id?: string | null
+          grade?: number | null
+          group_id?: string | null
+          id?: string
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_group_grading_criteria_id_fkey"
+            columns: ["criteria_id"]
+            isOneToOne: false
+            referencedRelation: "event_grading_criteria"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "user_group_grading_group_id_fkey"
+            columns: ["group_id"]
+            isOneToOne: false
+            referencedRelation: "groups"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "user_group_grading_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Views: {
