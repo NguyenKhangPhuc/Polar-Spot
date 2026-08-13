@@ -6,11 +6,13 @@ import { AnimatePresence, motion } from "framer-motion";
 import { Event } from "../../types/event";
 import { GroupWithMembersAndEvent } from "../../types/groups";
 import { updateGroup } from "../../actions/groups";
+import { useLoader } from "../../context/LoaderContext";
+import { useNotification } from "../../context/NotificationContext";
 
 /**
  * PURPOSE:
  * Pop-up modal dialog for editing an existing group record. Uses an independent react-hook-form instance
- * and populates initial values via reset() when a group is selected for editing.
+ * and populates initial values via reset() when a group is selected for editing, integrated with global Loader and Notification feedback.
  *
  * CONTEXT/PARENT FILE:
  * Extracted from app/groups-management/GroupManagementClient.tsx to encapsulate group modification logic and modal UI.
@@ -44,6 +46,9 @@ export function EditGroupModal({
   eventsList,
   onGroupUpdated,
 }: EditGroupModalProps) {
+  const { setIsOpenLoader } = useLoader();
+  const { showNotification } = useNotification();
+
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -67,7 +72,8 @@ export function EditGroupModal({
 
   /**
    * BEHAVIORAL MECHANISM:
-   * Submits form payload to updateGroup server action and updates parent state with enriched event details.
+   * Submits form payload to updateGroup server action.
+   * Displays global loader backdrop, notifies user via toast, and updates parent state upon success.
    *
    * PARAMETERS:
    * - formData (EditGroupFormValues): Validated form data.
@@ -80,38 +86,49 @@ export function EditGroupModal({
 
     setIsSubmitting(true);
     setSubmitError(null);
+    setIsOpenLoader(true);
 
-    const { data: updatedData, error } = await updateGroup({
-      id: group.id,
-      group_name: formData.group_name,
-      event_id: formData.event_id,
-      short_description: formData.short_description,
-    });
+    try {
+      const { data: updatedData, error } = await updateGroup({
+        id: group.id,
+        group_name: formData.group_name,
+        event_id: formData.event_id,
+        short_description: formData.short_description,
+      });
 
-    setIsSubmitting(false);
+      if (error || !updatedData) {
+        const errorMsg = error || "Fail to update group";
+        setSubmitError(errorMsg);
+        showNotification(errorMsg);
+        return;
+      }
 
-    if (error || !updatedData) {
-      setSubmitError(error || "Fail to update group");
-      return;
+      const matchedEvent = eventsList.find((e) => e.id === formData.event_id);
+      const enrichedGroup: GroupWithMembersAndEvent = {
+        ...group,
+        group_name: formData.group_name,
+        event_id: formData.event_id,
+        short_description: formData.short_description,
+        events: matchedEvent
+          ? {
+              id: matchedEvent.id,
+              short_description: matchedEvent.short_description,
+              location: matchedEvent.location,
+            }
+          : group.events,
+      };
+
+      showNotification("Group updated successfully");
+      onGroupUpdated(enrichedGroup);
+      onClose();
+    } catch {
+      const errorMsg = "Fail to update group";
+      setSubmitError(errorMsg);
+      showNotification(errorMsg);
+    } finally {
+      setIsSubmitting(false);
+      setIsOpenLoader(false);
     }
-
-    const matchedEvent = eventsList.find((e) => e.id === formData.event_id);
-    const enrichedGroup: GroupWithMembersAndEvent = {
-      ...group,
-      group_name: formData.group_name,
-      event_id: formData.event_id,
-      short_description: formData.short_description,
-      events: matchedEvent
-        ? {
-            id: matchedEvent.id,
-            short_description: matchedEvent.short_description,
-            location: matchedEvent.location,
-          }
-        : group.events,
-    };
-
-    onGroupUpdated(enrichedGroup);
-    onClose();
   };
 
   return (

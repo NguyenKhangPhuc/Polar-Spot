@@ -7,11 +7,13 @@ import { Event, EventInsert } from "../../types/event";
 import { EVENT_STATUS } from "../../types/enum";
 import { createEvent } from "../../actions/events";
 import RichTextEditor from "../../components/RichTextEditor";
+import { useLoader } from "../../context/LoaderContext";
+import { useNotification } from "../../context/NotificationContext";
 
 /**
  * PURPOSE:
  * 2-column pop-up modal component for creating a new event record. Utilizes React Hook Form for client-side
- * input validation and Plate RichTextEditor for event content.
+ * input validation and Plate RichTextEditor for event content, integrated with global Loader and Notification contexts.
  *
  * CONTEXT/PARENT FILE:
  * Extracted from app/events-management/EventsManagementClient.tsx to isolate form submission, validation rules, and modal dialog UI.
@@ -44,6 +46,9 @@ export function CreateEventModal({
   onClose,
   onEventCreated,
 }: CreateEventModalProps) {
+  const { setIsOpenLoader } = useLoader();
+  const { showNotification } = useNotification();
+
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -68,7 +73,8 @@ export function CreateEventModal({
 
   /**
    * BEHAVIORAL MECHANISM:
-   * Validates form fields, submits payload to createEvent server action, and updates parent state upon success.
+   * Validates form fields, triggers global loader, submits payload to createEvent server action,
+   * shows success/error notification toasts, and updates parent state upon success.
    *
    * PARAMETERS:
    * - formData (CreateEventFormValues): Validated form data payload.
@@ -79,6 +85,7 @@ export function CreateEventModal({
   const onFormSubmit = async (formData: CreateEventFormValues) => {
     setIsSubmitting(true);
     setSubmitError(null);
+    setIsOpenLoader(true);
 
     const payload: EventInsert = {
       short_description: formData.short_description,
@@ -91,18 +98,28 @@ export function CreateEventModal({
       content: formData.content,
     };
 
-    const { data: createdEvent, error } = await createEvent(payload);
+    try {
+      const { data: createdEvent, error } = await createEvent(payload);
 
-    setIsSubmitting(false);
+      if (error || !createdEvent) {
+        const errorMsg = error || "Failed to create event. Please try again.";
+        setSubmitError(errorMsg);
+        showNotification(errorMsg);
+        return;
+      }
 
-    if (error || !createdEvent) {
-      setSubmitError(error || "Failed to create event. Please try again.");
-      return;
+      showNotification("Event created successfully");
+      reset();
+      onEventCreated(createdEvent as Event);
+      onClose();
+    } catch {
+      const errorMsg = "Failed to create event. Please try again.";
+      setSubmitError(errorMsg);
+      showNotification(errorMsg);
+    } finally {
+      setIsSubmitting(false);
+      setIsOpenLoader(false);
     }
-
-    reset();
-    onEventCreated(createdEvent as Event);
-    onClose();
   };
 
   return (
@@ -121,6 +138,7 @@ export function CreateEventModal({
                 CREATE NEW EVENT
               </h2>
               <button
+                type="button"
                 onClick={onClose}
                 className="text-slate-400 hover:text-white p-1 cursor-pointer"
               >

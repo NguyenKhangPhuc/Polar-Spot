@@ -3,11 +3,14 @@
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { GroupWithMembersAndEvent } from "../../types/groups";
+import { deleteGroupMember } from "../../actions/group_members";
+import { useLoader } from "../../context/LoaderContext";
+import { useNotification } from "../../context/NotificationContext";
 
 /**
  * PURPOSE:
  * Tabular display component for rendering group records with expandable Framer Motion accordion rows.
- * Allows administrators to click rows to expand detailed group members, add new members, and remove existing members.
+ * Allows administrators to click rows to expand detailed group members, add new members, and remove existing members with Loader and Notification feedback.
  *
  * CONTEXT/PARENT FILE:
  * Extracted from app/groups-management/GroupManagementClient.tsx to isolate table structure and accordion dropdown interactions.
@@ -35,6 +38,9 @@ export function GroupsTable({
   onDeleteGroup,
   onMemberRemoved,
 }: GroupsTableProps) {
+  const { setIsOpenLoader } = useLoader();
+  const { showNotification } = useNotification();
+
   // Currently expanded group ID for row accordion
   const [expandedGroupId, setExpandedGroupId] = useState<string | null>(null);
 
@@ -50,6 +56,38 @@ export function GroupsTable({
    */
   const toggleExpandGroup = (groupId: string) => {
     setExpandedGroupId((prev) => (prev === groupId ? null : groupId));
+  };
+
+  /**
+   * BEHAVIORAL MECHANISM:
+   * Removes a member from a group by calling deleteGroupMember server action.
+   * Displays global backdrop loader and toast notification on success/error.
+   *
+   * PARAMETERS:
+   * - groupId (string): Associated group ID.
+   * - memberRecordId (string): Target group_members record ID.
+   *
+   * RETURNS:
+   * - Promise<void>
+   */
+  const handleRemoveMember = async (groupId: string, memberRecordId: string) => {
+    if (!confirm("Are you sure you want to remove this member from the group?")) return;
+
+    setIsOpenLoader(true);
+    try {
+      const { error } = await deleteGroupMember(memberRecordId);
+      if (error) {
+        showNotification(error || "Fail to remove group member");
+        return;
+      }
+
+      showNotification("Group member removed successfully");
+      onMemberRemoved(groupId, memberRecordId);
+    } catch {
+      showNotification("Fail to remove group member");
+    } finally {
+      setIsOpenLoader(false);
+    }
   };
 
   return (
@@ -225,7 +263,7 @@ export function GroupsTable({
                                         type="button"
                                         onClick={(e) => {
                                           e.stopPropagation();
-                                          onMemberRemoved(group.id, member.id);
+                                          handleRemoveMember(group.id, member.id);
                                         }}
                                         className="px-3 py-1.5 bg-red-950/70 border border-red-500/40 hover:bg-red-900/90 text-red-300 text-xs uppercase font-bold tracking-wider rounded-xl transition-colors cursor-pointer shrink-0"
                                       >

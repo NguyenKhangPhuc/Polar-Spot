@@ -6,11 +6,13 @@ import { AnimatePresence, motion } from "framer-motion";
 import { Event } from "../../types/event";
 import { GroupWithMembersAndEvent } from "../../types/groups";
 import { createGroup } from "../../actions/groups";
+import { useLoader } from "../../context/LoaderContext";
+import { useNotification } from "../../context/NotificationContext";
 
 /**
  * PURPOSE:
  * Pop-up modal dialog for creating a new pitching group. Uses an independent react-hook-form instance
- * to validate group_name, event_id, and short_description.
+ * to validate group_name, event_id, and short_description with global Loader and Notification feedback.
  *
  * CONTEXT/PARENT FILE:
  * Extracted from app/groups-management/GroupManagementClient.tsx to encapsulate create group form state and modal UI.
@@ -41,6 +43,9 @@ export function CreateGroupModal({
   eventsList,
   onGroupCreated,
 }: CreateGroupModalProps) {
+  const { setIsOpenLoader } = useLoader();
+  const { showNotification } = useNotification();
+
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -59,7 +64,8 @@ export function CreateGroupModal({
 
   /**
    * BEHAVIORAL MECHANISM:
-   * Submits form payload to createGroup server action. Attaches event details to created group and notifies parent.
+   * Submits form payload to createGroup server action.
+   * Activates global loader backdrop, notifies user via toast, and updates parent state upon success.
    *
    * PARAMETERS:
    * - formData (CreateGroupFormValues): Validated form inputs.
@@ -70,36 +76,47 @@ export function CreateGroupModal({
   const onFormSubmit = async (formData: CreateGroupFormValues) => {
     setIsSubmitting(true);
     setSubmitError(null);
+    setIsOpenLoader(true);
 
-    const { data: createdGroup, error } = await createGroup({
-      group_name: formData.group_name,
-      event_id: formData.event_id,
-      short_description: formData.short_description,
-    });
+    try {
+      const { data: createdGroup, error } = await createGroup({
+        group_name: formData.group_name,
+        event_id: formData.event_id,
+        short_description: formData.short_description,
+      });
 
-    setIsSubmitting(false);
+      if (error || !createdGroup) {
+        const errorMsg = error || "Fail to create group";
+        setSubmitError(errorMsg);
+        showNotification(errorMsg);
+        return;
+      }
 
-    if (error || !createdGroup) {
-      setSubmitError(error || "Fail to create group");
-      return;
+      const matchedEvent = eventsList.find((e) => e.id === formData.event_id);
+      const enrichedGroup: GroupWithMembersAndEvent = {
+        ...(createdGroup as any),
+        events: matchedEvent
+          ? {
+              id: matchedEvent.id,
+              short_description: matchedEvent.short_description,
+              location: matchedEvent.location,
+            }
+          : null,
+        group_members: [],
+      };
+
+      showNotification("Group created successfully");
+      reset();
+      onGroupCreated(enrichedGroup);
+      onClose();
+    } catch {
+      const errorMsg = "Fail to create group";
+      setSubmitError(errorMsg);
+      showNotification(errorMsg);
+    } finally {
+      setIsSubmitting(false);
+      setIsOpenLoader(false);
     }
-
-    const matchedEvent = eventsList.find((e) => e.id === formData.event_id);
-    const enrichedGroup: GroupWithMembersAndEvent = {
-      ...(createdGroup as any),
-      events: matchedEvent
-        ? {
-            id: matchedEvent.id,
-            short_description: matchedEvent.short_description,
-            location: matchedEvent.location,
-          }
-        : null,
-      group_members: [],
-    };
-
-    reset();
-    onGroupCreated(enrichedGroup);
-    onClose();
   };
 
   return (

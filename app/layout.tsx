@@ -3,7 +3,11 @@ import { Plus_Jakarta_Sans, Inter } from "next/font/google";
 import "./globals.css";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
+import Loader from "./components/Loader";
+import Notification from "./components/Notification";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { LoaderProvider } from "./context/LoaderContext";
+import { NotificationProvider } from "./context/NotificationContext";
 
 const plusJakartaSans = Plus_Jakarta_Sans({
   variable: "--font-plus-jakarta",
@@ -34,18 +38,26 @@ export default function RootLayout({
       className={`${plusJakartaSans.variable} ${inter.variable} h-full antialiased font-sans`}
     >
       <body className="min-h-full flex flex-col polar-snow-bg text-slate-100 selection:bg-cyan-500/30 selection:text-cyan-200 text-base font-sans">
-        <TooltipProvider>
-          {/* Global Left Navigation Bar */}
-          <Navbar />
+        <NotificationProvider>
+          <LoaderProvider>
+            <TooltipProvider>
+              {/* Global Backdrop Loader & Top-Right Animated Notification */}
+              <Loader />
+              <Notification />
 
-          {/* Main Content Area */}
-          <div className="flex-1 flex flex-col lg:pl-64 pt-16 lg:pt-0 min-h-screen">
-            <main className="flex-1 w-full relative z-10">{children}</main>
-            
-            {/* Global Footer */}
-            <Footer />
-          </div>
-        </TooltipProvider>
+              {/* Global Left Navigation Bar */}
+              <Navbar />
+
+              {/* Main Content Area */}
+              <div className="flex-1 flex flex-col lg:pl-64 pt-16 lg:pt-0 min-h-screen">
+                <main className="flex-1 w-full relative z-10">{children}</main>
+                
+                {/* Global Footer */}
+                <Footer />
+              </div>
+            </TooltipProvider>
+          </LoaderProvider>
+        </NotificationProvider>
       </body>
     </html>
   );

@@ -5,10 +5,13 @@ import { useForm } from "react-hook-form";
 import { AnimatePresence, motion } from "framer-motion";
 import { GroupWithMembersAndEvent, GroupMemberWithProfile } from "../../types/groups";
 import { addGroupMemberByEmail } from "../../actions/group_members";
+import { useLoader } from "../../context/LoaderContext";
+import { useNotification } from "../../context/NotificationContext";
 
 /**
  * PURPOSE:
- * Pop-up modal dialog for adding a new member to a group by looking up their profile email address. Uses react-hook-form.
+ * Pop-up modal dialog for adding a new member to a group by looking up their profile email address.
+ * Uses react-hook-form integrated with global Loader and Notification feedback.
  *
  * CONTEXT/PARENT FILE:
  * Extracted from app/groups-management/GroupManagementClient.tsx to encapsulate member assignment logic.
@@ -37,6 +40,9 @@ export function AddMemberModal({
   onClose,
   onMemberAdded,
 }: AddMemberModalProps) {
+  const { setIsOpenLoader } = useLoader();
+  const { showNotification } = useNotification();
+
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -53,8 +59,8 @@ export function AddMemberModal({
 
   /**
    * BEHAVIORAL MECHANISM:
-   * Calls addGroupMemberByEmail server action. If user profile exists and is not already a member,
-   * creates group_members entry and updates parent state.
+   * Calls addGroupMemberByEmail server action. Triggers global loader, notifies user via toast on success/error,
+   * creates group_members entry and updates parent state upon success.
    *
    * PARAMETERS:
    * - formData (AddMemberFormValues): Form data containing user email string.
@@ -67,22 +73,33 @@ export function AddMemberModal({
 
     setIsSubmitting(true);
     setSubmitError(null);
+    setIsOpenLoader(true);
 
-    const { data: newMemberRecord, error } = await addGroupMemberByEmail(
-      group.id,
-      formData.email
-    );
+    try {
+      const { data: newMemberRecord, error } = await addGroupMemberByEmail(
+        group.id,
+        formData.email
+      );
 
-    setIsSubmitting(false);
+      if (error || !newMemberRecord) {
+        const errorMsg = error || "Fail to add member to group";
+        setSubmitError(errorMsg);
+        showNotification(errorMsg);
+        return;
+      }
 
-    if (error || !newMemberRecord) {
-      setSubmitError(error || "Fail to add member to group");
-      return;
+      showNotification("Member added to group successfully");
+      reset();
+      onMemberAdded(group.id, newMemberRecord as GroupMemberWithProfile);
+      onClose();
+    } catch {
+      const errorMsg = "Fail to add member to group";
+      setSubmitError(errorMsg);
+      showNotification(errorMsg);
+    } finally {
+      setIsSubmitting(false);
+      setIsOpenLoader(false);
     }
-
-    reset();
-    onMemberAdded(group.id, newMemberRecord as GroupMemberWithProfile);
-    onClose();
   };
 
   return (

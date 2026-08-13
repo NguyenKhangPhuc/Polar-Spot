@@ -3,10 +3,13 @@
 import React, { useState } from "react";
 import { EVENT_STATUS } from "../../types/enum";
 import { updateEventStatus } from "../../actions/events";
+import { useLoader } from "../../context/LoaderContext";
+import { useNotification } from "../../context/NotificationContext";
 
 /**
  * PURPOSE:
- * Interactive status dropdown rendered inside events table rows. Allows instant updating of an event's status.
+ * Interactive status dropdown rendered inside events table rows. Allows instant updating of an event's status
+ * while triggering global Loader backdrop and Notification toasts.
  *
  * CONTEXT/PARENT FILE:
  * Extracted from app/events-management/EventsManagementClient.tsx to encapsulate status modification logic and server action execution.
@@ -28,6 +31,9 @@ export function EventStatusSelect({
   currentStatus,
   onStatusChanged,
 }: EventStatusSelectProps) {
+  const { setIsOpenLoader } = useLoader();
+  const { showNotification } = useNotification();
+
   const [selectedStatus, setSelectedStatus] = useState<string>(
     currentStatus || EVENT_STATUS.ONGOING
   );
@@ -36,7 +42,7 @@ export function EventStatusSelect({
   /**
    * BEHAVIORAL MECHANISM:
    * Triggers updateEventStatus server action when the dropdown selection changes.
-   * Optimistically updates local UI state, handles loading states, and reports changes to parent.
+   * Activates global loader, notifies user via toast, and updates local state.
    *
    * PARAMETERS:
    * - e (React.ChangeEvent<HTMLSelectElement>): Dropdown change event.
@@ -50,18 +56,27 @@ export function EventStatusSelect({
     const newStatus = e.target.value as EVENT_STATUS;
     setSelectedStatus(newStatus);
     setIsUpdating(true);
+    setIsOpenLoader(true);
 
-    const { data, error } = await updateEventStatus(eventId, newStatus);
-    setIsUpdating(false);
+    try {
+      const { data, error } = await updateEventStatus(eventId, newStatus);
 
-    if (error || !data) {
-      // Rollback to original status if server update fails
+      if (error || !data) {
+        // Rollback to original status if server update fails
+        setSelectedStatus(currentStatus || EVENT_STATUS.ONGOING);
+        showNotification(error || "Fail to update event status");
+        return;
+      }
+
+      showNotification("Event status updated successfully");
+      onStatusChanged(eventId, newStatus);
+    } catch {
       setSelectedStatus(currentStatus || EVENT_STATUS.ONGOING);
-      alert(error || "Fail to update event status");
-      return;
+      showNotification("Fail to update event status");
+    } finally {
+      setIsUpdating(false);
+      setIsOpenLoader(false);
     }
-
-    onStatusChanged(eventId, newStatus);
   };
 
   const isOngoing = selectedStatus === EVENT_STATUS.ONGOING;

@@ -5,6 +5,8 @@ import { useRouter } from "next/navigation";
 import { Event } from "../types/event";
 import { GroupWithMembersAndEvent, GroupMemberWithProfile } from "../types/groups";
 import { deleteGroup } from "../actions/groups";
+import { useLoader } from "../context/LoaderContext";
+import { useNotification } from "../context/NotificationContext";
 
 import HeaderSection from "./components/HeaderSection";
 import GroupFilterControls from "./components/GroupFilterControls";
@@ -38,6 +40,8 @@ export default function GroupManagementClient({
   eventsList,
 }: GroupManagementClientProps) {
   const router = useRouter();
+  const { setIsOpenLoader } = useLoader();
+  const { showNotification } = useNotification();
 
   // Local state
   const [groupsList, setGroupsList] = useState<GroupWithMembersAndEvent[]>(initialGroups);
@@ -96,7 +100,7 @@ export default function GroupManagementClient({
   /**
    * BEHAVIORAL MECHANISM:
    * Deletes a group by ID using deleteGroup server action after user confirmation.
-   * Updates local state and triggers router refresh.
+   * Triggers global loader spinner and toast notification on success/error.
    *
    * PARAMETERS:
    * - groupId (string): Unique identifier of target group to delete.
@@ -107,14 +111,22 @@ export default function GroupManagementClient({
   const handleDeleteGroup = async (groupId: string) => {
     if (!confirm("Are you sure you want to delete this group?")) return;
 
-    const { error } = await deleteGroup(groupId);
-    if (error) {
-      alert(error || "Fail to delete group");
-      return;
-    }
+    setIsOpenLoader(true);
+    try {
+      const { error } = await deleteGroup(groupId);
+      if (error) {
+        showNotification(error || "Fail to delete group");
+        return;
+      }
 
-    setGroupsList((prev) => prev.filter((g) => g.id !== groupId));
-    router.refresh();
+      showNotification("Group deleted successfully");
+      setGroupsList((prev) => prev.filter((g) => g.id !== groupId));
+      router.refresh();
+    } catch {
+      showNotification("Fail to delete group");
+    } finally {
+      setIsOpenLoader(false);
+    }
   };
 
   /**
