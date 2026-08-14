@@ -1,5 +1,5 @@
 import { getAllEvents } from "@/app/actions/events";
-import EventsClient from "./EventsClient";
+import EventsClient from "./components/EventsClient";
 
 /**
  * PURPOSE:
@@ -17,7 +17,7 @@ export default async function Page() {
   /**
    * BEHAVIORAL MECHANISM:
    * Fetches events via getAllEvents server action on the server.
-   * Renders the EventsClient component directly matching groups-management page architecture.
+   * Renders the modular EventsClient component directly matching groups-management page architecture.
    *
    * PARAMETERS:
    * None.
