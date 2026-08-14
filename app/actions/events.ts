@@ -126,6 +126,21 @@ export async function getEventById(eventId: string) {
 
 /**
  * PURPOSE:
+ * Fetches a single event record by ID for single event view page.
+ *
+ * CONTEXT/PARENT FILE:
+ * Called by app/events/[id]/page.tsx Server Component.
+ *
+ * INPUTS / PARAMETERS:
+ * - eventId (string, Required): Target event UUID.
+ */
+export async function getSingleEventById(eventId: string) {
+    return getEventById(eventId);
+}
+
+
+/**
+ * PURPOSE:
  * Updates or removes the event poster image in Supabase storage and updates poster_path on the event record.
  *
  * CONTEXT/PARENT FILE:

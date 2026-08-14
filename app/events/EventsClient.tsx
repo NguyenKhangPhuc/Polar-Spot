@@ -238,13 +238,25 @@ export default function EventsClient({ events }: EventsClientProps) {
                   {/* Event Poster Image */}
                   <div className="relative w-full md:w-56 h-48 rounded-xl overflow-hidden bg-[#0a1526] border border-white/18 shrink-0 flex items-center justify-center shadow-md">
                     {posterUrl ? (
-                      <Image
-                        src={posterUrl}
-                        alt={eventTitle}
-                        fill
-                        unoptimized
-                        className="object-cover"
-                      />
+                      <>
+                        {/* Ambient Blurred Backdrop to fill empty frame space */}
+                        <Image
+                          src={posterUrl}
+                          alt=""
+                          fill
+                          unoptimized
+                          aria-hidden="true"
+                          className="object-cover blur-xl opacity-35 scale-110 pointer-events-none"
+                        />
+                        {/* Main Poster Image Maintaining Exact Original Aspect Ratio inside Frame */}
+                        <Image
+                          src={posterUrl}
+                          alt={eventTitle}
+                          fill
+                          unoptimized
+                          className="object-contain p-2 relative z-10"
+                        />
+                      </>
                     ) : (
                       <div className="w-full h-full bg-gradient-to-br from-cyan-950 via-[#0a1526] to-sky-950 flex flex-col items-center justify-center p-4 text-center">
                         <svg className="w-10 h-10 text-cyan-400/60 mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">

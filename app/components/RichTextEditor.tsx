@@ -59,6 +59,7 @@ interface RichTextEditorProps {
   onChange?: (value: string) => void;
   placeholder?: string;
   className?: string;
+  readOnly?: boolean;
 }
 
 // Convert JSON value or HTML string to Slate/Plate value format safely
@@ -137,6 +138,7 @@ export function RichTextEditor({
   onChange,
   placeholder = "Write detailed event description, schedule rules, guidelines...",
   className = "",
+  readOnly = false,
 }: RichTextEditorProps) {
   const plateId = useId();
   const editor = usePlateEditor({
@@ -147,7 +149,7 @@ export function RichTextEditor({
 
   // Sync editor change to parent callback
   const handleEditorChange = ({ value: newValue }: { value: any }) => {
-    if (onChange) {
+    if (!readOnly && onChange) {
       // Serialize value as JSON string for storage
       const jsonString = JSON.stringify(newValue);
       onChange(jsonString);
@@ -157,13 +159,15 @@ export function RichTextEditor({
   return (
     <div className={`flex flex-col border border-white/15 rounded-xl bg-[#0a1526] overflow-hidden ${className}`}>
       <TooltipProvider>
-        <Plate editor={editor} onChange={handleEditorChange}>
+        <Plate editor={editor} onChange={handleEditorChange} readOnly={readOnly}>
           <EditorContainer>
-            <FixedToolbar>
-              <FixedToolbarButtons />
-            </FixedToolbar>
+            {!readOnly && (
+              <FixedToolbar>
+                <FixedToolbarButtons />
+              </FixedToolbar>
+            )}
 
-            <Editor placeholder={placeholder} />
+            <Editor placeholder={readOnly ? "" : placeholder} readOnly={readOnly} />
           </EditorContainer>
         </Plate>
       </TooltipProvider>
