@@ -79,6 +79,7 @@ export type Database = {
           short_description: string | null
           start_date: string | null
           status: Database["public"]["Enums"]["EVENT_STATUS"] | null
+          title: string | null
         }
         Insert: {
           content?: Json | null
@@ -92,6 +93,7 @@ export type Database = {
           short_description?: string | null
           start_date?: string | null
           status?: Database["public"]["Enums"]["EVENT_STATUS"] | null
+          title?: string | null
         }
         Update: {
           content?: Json | null
@@ -105,6 +107,7 @@ export type Database = {
           short_description?: string | null
           start_date?: string | null
           status?: Database["public"]["Enums"]["EVENT_STATUS"] | null
+          title?: string | null
         }
         Relationships: []
       }

@@ -10,7 +10,7 @@ import RichTextEditor from "@/app/components/RichTextEditor";
 
 /**
  * PURPOSE:
- * Basic event information configuration panel component. Renders form fields for title/short description,
+ * Basic event information configuration panel component. Renders form fields for title, short description textarea,
  * max group members, location node, temporal dates, organized timestamp, and rich specification editor.
  *
  * CONTEXT/PARENT FILE:
@@ -22,6 +22,7 @@ import RichTextEditor from "@/app/components/RichTextEditor";
  */
 
 interface BasicInfoFormValues {
+  title: string;
   short_description: string;
   member_per_groups: number;
   location: string;
@@ -47,6 +48,7 @@ export default function BasicInfoSection({ event, page }: BasicInfoSectionProps)
     formState: { errors },
   } = useForm<BasicInfoFormValues>({
     defaultValues: {
+      title: (event as any).title || "",
       short_description: event.short_description || "",
       member_per_groups: event.member_per_groups || 5,
       location: event.location || "",
@@ -79,6 +81,7 @@ export default function BasicInfoSection({ event, page }: BasicInfoSectionProps)
 
       const updatedPayload: EventInsert = {
         id: event.id,
+        title: formData.title,
         short_description: formData.short_description,
         member_per_groups: Number(formData.member_per_groups) || 5,
         location: formData.location,
@@ -122,20 +125,42 @@ export default function BasicInfoSection({ event, page }: BasicInfoSectionProps)
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-            {/* Title / Short Description */}
+            {/* Event Title */}
             <div className="flex flex-col gap-1.5 sm:col-span-2">
               <label className="text-xs font-semibold text-slate-200 uppercase tracking-wider">
-                EVENT TITLE / SHORT DESCRIPTION <span className="text-red-400">*</span>
+                EVENT TITLE <span className="text-red-400">*</span>
+              </label>
+              <input
+                type="text"
+                placeholder="e.g. POLAR BEAR PITCHING MAIN STAGE 2026"
+                className={`bg-[#0a1526] text-white border text-sm p-3.5 rounded-xl w-full outline-none transition-colors ${
+                  errors.title
+                    ? "border-red-500/70 focus:border-red-400"
+                    : "border-white/15 focus:border-white/50"
+                }`}
+                {...register("title", { required: "Event title is required" })}
+              />
+              {errors.title && (
+                <span className="text-xs text-red-400 font-medium">
+                  {errors.title.message}
+                </span>
+              )}
+            </div>
+
+            {/* Short Description Textarea */}
+            <div className="flex flex-col gap-1.5 sm:col-span-2">
+              <label className="text-xs font-semibold text-slate-200 uppercase tracking-wider">
+                SHORT DESCRIPTION <span className="text-red-400">*</span>
               </label>
               <textarea
-                rows={2}
-                placeholder="e.g. POLAR BEAR PITCHING MAIN STAGE 2026"
+                rows={3}
+                placeholder="Write a brief overview of the pitching event..."
                 className={`bg-[#0a1526] text-white border text-sm p-3.5 rounded-xl w-full outline-none transition-colors resize-none ${
                   errors.short_description
                     ? "border-red-500/70 focus:border-red-400"
                     : "border-white/15 focus:border-white/50"
                 }`}
-                {...register("short_description", { required: "Event title / short description is required" })}
+                {...register("short_description", { required: "Short description is required" })}
               />
               {errors.short_description && (
                 <span className="text-xs text-red-400 font-medium">

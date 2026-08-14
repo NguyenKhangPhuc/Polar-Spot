@@ -1,19 +1,9 @@
 "use client";
 
-import React, { useState } from "react";
-import { useForm, Controller } from "react-hook-form";
-import { AnimatePresence, motion } from "framer-motion";
-import { Event, EventInsert } from "../../types/event";
-import { EVENT_STATUS } from "../../types/enum";
-import { createEvent } from "../../actions/events";
-import RichTextEditor from "../../components/RichTextEditor";
-import { useLoader } from "../../context/LoaderContext";
-import { useNotification } from "../../context/NotificationContext";
-
 /**
  * PURPOSE:
  * 2-column pop-up modal component for creating a new event record. Utilizes React Hook Form for client-side
- * input validation and Plate RichTextEditor for event content, integrated with global Loader and Notification contexts.
+ * input validation (title, short description, logistics) and Plate RichTextEditor for event content.
  *
  * CONTEXT/PARENT FILE:
  * Extracted from app/events-management/EventsManagementClient.tsx to isolate form submission, validation rules, and modal dialog UI.
@@ -24,7 +14,18 @@ import { useNotification } from "../../context/NotificationContext";
  * - onEventCreated (function, Required): Callback invoked when an event is successfully created.
  */
 
+import React, { useState } from "react";
+import { useForm, Controller } from "react-hook-form";
+import { AnimatePresence, motion } from "framer-motion";
+import { Event, EventInsert } from "../../types/event";
+import { EVENT_STATUS } from "../../types/enum";
+import { createEvent } from "../../actions/events";
+import RichTextEditor from "../../components/RichTextEditor";
+import { useLoader } from "../../context/LoaderContext";
+import { useNotification } from "../../context/NotificationContext";
+
 interface CreateEventFormValues {
+  title: string;
   short_description: string;
   status: EVENT_STATUS;
   member_per_groups: number;
@@ -60,6 +61,7 @@ export function CreateEventModal({
     formState: { errors },
   } = useForm<CreateEventFormValues>({
     defaultValues: {
+      title: "",
       short_description: "",
       status: EVENT_STATUS.ONGOING,
       member_per_groups: 5,
@@ -88,6 +90,7 @@ export function CreateEventModal({
     setIsOpenLoader(true);
 
     const payload: EventInsert = {
+      title: formData.title,
       short_description: formData.short_description,
       status: formData.status || EVENT_STATUS.ONGOING,
       member_per_groups: Number(formData.member_per_groups) || 5,
@@ -159,19 +162,44 @@ export function CreateEventModal({
             <form onSubmit={handleSubmit(onFormSubmit)} className="space-y-6">
               <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
                 
-                {/* Left Column (lg:col-span-5): Metadata & Short Description Textarea */}
+                {/* Left Column (lg:col-span-5): Title, Short Description Textarea & Logistics */}
                 <div className="lg:col-span-5 space-y-4">
-                  {/* Field 1: Short Description (Textarea) */}
+                  
+                  {/* Field 1: Event Title */}
                   <div className="flex flex-col gap-1.5">
                     <label className="text-xs sm:text-sm font-semibold text-slate-200 uppercase tracking-wider">
-                      SHORT DESCRIPTION / EVENT TITLE <span className="text-red-400">*</span>
+                      EVENT TITLE <span className="text-red-400">*</span>
+                    </label>
+                    <input
+                      {...register("title", {
+                        required: "Event title is required",
+                      })}
+                      type="text"
+                      placeholder="e.g. Polar Bear Pitching Main Stage 2026"
+                      className={`bg-[#0a1526] text-white border text-sm sm:text-base p-3.5 rounded-xl w-full outline-none transition-colors ${
+                        errors.title
+                          ? "border-red-500/70 focus:border-red-400"
+                          : "border-white/15 focus:border-white/50"
+                      }`}
+                    />
+                    {errors.title && (
+                      <span className="text-xs text-red-400 font-medium mt-0.5">
+                        {errors.title.message}
+                      </span>
+                    )}
+                  </div>
+
+                  {/* Field 2: Short Description (Textarea) */}
+                  <div className="flex flex-col gap-1.5">
+                    <label className="text-xs sm:text-sm font-semibold text-slate-200 uppercase tracking-wider">
+                      SHORT DESCRIPTION <span className="text-red-400">*</span>
                     </label>
                     <textarea
                       {...register("short_description", {
-                        required: "Short description / event title is required",
+                        required: "Short description is required",
                       })}
                       rows={3}
-                      placeholder="e.g. Polar Bear Pitching Main Stage 2026"
+                      placeholder="Write a brief overview of the pitching event..."
                       className={`bg-[#0a1526] text-white border text-sm sm:text-base p-3.5 rounded-xl w-full outline-none transition-colors resize-none ${
                         errors.short_description
                           ? "border-red-500/70 focus:border-red-400"
