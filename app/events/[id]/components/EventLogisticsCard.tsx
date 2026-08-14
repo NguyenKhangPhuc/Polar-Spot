@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import Link from "next/link";
 import { motion } from "framer-motion";
 import { Event } from "@/app/types/event";
 import { EVENT_STATUS } from "@/app/types/enum";
@@ -8,7 +9,7 @@ import { EVENT_STATUS } from "@/app/types/enum";
 /**
  * PURPOSE:
  * Sticky left sidebar metadata panel displaying logistics information for a single event (status, group limit, location, dates)
- * with Framer Motion slide-in animations.
+ * and a navigation link button to view registered pitching groups (/events/[id]/groups) with Framer Motion slide-in animations.
  *
  * CONTEXT/PARENT FILE:
  * Extracted from app/events/[id]/SingleEventClient.tsx to isolate metadata logistics UI.
@@ -27,6 +28,7 @@ export function EventLogisticsCard({ event }: EventLogisticsCardProps) {
   /**
    * BEHAVIORAL MECHANISM:
    * Renders the sticky left sidebar panel inside motion.aside with slide-in transition.
+   * Includes a Next.js Link CTA button navigating to '/events/[id]/groups'.
    *
    * PARAMETERS:
    * - props (EventLogisticsCardProps): Component props object.
@@ -114,6 +116,19 @@ export function EventLogisticsCard({ event }: EventLogisticsCardProps) {
             </span>
           </div>
         )}
+      </div>
+
+      {/* Navigation Button to Event Pitching Groups Roster */}
+      <div className="pt-2">
+        <Link
+          href={`/events/${event.id}/groups`}
+          className="w-full py-3.5 bg-white hover:bg-sky-100 text-slate-950 font-bold text-xs uppercase tracking-widest rounded-xl transition-colors cursor-pointer flex items-center justify-center gap-2 shadow-lg"
+        >
+          <span>VIEW PITCHING GROUPS</span>
+          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+          </svg>
+        </Link>
       </div>
     </motion.aside>
   );

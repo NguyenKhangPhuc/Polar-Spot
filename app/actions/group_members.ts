@@ -96,6 +96,7 @@ export async function addGroupMemberByEmail(groupId: string, email: string) {
         .single();
 
     if (insertError || !newMember) {
+        console.log(insertError)
         return { data: null, error: "Fail to add group member" };
     }
 
