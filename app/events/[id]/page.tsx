@@ -1,7 +1,6 @@
 import React from "react";
-import Link from "next/link";
 import { getSingleEventById } from "@/app/actions/events";
-import SingleEventClient from "./SingleEventClient";
+import SingleEventClient from "./components/SingleEventClient";
 import BackButton from "@/app/components/BackButton";
 
 /**
