@@ -51,14 +51,14 @@ const Home = () => {
 
   return (
     <div className="w-full min-h-screen polar-snow-bg text-slate-100 flex flex-col items-center justify-center p-4 sm:p-6 lg:p-8 select-none font-sans relative">
-      <div className="w-full max-w-xl space-y-4">
+      <div className="w-full max-w-md space-y-4">
         {/* Back Button */}
         <BackButton href="/login" label="BACK TO LOGIN" />
 
         {/* Auth Form Container Card */}
         <form
           onSubmit={handleSubmit(onSubmit)}
-          className="bg-[#121212] border border-white/12 rounded-md p-6 sm:p-8 lg:p-10 shadow-2xl flex flex-col gap-6"
+          className="bg-[#121212] border border-white/12 rounded-md p-6 sm:p-8 shadow-2xl flex flex-col gap-6"
         >
           {/* Header Title & Brand Logo */}
           <div className="flex flex-col items-center text-center gap-2 border-b border-white/12 pb-5">
@@ -79,7 +79,7 @@ const Home = () => {
 
           {/* Email Address Input */}
           <div className="flex flex-col">
-            <label className="text-xs font-semibold text-slate-200 uppercase tracking-wider mb-1.5 flex items-center justify-between select-none">
+            <label className="text-xs font-mono font-bold text-slate-200 uppercase tracking-wider mb-1.5 flex items-center justify-between select-none">
               <span>ACCOUNT EMAIL</span>
               <span className="text-[#3be1fe]">*</span>
             </label>
@@ -92,7 +92,7 @@ const Home = () => {
               <input
                 type="text"
                 placeholder="Enter your registered email"
-                className="w-full bg-transparent text-white placeholder-slate-500 text-sm p-3.5 outline-none border-none font-mono"
+                className="w-full bg-transparent text-white placeholder-slate-500 text-xs p-3.5 outline-none border-none font-mono"
                 {...register("email", {
                   required: "Email is required",
                   pattern: {
@@ -103,7 +103,7 @@ const Home = () => {
               />
             </div>
             {errors.email && (
-              <p className="text-red-400 text-xs font-medium mt-1">
+              <p className="text-red-400 text-xs font-mono font-medium mt-1">
                 {errors.email.message}
               </p>
             )}
@@ -112,7 +112,7 @@ const Home = () => {
           {/* Primary Submit Button */}
           <button
             type="submit"
-            className="mt-2 w-full bg-[#3be1fe] hover:bg-[#6ee7fc] text-black font-bold text-xs uppercase tracking-widest py-3.5 rounded-md transition-colors cursor-pointer shadow-lg font-mono"
+            className="mt-2 w-full bg-[#3be1fe] hover:bg-[#6ee7fc] text-black font-mono font-bold text-xs uppercase tracking-widest py-3.5 rounded-md transition-colors cursor-pointer shadow-lg"
           >
             SEND OTP
           </button>
@@ -141,7 +141,7 @@ const Home = () => {
           <button
             type="button"
             onClick={handleLoginWithGithub}
-            className="w-full flex items-center justify-center gap-3 bg-[#050505] border border-white/15 text-slate-200 hover:text-white hover:bg-white/10 font-bold text-xs uppercase tracking-wider py-3.5 rounded-md transition-colors cursor-pointer shadow-md font-mono"
+            className="w-full flex items-center justify-center gap-3 bg-[#050505] border border-white/15 text-slate-200 hover:text-white hover:bg-white/10 font-mono font-bold text-xs uppercase tracking-wider py-3.5 rounded-md transition-colors cursor-pointer shadow-md"
           >
             <svg className="w-5 h-5 fill-current text-white" viewBox="0 0 24 24">
               <path fillRule="evenodd" clipRule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.53 1.032 1.53 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z" />

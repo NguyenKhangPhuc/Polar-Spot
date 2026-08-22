@@ -55,7 +55,7 @@ export const ResetPasswordClient = ({ email }: { email: string }) => {
   return (
     <form
       onSubmit={handleSubmit(onSubmit)}
-      className="bg-[#121212] border border-white/12 rounded-md p-6 sm:p-8 lg:p-10 shadow-2xl flex flex-col gap-6 w-full"
+      className="bg-[#121212] border border-white/12 rounded-md p-6 sm:p-8 shadow-2xl flex flex-col gap-6 w-full"
     >
       {/* Header Title & Brand Logo */}
       <div className="flex flex-col items-center text-center gap-2 border-b border-white/12 pb-5">
@@ -76,7 +76,7 @@ export const ResetPasswordClient = ({ email }: { email: string }) => {
 
       {/* Disabled Email Input */}
       <div className="flex flex-col">
-        <label className="text-xs font-semibold text-slate-200 uppercase tracking-wider mb-1.5 flex items-center justify-between select-none">
+        <label className="text-xs font-mono font-bold text-slate-200 uppercase tracking-wider mb-1.5 flex items-center justify-between select-none">
           <span>TARGET EMAIL</span>
           <span className="text-slate-400 font-bold font-mono">(LOCKED)</span>
         </label>
@@ -90,7 +90,7 @@ export const ResetPasswordClient = ({ email }: { email: string }) => {
             disabled
             type="text"
             placeholder="Enter your Email"
-            className="w-full bg-transparent text-slate-400 placeholder-slate-500 text-sm p-3.5 outline-none border-none cursor-not-allowed font-mono"
+            className="w-full bg-transparent text-slate-400 placeholder-slate-500 text-xs p-3.5 outline-none border-none cursor-not-allowed font-mono"
             {...register("email", {
               required: "Email is required",
               pattern: {
@@ -101,7 +101,7 @@ export const ResetPasswordClient = ({ email }: { email: string }) => {
           />
         </div>
         {errors.email && (
-          <p className="text-red-400 text-xs font-medium mt-1">
+          <p className="text-red-400 text-xs font-mono font-medium mt-1">
             {errors.email.message}
           </p>
         )}
@@ -109,7 +109,7 @@ export const ResetPasswordClient = ({ email }: { email: string }) => {
 
       {/* Received OTP Input */}
       <div className="flex flex-col">
-        <label className="text-xs font-semibold text-slate-200 uppercase tracking-wider mb-1.5 flex items-center justify-between select-none">
+        <label className="text-xs font-mono font-bold text-slate-200 uppercase tracking-wider mb-1.5 flex items-center justify-between select-none">
           <span>RECEIVED OTP CODE</span>
           <span className="text-[#3be1fe]">*</span>
         </label>
@@ -122,14 +122,14 @@ export const ResetPasswordClient = ({ email }: { email: string }) => {
           <input
             type="password"
             placeholder="Enter your Received OTP"
-            className="w-full bg-transparent text-white placeholder-slate-500 text-sm p-3.5 outline-none border-none font-mono"
+            className="w-full bg-transparent text-white placeholder-slate-500 text-xs p-3.5 outline-none border-none font-mono"
             {...register("otp", {
               required: "OTP is required",
             })}
           />
         </div>
         {errors.otp && (
-          <p className="text-red-400 text-xs font-medium mt-1">
+          <p className="text-red-400 text-xs font-mono font-medium mt-1">
             {errors.otp.message}
           </p>
         )}
@@ -137,7 +137,7 @@ export const ResetPasswordClient = ({ email }: { email: string }) => {
 
       {/* New Password Input */}
       <div className="flex flex-col">
-        <label className="text-xs font-semibold text-slate-200 uppercase tracking-wider mb-1.5 flex items-center justify-between select-none">
+        <label className="text-xs font-mono font-bold text-slate-200 uppercase tracking-wider mb-1.5 flex items-center justify-between select-none">
           <span>NEW PASSWORD</span>
           <span className="text-[#3be1fe]">*</span>
         </label>
@@ -150,7 +150,7 @@ export const ResetPasswordClient = ({ email }: { email: string }) => {
           <input
             type={showNewPassword ? "text" : "password"}
             placeholder="Enter your New Password"
-            className="w-full bg-transparent text-white placeholder-slate-500 text-sm p-3.5 outline-none border-none font-mono"
+            className="w-full bg-transparent text-white placeholder-slate-500 text-xs p-3.5 outline-none border-none font-mono"
             {...register("newPassword", {
               required: "New Password is required",
               minLength: {
@@ -178,7 +178,7 @@ export const ResetPasswordClient = ({ email }: { email: string }) => {
           </button>
         </div>
         {errors.newPassword && (
-          <p className="text-red-400 text-xs font-medium mt-1">
+          <p className="text-red-400 text-xs font-mono font-medium mt-1">
             {errors.newPassword.message}
           </p>
         )}
@@ -186,7 +186,7 @@ export const ResetPasswordClient = ({ email }: { email: string }) => {
 
       {/* Confirm New Password Input */}
       <div className="flex flex-col">
-        <label className="text-xs font-semibold text-slate-200 uppercase tracking-wider mb-1.5 flex items-center justify-between select-none">
+        <label className="text-xs font-mono font-bold text-slate-200 uppercase tracking-wider mb-1.5 flex items-center justify-between select-none">
           <span>CONFIRM NEW PASSWORD</span>
           <span className="text-[#3be1fe]">*</span>
         </label>
@@ -199,7 +199,7 @@ export const ResetPasswordClient = ({ email }: { email: string }) => {
           <input
             type={showConfirmPassword ? "text" : "password"}
             placeholder="Confirm your new password"
-            className="w-full bg-transparent text-white placeholder-slate-500 text-sm p-3.5 outline-none border-none font-mono"
+            className="w-full bg-transparent text-white placeholder-slate-500 text-xs p-3.5 outline-none border-none font-mono"
             {...register("confirmedNewPassword", {
               required: "Confirm New Password Required",
               minLength: {
@@ -232,7 +232,7 @@ export const ResetPasswordClient = ({ email }: { email: string }) => {
           </button>
         </div>
         {errors.confirmedNewPassword && (
-          <p className="text-red-400 text-xs font-medium mt-1">
+          <p className="text-red-400 text-xs font-mono font-medium mt-1">
             {errors.confirmedNewPassword.message}
           </p>
         )}
@@ -241,7 +241,7 @@ export const ResetPasswordClient = ({ email }: { email: string }) => {
       {/* Submit Button */}
       <button
         type="submit"
-        className="mt-2 w-full bg-[#3be1fe] hover:bg-[#6ee7fc] text-black font-bold text-xs uppercase tracking-widest py-3.5 rounded-md transition-colors cursor-pointer shadow-lg font-mono"
+        className="mt-2 w-full bg-[#3be1fe] hover:bg-[#6ee7fc] text-black font-mono font-bold text-xs uppercase tracking-widest py-3.5 rounded-md transition-colors cursor-pointer shadow-lg"
       >
         UPDATE PASSWORD
       </button>
