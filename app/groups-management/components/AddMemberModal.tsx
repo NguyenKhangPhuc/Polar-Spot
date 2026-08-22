@@ -3,14 +3,14 @@
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { AnimatePresence, motion } from "framer-motion";
-import { GroupWithMembersAndEvent, GroupMemberWithProfile } from "../../types/groups";
-import { addGroupMemberByEmail } from "../../actions/group_members";
+import { GroupWithMembersAndEvent, GroupMember } from "../../types/groups";
+import { createGroupMemberDirectly } from "../../actions/group_members";
 import { useLoader } from "../../context/LoaderContext";
 import { useNotification } from "../../context/NotificationContext";
 
 /**
  * PURPOSE:
- * Pop-up modal dialog for adding a new member to a group by looking up their profile email address.
+ * Pop-up modal dialog for adding a new member to a group with name and email address.
  * Uses react-hook-form integrated with global Loader and Notification feedback.
  *
  * CONTEXT/PARENT FILE:
@@ -24,6 +24,7 @@ import { useNotification } from "../../context/NotificationContext";
  */
 
 interface AddMemberFormValues {
+  name: string;
   email: string;
 }
 
@@ -31,7 +32,7 @@ interface AddMemberModalProps {
   group: GroupWithMembersAndEvent | null;
   isOpen: boolean;
   onClose: () => void;
-  onMemberAdded: (groupId: string, newMemberRecord: GroupMemberWithProfile) => void;
+  onMemberAdded: (groupId: string, newMemberRecord: GroupMember) => void;
 }
 
 export function AddMemberModal({
@@ -53,17 +54,18 @@ export function AddMemberModal({
     formState: { errors },
   } = useForm<AddMemberFormValues>({
     defaultValues: {
+      name: "",
       email: "",
     },
   });
 
   /**
    * BEHAVIORAL MECHANISM:
-   * Calls addGroupMemberByEmail server action. Triggers global loader, notifies user via toast on success/error,
+   * Calls createGroupMemberDirectly server action. Triggers global loader, notifies user via toast on success/error,
    * creates group_members entry and updates parent state upon success.
    *
    * PARAMETERS:
-   * - formData (AddMemberFormValues): Form data containing user email string.
+   * - formData (AddMemberFormValues): Form data containing user full name and email string.
    *
    * RETURNS:
    * - Promise<void>: Asynchronous member addition.
@@ -76,8 +78,9 @@ export function AddMemberModal({
     setIsOpenLoader(true);
 
     try {
-      const { data: newMemberRecord, error } = await addGroupMemberByEmail(
+      const { data: newMemberRecord, error } = await createGroupMemberDirectly(
         group.id,
+        formData.name,
         formData.email
       );
 
@@ -90,7 +93,7 @@ export function AddMemberModal({
 
       showNotification("Member added to group successfully");
       reset();
-      onMemberAdded(group.id, newMemberRecord as GroupMemberWithProfile);
+      onMemberAdded(group.id, newMemberRecord);
       onClose();
     } catch {
       const errorMsg = "Fail to add member to group";
@@ -142,7 +145,31 @@ export function AddMemberModal({
 
             {/* Form using react-hook-form */}
             <form onSubmit={handleSubmit(onFormSubmit)} className="space-y-4">
-              {/* Field: User Email */}
+              {/* Field 1: User Full Name */}
+              <div className="flex flex-col gap-1.5">
+                <label className="text-xs sm:text-sm font-semibold text-slate-200 uppercase tracking-wider">
+                  MEMBER FULL NAME <span className="text-red-400">*</span>
+                </label>
+                <input
+                  {...register("name", {
+                    required: "Member full name is required",
+                  })}
+                  type="text"
+                  placeholder="e.g. John Doe"
+                  className={`bg-[#0a1526] text-white border text-sm sm:text-base p-3.5 rounded-xl w-full outline-none transition-colors ${
+                    errors.name
+                      ? "border-red-500/70 focus:border-red-400"
+                      : "border-white/15 focus:border-white/50"
+                  }`}
+                />
+                {errors.name && (
+                  <span className="text-xs text-red-400 font-medium mt-0.5">
+                    {errors.name.message}
+                  </span>
+                )}
+              </div>
+
+              {/* Field 2: User Email */}
               <div className="flex flex-col gap-1.5">
                 <label className="text-xs sm:text-sm font-semibold text-slate-200 uppercase tracking-wider">
                   MEMBER EMAIL ADDRESS <span className="text-red-400">*</span>
@@ -196,3 +223,4 @@ export function AddMemberModal({
 }
 
 export default AddMemberModal;
+

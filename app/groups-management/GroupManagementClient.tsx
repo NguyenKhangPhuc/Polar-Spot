@@ -3,7 +3,7 @@
 import React, { useState, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { Event } from "../types/event";
-import { GroupWithMembersAndEvent, GroupMemberWithProfile } from "../types/groups";
+import { GroupWithMembersAndEvent, GroupMember } from "../types/groups";
 import { deleteGroup } from "../actions/groups";
 import { useLoader } from "../context/LoaderContext";
 import { useNotification } from "../context/NotificationContext";
@@ -166,7 +166,7 @@ export default function GroupManagementClient({
    * RETURNS:
    * - void
    */
-  const handleMemberAdded = (groupId: string, newMemberRecord: GroupMemberWithProfile) => {
+  const handleMemberAdded = (groupId: string, newMemberRecord: GroupMember) => {
     setGroupsList((prev) =>
       prev.map((g) => {
         if (g.id === groupId) {

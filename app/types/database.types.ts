@@ -116,19 +116,22 @@ export type Database = {
           created_at: string
           group_id: string | null
           id: string
-          member_id: string | null
+          member_email: string | null
+          member_name: string | null
         }
         Insert: {
           created_at?: string
           group_id?: string | null
           id?: string
-          member_id?: string | null
+          member_email?: string | null
+          member_name?: string | null
         }
         Update: {
           created_at?: string
           group_id?: string | null
           id?: string
-          member_id?: string | null
+          member_email?: string | null
+          member_name?: string | null
         }
         Relationships: [
           {
@@ -136,13 +139,6 @@ export type Database = {
             columns: ["group_id"]
             isOneToOne: false
             referencedRelation: "groups"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "group_members_member_id_fkey"
-            columns: ["member_id"]
-            isOneToOne: false
-            referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
         ]
@@ -178,38 +174,6 @@ export type Database = {
             columns: ["event_id"]
             isOneToOne: false
             referencedRelation: "events"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      invitations: {
-        Row: {
-          created_at: string
-          group_id: string | null
-          id: number
-          member_email: string | null
-          status: Database["public"]["Enums"]["INVITATION_STATUS"] | null
-        }
-        Insert: {
-          created_at?: string
-          group_id?: string | null
-          id?: number
-          member_email?: string | null
-          status?: Database["public"]["Enums"]["INVITATION_STATUS"] | null
-        }
-        Update: {
-          created_at?: string
-          group_id?: string | null
-          id?: number
-          member_email?: string | null
-          status?: Database["public"]["Enums"]["INVITATION_STATUS"] | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "invitations_group_id_fkey"
-            columns: ["group_id"]
-            isOneToOne: false
-            referencedRelation: "groups"
             referencedColumns: ["id"]
           },
         ]

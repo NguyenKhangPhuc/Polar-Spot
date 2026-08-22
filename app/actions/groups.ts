@@ -45,57 +45,30 @@ export async function getAllGroupsWithMembersWithEvent() {
         return { data: null, error: "Fail to fetch groups" };
     }
 
-    // 2. Fetch all group_members records
+    // 2. Fetch all group_members records directly
     const { data: membersData, error: membersError } = await supabase
         .from('group_members')
-        .select('id, group_id, member_id, created_at');
+        .select('id, group_id, member_name, member_email, created_at');
 
     if (membersError) {
         return { data: null, error: "Fail to fetch group members" };
     }
 
-    // 3. Extract unique member IDs to fetch profiles
-    const memberIds = Array.from(
-        new Set(
-            (membersData || [])
-                .map((m) => m.member_id)
-                .filter((id): id is string => Boolean(id))
-        )
-    );
-
-    let profilesMap: Record<string, { id: string; email: string | null; full_name: string | null }> = {};
-
-    if (memberIds.length > 0) {
-        const { data: profilesData } = await supabase
-            .from('profiles')
-            .select('id, email, full_name')
-            .in('id', memberIds);
-
-        if (profilesData) {
-            profilesData.forEach((p) => {
-                profilesMap[p.id] = p;
-            });
+    // 3. Map members to groups
+    const membersByGroup: Record<string, typeof membersData> = {};
+    (membersData || []).forEach((m) => {
+        if (!m.group_id) return;
+        if (!membersByGroup[m.group_id]) {
+            membersByGroup[m.group_id] = [];
         }
-    }
-
-    // 4. Assemble joined result
-    const joinedGroups: GroupWithMembersAndEvent[] = groupsData.map((group) => {
-        const groupMembers = (membersData || [])
-            .filter((m) => m.group_id === group.id)
-            .map((m) => ({
-                id: m.id,
-                group_id: m.group_id || group.id,
-                member_id: m.member_id || "",
-                created_at: m.created_at,
-                profiles: m.member_id && profilesMap[m.member_id] ? profilesMap[m.member_id] : null,
-            }));
-
-        return {
-            ...group,
-            events: group.events ? (group.events as any) : null,
-            group_members: groupMembers,
-        };
+        membersByGroup[m.group_id].push(m);
     });
+
+    const joinedGroups: GroupWithMembersAndEvent[] = groupsData.map((group) => ({
+        ...group,
+        events: group.events ? (group.events as any) : null,
+        group_members: membersByGroup[group.id] || [],
+    }));
 
     return { data: joinedGroups, error: null };
 }
@@ -269,50 +242,24 @@ export async function getGroupsByEventId(eventId: string) {
 
     const groupIds = groupsData.map((g) => g.id);
 
-    // 2. Fetch group_members for these groups
+    // 2. Fetch group_members for these groups directly
     const { data: membersData, error: membersError } = await supabase
         .from('group_members')
-        .select('id, group_id, member_id, created_at')
+        .select('id, group_id, member_name, member_email, created_at')
         .in('group_id', groupIds);
 
     if (membersError) {
         return { data: null, error: "Fail to fetch group members" };
     }
 
-    // 3. Extract unique member_ids and fetch profiles
-    const memberIds = Array.from(
-        new Set(
-            (membersData || [])
-                .map((m) => m.member_id)
-                .filter((id): id is string => typeof id === "string" && id.length > 0)
-        )
-    );
-
-    const profilesMap: Record<string, { id: string; email: string | null; full_name: string | null; avatar_url?: string | null }> = {};
-
-    if (memberIds.length > 0) {
-        const { data: profilesData } = await supabase
-            .from('profiles')
-            .select('id, email, full_name, avatar_url')
-            .in('id', memberIds);
-
-        (profilesData || []).forEach((p) => {
-            profilesMap[p.id] = p;
-        });
-    }
-
-    // 4. Map members to their groups
-    const membersByGroup: Record<string, any[]> = {};
+    // 3. Map members to their groups
+    const membersByGroup: Record<string, typeof membersData> = {};
     (membersData || []).forEach((m) => {
         if (!m.group_id) return;
         if (!membersByGroup[m.group_id]) {
             membersByGroup[m.group_id] = [];
         }
-        const profile = m.member_id ? profilesMap[m.member_id] || null : null;
-        membersByGroup[m.group_id].push({
-            ...m,
-            profiles: profile,
-        });
+        membersByGroup[m.group_id].push(m);
     });
 
     const result: GroupWithMembersAndEvent[] = groupsData.map((g) => ({

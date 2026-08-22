@@ -93,9 +93,8 @@ export function MembersDropdown({
           <div className="absolute right-0 mt-2 w-72 bg-[#0f2038] border border-white/25 rounded-xl shadow-2xl z-30 p-2 space-y-1.5 max-h-60 overflow-y-auto">
             {members.length > 0 ? (
               members.map((member) => {
-                const profile = member.profiles;
                 const displayName =
-                  profile?.full_name || profile?.email || "Unnamed Member";
+                  member.member_name || member.member_email || "Unnamed Member";
                 const isRemoving = removingId === member.id;
 
                 return (
@@ -107,9 +106,9 @@ export function MembersDropdown({
                       <span className="text-xs font-bold text-white truncate">
                         {displayName}
                       </span>
-                      {profile?.email && (
+                      {member.member_email && (
                         <span className="text-[10px] text-slate-400 truncate">
-                          {profile.email}
+                          {member.member_email}
                         </span>
                       )}
                     </div>

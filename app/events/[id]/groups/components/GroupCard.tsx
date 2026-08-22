@@ -103,9 +103,8 @@ export function GroupCard({ group, index = 0 }: GroupCardProps) {
         ) : (
           <div className="space-y-2">
             {members.map((m) => {
-              const profile = m.profiles;
-              const fullName = profile?.full_name || "Member Profile";
-              const email = profile?.email || "No email available";
+              const fullName = m.member_name || "Member Profile";
+              const email = m.member_email || "No email available";
 
               return (
                 <div

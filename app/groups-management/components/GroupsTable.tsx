@@ -258,10 +258,9 @@ export function GroupsTable({
                             {memberCount > 0 ? (
                               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                                 {members.map((member) => {
-                                  const profile = member.profiles;
                                   const displayName =
-                                    profile?.full_name || profile?.email || "UNNAMED_MEMBER";
-                                  const emailStr = profile?.email || "NO_EMAIL";
+                                    member.member_name || member.member_email || "UNNAMED_MEMBER";
+                                  const emailStr = member.member_email || "NO_EMAIL";
 
                                   return (
                                     <div

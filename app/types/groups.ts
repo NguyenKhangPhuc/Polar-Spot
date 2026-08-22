@@ -2,18 +2,8 @@ import { Database } from "./database.types";
 
 export type Group = Database["public"]["Tables"]["groups"]["Row"];
 export type GroupInsert = Database["public"]["Tables"]["groups"]["Insert"];
-
-export interface GroupMemberWithProfile {
-  id: string;
-  group_id: string;
-  member_id: string;
-  created_at: string;
-  profiles: {
-    id: string;
-    email: string | null;
-    full_name?: string | null;
-  } | null;
-}
+export type GroupMember = Database["public"]["Tables"]["group_members"]["Row"];
+export type GroupMemberWithProfile = GroupMember;
 
 export interface GroupWithMembersAndEvent extends Group {
   events: {
@@ -21,5 +11,5 @@ export interface GroupWithMembersAndEvent extends Group {
     short_description: string | null;
     location: string | null;
   } | null;
-  group_members: GroupMemberWithProfile[];
+  group_members: GroupMember[];
 }
