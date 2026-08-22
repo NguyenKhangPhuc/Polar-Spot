@@ -1,23 +1,6 @@
 "use client";
 
-/**
- * PURPOSE:
- * Client Component for evaluating and grading a specific group across event criteria.
- * Renders a 2-column grid layout containing the evaluation form on the left column and
- * the live GradingSummaryPanel subcomponent on the right column.
- *
- * CONTEXT/PARENT FILE:
- * Rendered by 'app/groups/[id]/grading/page.tsx'.
- *
- * INPUTS / PARAMETERS:
- * - group (any, Required): Target group object.
- * - criteriaList (Criteria[], Required): List of event grading criteria sorted by created_at.
- * - existingGradings (UserGroupGrading[], Optional): Previously assigned evaluation records for this user and group.
- * - userId (string, Required): Authenticated evaluator user UUID.
- */
-
 import React, { useMemo } from "react";
-import Image from "next/image";
 import { useForm } from "react-hook-form";
 import BackButton from "@/app/components/BackButton";
 import { Criteria } from "@/app/types/event_criteria";
@@ -43,7 +26,9 @@ export default function GroupGradingClient({
   const { showNotification } = useNotification();
   const { setIsOpenLoader } = useLoader();
 
-  // 1. Build memoized default values mapping criteria_id to numeric grade
+  const groupName = group.group_name || "Unnamed Group";
+
+  // Build memoized default values mapping criteria_id to numeric grade
   const defaultValues = useMemo(() => {
     const initialValues: Record<string, number> = {};
     if (criteriaList && criteriaList.length > 0) {
@@ -67,17 +52,6 @@ export default function GroupGradingClient({
     defaultValues,
   });
 
-  /**
-   * BEHAVIORAL MECHANISM:
-   * Form submission handler. Converts form rating values to integer numbers, constructs
-   * an array of UserGroupGradingInsert objects, and triggers upsertUserGroupGrading action.
-   *
-   * PARAMETERS:
-   * - formData (Record<string, number>): Map of criteria ID to numeric star rating grade.
-   *
-   * RETURNS:
-   * - Promise<void>
-   */
   const onSubmit = async (formData: Record<string, number>): Promise<void> => {
     setIsOpenLoader(true);
     try {
@@ -102,72 +76,45 @@ export default function GroupGradingClient({
       const errorMessage = err instanceof Error ? err.message : "Fail to submit group grading";
       showNotification(errorMessage);
     } finally {
-      setIsOpenLoader(false);
+      setIsSubmittingLoader(false);
     }
   };
 
+  const setIsSubmittingLoader = (val: boolean) => {
+    setIsOpenLoader(val);
+  };
+
   return (
-    <div className="w-full max-w-7xl mx-auto space-y-8">
-      {/* Top Header & Navigation Section matching groups-management design */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-white/15 pb-6">
+    <div className="w-full space-y-8">
+      {/* Top Header & Navigation Section */}
+      <div className="flex flex-col space-y-4 border-b border-white/12 pb-6">
+        <BackButton href={`/events/${group.event_id}/groups`} label="BACK TO EVENT GROUPS" />
         <div>
-          <div className="mb-3">
-            <BackButton />
-          </div>
           <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black text-white tracking-tight">
-            Group Evaluation &amp; Grading
+            Group Evaluation: <span className="text-[#3be1fe]">{groupName}</span>
           </h1>
           <p className="text-sm sm:text-base text-slate-300 font-medium mt-2">
-            CRITERIA SCORING &amp; LIVE PERFORMANCE SUMMARY FOR POLAR BEAR PITCHING
+            CRITERIA SCORING &amp; LIVE PERFORMANCE EVALUATION FOR POLAR BEAR PITCHING
           </p>
         </div>
       </div>
 
-      {/* Group Info Banner */}
-      <div className="bg-[#13243b] border border-white/20 rounded-2xl p-6 sm:p-8 backdrop-blur-md shadow-xl flex flex-col sm:flex-row items-center gap-6">
-        <div className="relative w-20 h-20 rounded-2xl overflow-hidden bg-[#0a1526] border border-white/20 shrink-0 flex items-center justify-center shadow-lg">
-          {group.avatar_url ? (
-            <Image
-              src={group.avatar_url}
-              alt={group.group_name || "Group Avatar"}
-              fill
-              className="object-cover"
-            />
-          ) : (
-            <div className="w-full h-full bg-gradient-to-br from-cyan-900 to-sky-950 flex items-center justify-center text-cyan-300 font-extrabold text-2xl">
-              {(group.group_name || "G").charAt(0).toUpperCase()}
-            </div>
-          )}
-        </div>
-        <div className="space-y-1 text-center sm:text-left flex-1">
-          <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">
-            EVALUATING TEAM
-          </span>
-          <h2 className="text-2xl font-extrabold text-white tracking-tight">
-            {group.group_name || "Unnamed Group"}
-          </h2>
-          <p className="text-sm text-slate-300 line-clamp-2">
-            {group.short_description || "No description provided for this group."}
-          </p>
-        </div>
-      </div>
-
-      {/* Main 2-Column Grid Layout */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8 items-start">
-        {/* Left Column: Evaluation Criteria Rating Form */}
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-          <div className="bg-[#13243b] border border-white/20 rounded-2xl p-6 sm:p-8 backdrop-blur-md shadow-xl space-y-8">
-            <div className="pb-2">
-              <h3 className="text-lg font-bold text-white uppercase tracking-wider">
+      {/* Main 2-Column Grid Layout with reduced summary width (7 cols / 5 cols) */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-start">
+        {/* Left Column: Evaluation Criteria Rating Form (lg:col-span-7) */}
+        <form onSubmit={handleSubmit(onSubmit)} className="lg:col-span-7 space-y-6">
+          <div className="bg-[#121212] border border-white/12 rounded-md p-6 sm:p-8 shadow-xl space-y-8">
+            <div className="pb-2 border-b border-white/12">
+              <h3 className="text-base font-mono font-bold text-[#3be1fe] uppercase tracking-wider">
                 EVALUATION CRITERIA
               </h3>
-              <p className="text-xs text-slate-300 mt-1">
-                Select 1 to 5 stars for each criteria below. All criteria ratings are required.
+              <p className="text-xs text-slate-300 mt-1 font-mono">
+                Select 1 to 5 stars for each criteria below. All ratings are required.
               </p>
             </div>
 
             {criteriaList.length === 0 ? (
-              <div className="text-center py-12 text-slate-400 text-sm">
+              <div className="text-center py-12 text-slate-400 text-xs font-mono italic">
                 No evaluation criteria found for this event.
               </div>
             ) : (
@@ -178,29 +125,31 @@ export default function GroupGradingClient({
                   return (
                     <div
                       key={criteria.id}
-                      className="bg-[#0a1526] border border-white/12 rounded-xl p-5 flex flex-col gap-4 shadow-md"
+                      className="bg-[#050505] border border-white/12 rounded-md p-5 flex flex-col gap-4 shadow-md"
                     >
                       <div className="space-y-1">
                         <div className="flex items-center gap-2">
-                          <span className="text-xs font-bold text-cyan-400 bg-cyan-950/60 border border-cyan-500/30 px-2 py-0.5 rounded-md">
+                          <span className="text-xs font-mono font-bold text-[#3be1fe] bg-[#000000] border border-[#3be1fe]/40 px-2 py-0.5 rounded-sm">
                             #{index + 1}
                           </span>
-                          <h4 className="text-base font-extrabold text-white tracking-tight">
+                          <h4 className="text-base font-bold text-white tracking-tight font-sans">
                             {criteria.name || "Unnamed Criteria"}
                           </h4>
                         </div>
-                        <p className="text-xs text-slate-300 leading-relaxed">
-                          {criteria.short_description || "No description available."}
-                        </p>
+                        {criteria.short_description && (
+                          <p className="text-xs text-slate-300 leading-relaxed font-sans pt-1">
+                            {criteria.short_description}
+                          </p>
+                        )}
                         {errors[criteria.id] && (
-                          <p className="text-red-400 text-xs font-medium mt-1">
+                          <p className="text-red-400 text-xs font-mono font-medium mt-1">
                             {errors[criteria.id]?.message}
                           </p>
                         )}
                       </div>
 
-                      {/* 5-Star Radio Component without bottom borders */}
-                      <div className="flex items-center justify-start gap-1 pt-1">
+                      {/* Enlarged 5-Star Radio Component with font-size 42px */}
+                      <div className="flex items-center justify-start gap-1 pt-2">
                         <div className="radio">
                           {[5, 4, 3, 2, 1].map((starVal) => {
                             const isChecked = Number(currentGrade) === starVal;
@@ -240,19 +189,21 @@ export default function GroupGradingClient({
           {criteriaList.length > 0 && (
             <button
               type="submit"
-              className="w-full py-4 bg-white hover:bg-sky-100 text-slate-950 font-bold text-xs uppercase tracking-widest rounded-xl transition-colors cursor-pointer shadow-lg shadow-white/10"
+              className="w-full py-3.5 bg-[#3be1fe] hover:bg-[#6ee7fc] text-black font-mono font-bold text-xs uppercase tracking-widest rounded-md transition-colors cursor-pointer shadow-lg"
             >
-              GIVE YOUR GRADE
+              SUBMIT EVALUATION GRADE
             </button>
           )}
         </form>
 
-        {/* Right Column: Isolated Live Grading Summary Subcomponent */}
-        <GradingSummaryPanel
-          control={control}
-          criteriaList={criteriaList}
-          groupName={group.group_name}
-        />
+        {/* Right Column: Reduced Width Live Grading Summary Panel (lg:col-span-5) */}
+        <div className="lg:col-span-5">
+          <GradingSummaryPanel
+            control={control}
+            criteriaList={criteriaList}
+            groupName={groupName}
+          />
+        </div>
       </div>
     </div>
   );

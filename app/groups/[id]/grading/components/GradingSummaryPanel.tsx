@@ -1,20 +1,5 @@
 "use client";
 
-/**
- * PURPOSE:
- * Isolated summary panel component for calculating and displaying live evaluation scores.
- * Subscribes to React Hook Form state using useWatch to prevent parent re-renders when rating values change.
- * Displays individual criteria score breakdowns and calculates the final total point sum.
- *
- * CONTEXT/PARENT FILE:
- * Rendered by app/groups/[id]/grading/GroupGradingClient.tsx.
- *
- * INPUTS / PARAMETERS:
- * - control (Control<Record<string, number>>, Required): React Hook Form control object.
- * - criteriaList (Criteria[], Required): List of event grading criteria.
- * - groupName (string, Optional): Name of the group being evaluated.
- */
-
 import React from "react";
 import { Control, useWatch } from "react-hook-form";
 import { Criteria } from "@/app/types/event_criteria";
@@ -30,64 +15,59 @@ export function GradingSummaryPanel({
   criteriaList,
   groupName,
 }: GradingSummaryPanelProps) {
-  /**
-   * BEHAVIORAL MECHANISM:
-   * Subscribes strictly to form field value changes via useWatch without triggering re-renders
-   * in the parent GroupGradingClient component. Iterates through criteria values, calculates
-   * individual percentages and total accumulated score (Final Point).
-   *
-   * PARAMETERS:
-   * - props (GradingSummaryPanelProps): Control object, criteria list, and group name.
-   *
-   * RETURNS:
-   * - JSX.Element: Live score summary card containing score breakdown and final total points.
-   */
   const formValues = useWatch({ control });
 
   // Calculate maximum achievable total points (each criteria has max 5 points)
   const maxPossiblePoints = criteriaList.length * 5;
 
-  // Calculate current total accumulated points
-  let finalPoints = 0;
+  // Calculate accumulated points sum and count rated criteria
+  let totalSumPoints = 0;
+  let ratedCount = 0;
   criteriaList.forEach((criteria) => {
     const rawGrade = formValues[criteria.id];
     const numericGrade = typeof rawGrade === "number" ? rawGrade : parseInt(String(rawGrade || 0), 10);
     if (!isNaN(numericGrade) && numericGrade > 0) {
-      finalPoints += numericGrade;
+      totalSumPoints += numericGrade;
+      ratedCount += 1;
     }
   });
 
+  // Calculate average score out of 5.0
+  const averageScore = criteriaList.length > 0
+    ? (totalSumPoints / criteriaList.length).toFixed(1)
+    : "0.0";
+
   const overallPercentage = maxPossiblePoints > 0
-    ? Math.round((finalPoints / maxPossiblePoints) * 100)
+    ? Math.round((totalSumPoints / maxPossiblePoints) * 100)
     : 0;
 
   return (
-    <div className="bg-[#13243b] border border-white/20 rounded-2xl p-6 sm:p-8 backdrop-blur-md shadow-xl flex flex-col gap-6 sticky top-6">
+    <div className="bg-[#121212] border border-white/12 rounded-md p-5 sm:p-6 shadow-xl flex flex-col gap-6 sticky top-6 font-mono text-xs">
       {/* Header Title & Badge */}
       <div className="flex items-center justify-between border-b border-white/12 pb-4">
         <div>
-          <span className="text-[10px] font-bold text-cyan-400 uppercase tracking-widest block">
+          <span className="text-[10px] font-bold text-[#3be1fe] uppercase tracking-widest block">
             LIVE SCORE SUMMARY
           </span>
-          <h3 className="text-xl font-extrabold text-white tracking-tight uppercase">
+          <h3 className="text-lg font-black text-white tracking-tight uppercase font-sans">
             GRADING BREAKDOWN
           </h3>
         </div>
-        <div className="px-3 py-1 rounded-full bg-cyan-950/80 border border-cyan-500/30 text-cyan-300 font-bold text-xs">
-          {groupName || "GROUP EVALUATION"}
+        <div className="px-3 py-1 rounded-md bg-[#000000] border border-[#3be1fe]/40 text-[#3be1fe] font-bold text-xs truncate max-w-[160px]">
+          {groupName || "EVALUATION"}
         </div>
       </div>
 
       {/* Criteria Breakdown List */}
-      <div className="space-y-4 flex-1">
-        <span className="text-xs font-semibold text-slate-300 uppercase tracking-wider block">
-          CRITERIA SCORES
+      <div className="space-y-3 flex-1">
+        <span className="text-xs font-bold text-slate-300 uppercase tracking-wider block">
+          CRITERIA SCORES ({ratedCount}/{criteriaList.length} RATED)
         </span>
 
         {criteriaList.length === 0 ? (
           <p className="text-xs text-slate-400 italic">No criteria loaded.</p>
         ) : (
-          <div className="space-y-3">
+          <div className="space-y-2.5">
             {criteriaList.map((criteria, index) => {
               const rawGrade = formValues[criteria.id];
               const score = typeof rawGrade === "number" ? rawGrade : parseInt(String(rawGrade || 0), 10) || 0;
@@ -96,13 +76,13 @@ export function GradingSummaryPanel({
               return (
                 <div
                   key={criteria.id}
-                  className="bg-[#0a1526] border border-white/12 rounded-xl p-3.5 flex items-center justify-between gap-3"
+                  className="bg-[#050505] border border-white/12 rounded-md p-3 flex items-center justify-between gap-3"
                 >
-                  <div className="flex items-center gap-2.5 min-w-0">
-                    <span className="w-5 h-5 rounded-md bg-white/10 text-slate-300 flex items-center justify-center text-[10px] font-bold shrink-0">
+                  <div className="flex items-center gap-2 min-w-0">
+                    <span className="w-5 h-5 rounded-sm bg-[#000000] border border-white/15 text-[#3be1fe] flex items-center justify-center text-[10px] font-bold shrink-0 font-mono">
                       {index + 1}
                     </span>
-                    <span className="text-xs font-semibold text-slate-200 truncate">
+                    <span className="text-xs font-bold text-white truncate font-sans">
                       {criteria.name || "Criteria"}
                     </span>
                   </div>
@@ -114,7 +94,7 @@ export function GradingSummaryPanel({
                         <svg
                           key={starIdx}
                           className={`w-3.5 h-3.5 ${
-                            starIdx <= score ? "text-cyan-400 fill-current drop-shadow-[0_0_6px_rgba(56,189,248,0.8)]" : "text-slate-700 fill-current"
+                            starIdx <= score ? "text-[#3be1fe] fill-current drop-shadow-[0_0_6px_rgba(59,225,254,0.8)]" : "text-slate-700 fill-current"
                           }`}
                           viewBox="0 0 576 512"
                         >
@@ -122,7 +102,7 @@ export function GradingSummaryPanel({
                         </svg>
                       ))}
                     </div>
-                    <span className={`text-xs font-bold pl-1 ${hasScore ? "text-cyan-300" : "text-slate-400"}`}>
+                    <span className={`text-xs font-bold pl-1 ${hasScore ? "text-[#3be1fe]" : "text-slate-500"}`}>
                       {hasScore ? `${score}/5` : "-/5"}
                     </span>
                   </div>
@@ -134,29 +114,29 @@ export function GradingSummaryPanel({
       </div>
 
       {/* Divider */}
-      <div className="h-px bg-white/15 my-1" />
+      <div className="h-px bg-white/12 my-1" />
 
-      {/* Final Point Display Box */}
-      <div className="bg-gradient-to-br from-[#0c1c33] to-[#071324] border border-cyan-500/30 rounded-xl p-5 shadow-lg flex items-center justify-between">
+      {/* Average Final Score Display Box */}
+      <div className="bg-[#050505] border border-[#3be1fe]/40 rounded-md p-4 flex items-center justify-between shadow-lg">
         <div>
-          <span className="text-[10px] font-bold text-cyan-400 uppercase tracking-widest block">
-            ACCUMULATED SCORE
+          <span className="text-[10px] font-bold text-[#3be1fe] uppercase tracking-widest block">
+            AVERAGE SCORE RATING
           </span>
-          <h4 className="text-base sm:text-lg font-black text-white uppercase tracking-tight">
-            FINAL POINT
+          <h4 className="text-sm font-black text-white uppercase tracking-tight font-sans">
+            FINAL SCORE
           </h4>
-          <span className="text-xs text-slate-400 font-medium">
-            {overallPercentage}% of maximum score
+          <span className="text-[11px] text-slate-400 font-medium">
+            {overallPercentage}% of max grade
           </span>
         </div>
 
         <div className="text-right">
-          <div className="text-3xl sm:text-4xl font-black text-cyan-300 tracking-tight drop-shadow-[0_0_12px_rgba(56,189,248,0.5)]">
-            {finalPoints}
-            <span className="text-sm font-semibold text-slate-400">/{maxPossiblePoints}</span>
+          <div className="text-2xl sm:text-3xl font-black text-[#3be1fe] tracking-tight drop-shadow-[0_0_10px_rgba(59,225,254,0.5)]">
+            {averageScore}
+            <span className="text-xs font-semibold text-slate-400">/5.0</span>
           </div>
-          <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">
-            TOTAL POINTS
+          <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">
+            AVERAGE GRADE
           </span>
         </div>
       </div>
