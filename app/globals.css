@@ -8,39 +8,34 @@
 @custom-variant dark (&:is(.dark *));
 
 @layer utilities {
-  /* Arctic Ocean background grounded in Oulu winter night */
+  /* Clean Charcoal Black background (#09090b) - slightly lighter than pitch black navbar (#000000) */
   .polar-snow-bg {
-    background-color: #070d18;
-    background-image: 
-      radial-gradient(ellipse at 50% 0%, rgba(224, 242, 254, 0.12) 0%, transparent 60%),
-      radial-gradient(ellipse at 85% 45%, rgba(56, 189, 248, 0.08) 0%, transparent 50%),
-      radial-gradient(ellipse at 15% 85%, rgba(129, 140, 248, 0.06) 0%, transparent 50%);
+    background-color: #09090b;
     background-attachment: fixed;
     position: relative;
     overflow-x: hidden;
   }
 
-  /* Refined Glacial Slate Frost Card */
+  /* Refined Cyber Slate Frost Card */
   .frost-card {
-    background: rgba(19, 36, 59, 0.85);
+    background: rgba(10, 10, 10, 0.95);
     backdrop-filter: blur(14px);
     -webkit-backdrop-filter: blur(14px);
-    border: 1px solid rgba(255, 255, 255, 0.18);
-    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.35);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.8);
+    border-radius: 0.375rem;
   }
 
   .frost-card:hover {
-    background: rgba(26, 49, 80, 0.92);
-    border-color: rgba(255, 255, 255, 0.45);
-    box-shadow: 0 12px 36px 0 rgba(56, 189, 248, 0.18);
+    background: rgba(18, 18, 18, 0.98);
+    border-color: rgba(59, 225, 254, 0.5);
+    box-shadow: 0 12px 36px 0 rgba(59, 225, 254, 0.15);
   }
 
-  /* Navigation bar frost styling */
+  /* Navigation bar deep black styling */
   .frost-nav {
-    background: rgba(19, 36, 59, 0.9);
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
-    border-color: rgba(255, 255, 255, 0.18);
+    background: #000000;
+    border-color: rgba(255, 255, 255, 0.12);
   }
 }
 
@@ -216,8 +211,8 @@
 }
 
 @theme inline {
-  --font-sans: var(--font-plus-jakarta), var(--font-inter), system-ui, sans-serif;
-  --font-heading: var(--font-plus-jakarta), var(--font-inter), system-ui, sans-serif;
+  --font-sans: var(--font-roboto), system-ui, sans-serif;
+  --font-heading: var(--font-roboto), system-ui, sans-serif;
   --color-brand: var(--brand);
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);

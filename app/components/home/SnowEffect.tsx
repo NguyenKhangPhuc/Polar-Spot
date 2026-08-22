@@ -34,7 +34,7 @@ export default function SnowEffect() {
       {snowflakes.map((flake) => (
         <div
           key={flake.id}
-          className="snowflake absolute rounded-full bg-cyan-100/80 shadow-[0_0_8px_rgba(56,189,248,0.7)]"
+          className="snowflake absolute rounded-full bg-[#3be1fe]/80 shadow-[0_0_10px_rgba(59,225,254,0.85)]"
           style={{
             left: `${flake.left}%`,
             width: `${flake.size}px`,

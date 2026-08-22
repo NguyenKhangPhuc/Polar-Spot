@@ -6,18 +6,6 @@ import { motion } from "framer-motion";
 import { Event } from "@/app/types/event";
 import { EVENT_STATUS } from "@/app/types/enum";
 
-/**
- * PURPOSE:
- * Sticky left sidebar metadata panel displaying logistics information for a single event (status, group limit, location, dates)
- * and a navigation link button to view registered pitching groups (/events/[id]/groups) with Framer Motion slide-in animations.
- *
- * CONTEXT/PARENT FILE:
- * Extracted from app/events/[id]/SingleEventClient.tsx to isolate metadata logistics UI.
- *
- * INPUTS / PARAMETERS:
- * - event (Event, Required): Single event record payload.
- */
-
 interface EventLogisticsCardProps {
   event: Event;
 }
@@ -25,27 +13,16 @@ interface EventLogisticsCardProps {
 export function EventLogisticsCard({ event }: EventLogisticsCardProps) {
   const isOngoing = event.status === EVENT_STATUS.ONGOING;
 
-  /**
-   * BEHAVIORAL MECHANISM:
-   * Renders the sticky left sidebar panel inside motion.aside with slide-in transition.
-   * Includes a Next.js Link CTA button navigating to '/events/[id]/groups'.
-   *
-   * PARAMETERS:
-   * - props (EventLogisticsCardProps): Component props object.
-   *
-   * RETURNS:
-   * - JSX.Element: Logistics metadata panel element.
-   */
   return (
     <motion.aside
       initial={{ opacity: 0, x: -20 }}
       animate={{ opacity: 1, x: 0 }}
       transition={{ duration: 0.4, delay: 0.2, ease: "easeOut" }}
-      className="lg:col-span-4 bg-[#13243b] border border-white/20 rounded-2xl p-6 backdrop-blur-md shadow-xl space-y-6 sticky top-6"
+      className="lg:col-span-4 bg-[#0a0a0a] border border-white/12 rounded-md p-6 shadow-xl space-y-6 sticky top-6"
     >
       <div className="border-b border-white/12 pb-3">
         <h3 className="text-base font-extrabold text-white uppercase tracking-wider flex items-center gap-2">
-          <svg className="w-4 h-4 text-cyan-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <svg className="w-4 h-4 text-[#3be1fe]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
           </svg>
           <span>LOGISTICS &amp; INFO</span>
@@ -75,7 +52,7 @@ export function EventLogisticsCard({ event }: EventLogisticsCardProps) {
           <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">
             GROUP CAPACITY LIMIT
           </span>
-          <span className="text-sm font-bold text-cyan-300">
+          <span className="text-sm font-bold text-[#3be1fe]">
             {event.member_per_groups || 5} Members per Group
           </span>
         </div>
@@ -122,7 +99,7 @@ export function EventLogisticsCard({ event }: EventLogisticsCardProps) {
       <div className="pt-2 space-y-2.5">
         <Link
           href={`/events/${event.id}/groups`}
-          className="w-full py-3.5 bg-white hover:bg-sky-100 text-slate-950 font-bold text-xs uppercase tracking-widest rounded-xl transition-colors cursor-pointer flex items-center justify-center gap-2 shadow-lg"
+          className="w-full py-3 bg-[#3be1fe] hover:bg-[#6ee7fc] text-black font-bold text-xs uppercase tracking-widest rounded-md transition-colors cursor-pointer flex items-center justify-center gap-2 shadow-lg"
         >
           <span>VIEW PITCHING GROUPS</span>
           <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -132,10 +109,10 @@ export function EventLogisticsCard({ event }: EventLogisticsCardProps) {
 
         <Link
           href={`/events/${event.id}/result`}
-          className="w-full py-3.5 bg-cyan-950 hover:bg-cyan-900 text-cyan-300 border border-cyan-500/40 font-bold text-xs uppercase tracking-widest rounded-xl transition-colors cursor-pointer flex items-center justify-center gap-2 shadow-md"
+          className="w-full py-3 bg-[#000000] hover:bg-[#121212] text-[#3be1fe] border border-[#3be1fe]/50 font-bold text-xs uppercase tracking-widest rounded-md transition-colors cursor-pointer flex items-center justify-center gap-2 shadow-md"
         >
           <span>VIEW EVALUATION RESULTS</span>
-          <svg className="w-4 h-4 text-cyan-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <svg className="w-4 h-4 text-[#3be1fe]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 012-2h2a2 2 0 012 2v6m-6 0h10" />
           </svg>
         </Link>

@@ -13,7 +13,7 @@ interface NavItem {
   icon: (props: { className?: string }) => React.ReactNode;
 }
 
-const navItems: NavItem[] = [
+const baseNavItems: NavItem[] = [
   {
     name: "Home",
     href: "/",
@@ -41,6 +41,9 @@ const navItems: NavItem[] = [
       </svg>
     ),
   },
+];
+
+const adminNavItems: NavItem[] = [
   {
     name: "Events Management",
     href: "/events-management",
@@ -64,9 +67,10 @@ const navItems: NavItem[] = [
 
 interface NavigationBarClientProps {
   user?: User | null;
+  isAdmin?: boolean;
 }
 
-export default function NavigationBarClient({ user }: NavigationBarClientProps) {
+export default function NavigationBarClient({ user, isAdmin = false }: NavigationBarClientProps) {
   const pathname = usePathname();
   const { showNotification } = useNotification();
 
@@ -80,11 +84,13 @@ export default function NavigationBarClient({ user }: NavigationBarClientProps) 
     }
   };
 
+  const navItems = isAdmin ? [...baseNavItems, ...adminNavItems] : baseNavItems;
+
   return (
-    <aside className="hidden lg:flex lg:flex-col fixed top-0 left-0 bottom-0 w-64 frost-nav border-r border-white/20 z-30 p-6">
+    <aside className="hidden lg:flex lg:flex-col fixed top-0 left-0 bottom-0 w-64 bg-black border-r border-white/10 z-30 p-6">
       {/* Brand Logo & Name */}
-      <div className="flex items-center gap-3 pb-8 border-b border-white/15">
-        <div className="relative w-10 h-10 rounded-xl bg-[#0f2038] p-1 border border-white/30 flex items-center justify-center">
+      <div className="flex items-center gap-3 pb-8 border-b border-white/10">
+        <div className="relative w-10 h-10 rounded-md bg-[#0a0a0a] p-1 border border-white/20 flex items-center justify-center">
           <Image
             src="/polarbear-logo.png"
             alt="Polar Bear Pitching Logo"
@@ -98,7 +104,7 @@ export default function NavigationBarClient({ user }: NavigationBarClientProps) 
           <h1 className="text-xl font-bold tracking-tight text-white">
             Polar-Spot
           </h1>
-          <p className="text-xs text-sky-200 font-medium">Polar Bear Pitching</p>
+          <p className="text-xs text-[#3be1fe] font-medium">Polar Bear Pitching</p>
         </div>
       </div>
 
@@ -111,29 +117,26 @@ export default function NavigationBarClient({ user }: NavigationBarClientProps) 
             <Link
               key={item.name}
               href={item.href}
-              className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 text-sm font-medium ${
+              className={`flex items-center gap-3 px-4 py-3 rounded-r-md transition-all duration-200 text-sm font-medium ${
                 isActive
-                  ? "bg-white/20 text-white border border-white/40 shadow-[0_0_15px_rgba(255,255,255,0.2)]"
-                  : "text-slate-200 hover:text-white hover:bg-white/10 hover:border hover:border-white/25"
+                  ? "border-l-4 border-[#3be1fe] text-[#3be1fe] translate-x-2 font-bold bg-[#3be1fe]/10"
+                  : "text-slate-300 hover:text-white hover:translate-x-1"
               }`}
             >
-              <Icon className={`w-5 h-5 ${isActive ? "text-white" : "text-slate-300"}`} />
+              <Icon className={`w-5 h-5 ${isActive ? "text-[#3be1fe]" : "text-slate-400"}`} />
               <span>{item.name}</span>
-              {isActive && (
-                <span className="ml-auto w-1.5 h-1.5 rounded-full bg-white shadow-[0_0_8px_#ffffff]" />
-              )}
             </Link>
           );
         })}
       </nav>
 
       {/* Auth Navigation Action Section */}
-      <div className="pt-4 border-t border-white/15 mb-4">
+      <div className="pt-4 border-t border-white/10 mb-4">
         {user ? (
           <button
             onClick={handleLogout}
             type="button"
-            className="w-full text-center py-2.5 px-3 rounded-xl text-xs font-bold uppercase tracking-wider text-red-400 bg-red-950/40 border border-red-500/30 hover:bg-red-900/60 hover:text-white transition-colors cursor-pointer shadow-md flex items-center justify-center gap-2"
+            className="w-full text-center py-2.5 px-3 rounded-md text-xs font-bold uppercase tracking-wider text-red-400 bg-red-950/40 border border-red-500/30 hover:bg-red-900/60 hover:text-white transition-colors cursor-pointer shadow-md flex items-center justify-center gap-2"
           >
             <svg className="w-4 h-4 text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
@@ -144,20 +147,20 @@ export default function NavigationBarClient({ user }: NavigationBarClientProps) 
           <div className="flex items-center gap-2">
             <Link
               href="/login"
-              className={`flex-1 text-center py-2.5 px-3 rounded-xl text-xs font-bold uppercase tracking-wider transition-colors border ${
+              className={`flex-1 text-center py-2.5 px-3 rounded-md text-xs font-bold uppercase tracking-wider transition-colors border ${
                 pathname === "/login"
                   ? "bg-white/20 text-white border-white/40"
-                  : "bg-[#0f2038] text-slate-200 border-white/20 hover:bg-white/10 hover:text-white"
+                  : "bg-[#0a0a0a] text-slate-200 border-white/20 hover:bg-white/10 hover:text-white"
               }`}
             >
               Sign In
             </Link>
             <Link
               href="/sign-up"
-              className={`flex-1 text-center py-2.5 px-3 rounded-xl text-xs font-bold uppercase tracking-wider transition-colors shadow-md ${
+              className={`flex-1 text-center py-2.5 px-3 rounded-md text-xs font-bold uppercase tracking-wider transition-colors shadow-md ${
                 pathname === "/sign-up"
-                  ? "bg-cyan-300 text-slate-950 font-extrabold"
-                  : "bg-white hover:bg-sky-100 text-slate-950"
+                  ? "bg-[#3be1fe] text-slate-950 font-extrabold"
+                  : "bg-[#3be1fe] hover:bg-[#6ee7fc] text-slate-950"
               }`}
             >
               Sign Up
@@ -167,11 +170,11 @@ export default function NavigationBarClient({ user }: NavigationBarClientProps) 
       </div>
 
       {/* Arctic Pitching Info Card */}
-      <div className="p-4 rounded-xl bg-[#0f2038]/90 border border-white/20">
+      <div className="p-4 rounded-md bg-[#0a0a0a] border border-white/12">
         <div className="text-xs text-white font-semibold mb-1">
           Oulu, Finland
         </div>
-        <p className="text-[11px] text-slate-300 leading-relaxed">
+        <p className="text-[11px] text-slate-400 leading-relaxed">
           Home of the freezing ice-hole startup pitches!
         </p>
       </div>

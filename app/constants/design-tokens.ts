@@ -1,41 +1,42 @@
 /**
  * Polar-Spot Design Tokens
- * Grounded in the real Arctic subject of Polar Bear Pitching (Oulu, Finland).
- * Follows frontend-design and design-taste principles.
+ * Grounded in Deep Black navbar (#000000), Charcoal Black page bg (#09090b),
+ * Surface Black cards (#121212), and Cyber Cyan (#3be1fe) theme.
  */
 
 export const colors = {
-  // Subject Colors
-  arcticAbyss: "#070d18",   // Deep Baltic Sea Arctic Night background
-  glacialSlate: "#13243b",  // Elevated surface frost glass
-  frostWhite: "#f8fafc",    // Primary high-contrast text
-  auroraCyan: "#38bdf8",    // Accent for key interactive data
-  iceRim: "rgba(255, 255, 255, 0.18)", // Structural ice borders
+  // Theme Colors
+  deepBlack: "#000000",       // Pure black navbar
+  pageBlack: "#09090b",       // Dark charcoal page background
+  surfaceBlack: "#121212",    // Elevated card surface
+  themeCyan: "#3be1fe",       // Primary cyan theme accent
+  frostWhite: "#f8fafc",      // High contrast text
+  subtleBorder: "rgba(255, 255, 255, 0.12)",
 } as const;
 
 export const tw = {
   bg: {
-    main: "bg-[#070d18]",
-    nav: "bg-[#13243b]/90 backdrop-blur-xl border-r border-white/18",
-    card: "bg-[#13243b]/85 backdrop-blur-md border border-white/18 shadow-xl shadow-black/40",
-    cardHover: "hover:bg-[#1a3150] hover:border-white/45 transition-all duration-300",
-    imageHolder: "bg-[#0a1526] border border-white/20",
-    buttonPrimary: "bg-white text-slate-950 font-bold hover:bg-sky-100 hover:text-slate-900 transition-colors shadow-lg shadow-white/10",
+    main: "bg-[#09090b]",
+    nav: "bg-[#000000] border-r border-white/10",
+    card: "bg-[#121212] border border-white/12 shadow-xl shadow-black",
+    cardHover: "hover:bg-[#18181b] hover:border-[#3be1fe]/50 transition-all duration-300",
+    imageHolder: "bg-[#050505] border border-white/15",
+    buttonPrimary: "bg-[#3be1fe] text-black font-bold hover:bg-[#6ee7fc] transition-colors shadow-md shadow-[#3be1fe]/20",
   },
   border: {
-    ice: "border border-white/18 hover:border-white/45 transition-colors",
+    ice: "border border-white/12 hover:border-[#3be1fe]/50 transition-colors",
   },
   text: {
     heading: "text-white font-black tracking-tight",
     brand: "text-white font-bold",
     primary: "text-slate-100",
-    muted: "text-slate-300",
-    accent: "text-sky-300",
+    muted: "text-slate-400",
+    accent: "text-[#3be1fe]",
   },
   radius: {
-    card: "rounded-2xl",
-    button: "rounded-xl",
-    pill: "rounded-full",
-    avatar: "rounded-2xl",
+    card: "rounded-md",
+    button: "rounded-md",
+    pill: "rounded-sm",
+    avatar: "rounded-md",
   },
 } as const;

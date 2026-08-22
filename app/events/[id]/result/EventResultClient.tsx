@@ -24,10 +24,6 @@ export function EventResultClient({
   const [searchQuery, setSearchQuery] = useState("");
   const [sortOption, setSortOption] = useState<SortOption>("score_desc");
 
-  /**
-   * BEHAVIORAL MECHANISM:
-   * Computes summary metrics for top cards: overall group count, top average score, and unique criteria count.
-   */
   const totalGroupsCount = groupFinalScores.length;
   const topScore = useMemo(() => {
     if (groupFinalScores.length === 0) return 0;
@@ -35,10 +31,6 @@ export function EventResultClient({
     return max;
   }, [groupFinalScores]);
 
-  /**
-   * BEHAVIORAL MECHANISM:
-   * Filters group scores by text search on group_name and applies sorting option.
-   */
   const filteredAndSortedScores = useMemo(() => {
     let list = [...groupFinalScores];
 
@@ -77,12 +69,12 @@ export function EventResultClient({
   return (
     <div className="w-full min-h-screen py-10 px-4 sm:px-6 lg:px-8 space-y-8 select-none text-slate-100 max-w-7xl mx-auto">
       {/* Top Header & Navigation */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-white/15 pb-6">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-white/12 pb-6">
         <div>
           <div className="flex items-center gap-3">
             <Link
               href={event ? `/events/${event.id}` : "/events"}
-              className="p-2 rounded-xl bg-white/10 hover:bg-white/20 border border-white/20 text-slate-300 hover:text-white transition-colors cursor-pointer"
+              className="p-2 rounded-md bg-white/5 hover:bg-white/15 border border-white/15 text-slate-300 hover:text-white transition-colors cursor-pointer"
               title="Back to Event"
             >
               <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -90,7 +82,7 @@ export function EventResultClient({
               </svg>
             </Link>
             <div>
-              <span className="text-[10px] font-bold text-sky-400 uppercase tracking-widest block font-mono">
+              <span className="text-[10px] font-bold text-[#3be1fe] uppercase tracking-widest block font-mono">
                 FINAL SCORE EVALUATION
               </span>
               <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight uppercase">
@@ -102,16 +94,16 @@ export function EventResultClient({
 
         <Link
           href={event ? `/events/${event.id}` : "/events"}
-          className="self-start sm:self-auto px-4 py-2.5 rounded-xl bg-white/15 hover:bg-white/25 border border-white/25 text-xs font-bold text-white uppercase tracking-wider transition-colors"
+          className="self-start sm:self-auto px-4 py-2.5 rounded-md bg-white/10 hover:bg-white/20 border border-white/20 text-xs font-bold text-white uppercase tracking-wider transition-colors"
         >
           VIEW EVENT OVERVIEW
         </Link>
       </div>
 
       {/* Summary Stat Badges */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         {/* Metric 1: Total Groups */}
-        <div className={`${tw.bg.card} p-5 rounded-2xl flex flex-col justify-between`}>
+        <div className={`${tw.bg.card} p-5 rounded-md flex flex-col justify-between`}>
           <span className="text-xs font-mono font-bold text-slate-400 uppercase tracking-wider">
             TOTAL EVALUATED TEAMS
           </span>
@@ -122,33 +114,19 @@ export function EventResultClient({
         </div>
 
         {/* Metric 2: Highest Average Score */}
-        <div className={`${tw.bg.card} p-5 rounded-2xl flex flex-col justify-between`}>
-          <span className="text-xs font-mono font-bold text-sky-300 uppercase tracking-wider">
+        <div className={`${tw.bg.card} p-5 rounded-md flex flex-col justify-between`}>
+          <span className="text-xs font-mono font-bold text-[#3be1fe] uppercase tracking-wider">
             TOP EVALUATION SCORE
           </span>
           <div className="mt-2 flex items-baseline gap-2">
-            <span className="text-3xl font-black text-sky-400">{topScore.toFixed(1)}</span>
+            <span className="text-3xl font-black text-[#3be1fe]">{topScore.toFixed(1)}</span>
             <span className="text-xs text-sky-200">/ 5.0 MAX</span>
-          </div>
-        </div>
-
-        {/* Metric 3: Authenticated User Status */}
-        <div className={`${tw.bg.card} p-5 rounded-2xl flex flex-col justify-between`}>
-          <span className="text-xs font-mono font-bold text-slate-400 uppercase tracking-wider">
-            EVALUATOR SESSION
-          </span>
-          <div className="mt-2 truncate font-semibold text-sm text-slate-200">
-            {user ? (
-              <span className="text-cyan-300 font-bold truncate block">{user.email}</span>
-            ) : (
-              <span className="text-slate-500 italic">ANONYMOUS VIEWER</span>
-            )}
           </div>
         </div>
       </div>
 
       {/* Controls: Search and Sort */}
-      <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4 bg-[#0d1b2e] p-4 rounded-2xl border border-white/15 shadow-md">
+      <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4 bg-[#0a0a0a] p-4 rounded-md border border-white/12 shadow-md">
         {/* Search Bar */}
         <div className="relative flex-1">
           <input
@@ -156,7 +134,7 @@ export function EventResultClient({
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Search group by name..."
-            className="w-full bg-[#070d18] text-white border border-white/18 rounded-xl px-4 py-2.5 text-sm outline-none focus:border-white/50 transition-colors font-mono placeholder:text-slate-500"
+            className="w-full bg-[#000000] text-white border border-white/15 rounded-md px-4 py-2.5 text-sm outline-none focus:border-[#3be1fe]/60 transition-colors font-mono placeholder:text-slate-500"
           />
         </div>
 
@@ -168,7 +146,7 @@ export function EventResultClient({
           <select
             value={sortOption}
             onChange={(e) => setSortOption(e.target.value as SortOption)}
-            className="bg-[#070d18] text-white border border-white/18 rounded-xl px-3 py-2.5 text-xs font-bold font-mono outline-none uppercase cursor-pointer"
+            className="bg-[#000000] text-white border border-white/15 rounded-md px-3 py-2.5 text-xs font-bold font-mono outline-none uppercase cursor-pointer focus:border-[#3be1fe]/60"
           >
             <option value="score_desc">FINAL SCORE (HIGH TO LOW)</option>
             <option value="score_asc">FINAL SCORE (LOW TO HIGH)</option>

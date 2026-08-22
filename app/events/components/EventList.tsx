@@ -5,19 +5,6 @@ import { AnimatePresence, motion } from "framer-motion";
 import { Event } from "@/app/types/event";
 import EventCard from "./EventCard";
 
-/**
- * PURPOSE:
- * Renders the roster list of filtered and sorted events or empty state feedback with Framer Motion AnimatePresence mode popLayout.
- *
- * CONTEXT/PARENT FILE:
- * Subcomponent rendered by app/events/components/EventsClient.tsx.
- *
- * INPUTS / PARAMETERS:
- * - events (Event[], Required): Array of processed event records to render.
- * - getPosterUrl (function, Required): Function resolving public image URLs for event posters.
- * - onResetFilters (function, Required): Callback triggered when user clicks clear filters button.
- */
-
 interface EventListProps {
   events: Event[];
   getPosterUrl: (posterPath: string | null | undefined) => string | null;
@@ -29,32 +16,21 @@ export function EventList({
   getPosterUrl,
   onResetFilters,
 }: EventListProps) {
-  /**
-   * BEHAVIORAL MECHANISM:
-   * Checks if events array contains elements. If empty, renders an animated empty state container with reset CTA.
-   * Otherwise iterates over events array wrapped inside AnimatePresence for animated filtering transitions.
-   *
-   * PARAMETERS:
-   * - props (EventListProps): Component parameters object.
-   *
-   * RETURNS:
-   * - JSX.Element: Animated event list or empty state element.
-   */
   if (events.length === 0) {
     return (
       <motion.div
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
         exit={{ opacity: 0, scale: 0.95 }}
-        className="bg-[#13243b] border border-white/20 rounded-2xl p-12 text-center space-y-3 shadow-xl backdrop-blur-md"
+        className="bg-[#0a0a0a] border border-white/12 rounded-md p-12 text-center space-y-4 shadow-xl"
       >
-        <p className="text-base text-slate-300 font-semibold">
-          No events found matching your active filter criteria.
+        <p className="text-sm text-slate-300 font-semibold font-mono">
+          NO EVENTS FOUND MATCHING ACTIVE FILTER CRITERIA
         </p>
         <button
           type="button"
           onClick={onResetFilters}
-          className="px-4 py-2 rounded-xl bg-white/15 hover:bg-white/25 text-white border border-white/20 text-xs font-bold uppercase tracking-wider transition-colors cursor-pointer"
+          className="px-4 py-2.5 rounded-md bg-[#3be1fe] hover:bg-[#6ee7fc] text-black text-xs font-bold uppercase tracking-wider transition-colors cursor-pointer"
         >
           CLEAR ALL FILTERS
         </button>
@@ -63,7 +39,7 @@ export function EventList({
   }
 
   return (
-    <div className="space-y-6">
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 items-stretch">
       <AnimatePresence mode="popLayout">
         {events.map((event, index) => (
           <EventCard

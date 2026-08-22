@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Plus_Jakarta_Sans, Inter } from "next/font/google";
+import { Roboto } from "next/font/google";
 import "./globals.css";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
@@ -9,17 +9,11 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { LoaderProvider } from "./context/LoaderContext";
 import { NotificationProvider } from "./context/NotificationContext";
 
-const plusJakartaSans = Plus_Jakarta_Sans({
-  variable: "--font-plus-jakarta",
+const roboto = Roboto({
+  variable: "--font-roboto",
   subsets: ["latin"],
   display: "swap",
-  weight: ["400", "500", "600", "700", "800"],
-});
-
-const inter = Inter({
-  variable: "--font-inter",
-  subsets: ["latin"],
-  display: "swap",
+  weight: ["300", "400", "500", "700", "900"],
 });
 
 export const metadata: Metadata = {
@@ -35,9 +29,9 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${plusJakartaSans.variable} ${inter.variable} h-full antialiased font-sans`}
+      className={`${roboto.variable} h-full antialiased font-sans`}
     >
-      <body className="min-h-full flex flex-col polar-snow-bg text-slate-100 selection:bg-cyan-500/30 selection:text-cyan-200 text-base font-sans">
+      <body className="min-h-full flex flex-col polar-snow-bg text-slate-100 selection:bg-[#3be1fe]/30 selection:text-[#3be1fe] text-base font-sans bg-black">
         <NotificationProvider>
           <LoaderProvider>
             <TooltipProvider>

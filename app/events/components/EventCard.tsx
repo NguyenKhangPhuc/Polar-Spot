@@ -7,21 +7,6 @@ import { motion } from "framer-motion";
 import { Event } from "@/app/types/event";
 import { EVENT_STATUS } from "@/app/types/enum";
 
-/**
- * PURPOSE:
- * Renders a single event row card in the events roster list with smooth Framer Motion hover effects and entrance transitions.
- * Displays poster image preserving original aspect ratio (object-contain) with an ambient blur backdrop,
- * event title, status and capacity badges, logistics metadata, short description, and navigation CTA button.
- *
- * CONTEXT/PARENT FILE:
- * Subcomponent rendered by app/events/components/EventList.tsx.
- *
- * INPUTS / PARAMETERS:
- * - event (Event, Required): Single event record.
- * - posterUrl (string | null, Required): Fully qualified public storage URL or direct link for event poster.
- * - index (number, Optional): Row index for staggered animation delays.
- */
-
 interface EventCardProps {
   event: Event;
   posterUrl: string | null;
@@ -35,17 +20,6 @@ export function EventCard({ event, posterUrl, index = 0 }: EventCardProps) {
     event.short_description ||
     "POLAR BEAR PITCHING EVENT";
 
-  /**
-   * BEHAVIORAL MECHANISM:
-   * Maps event object properties into a responsive motion.div row card layout.
-   * Utilizes staggered entry delays based on index and smooth hover lift animations.
-   *
-   * PARAMETERS:
-   * - props (EventCardProps): Component props object.
-   *
-   * RETURNS:
-   * - JSX.Element: Event row card element with Framer Motion animations.
-   */
   return (
     <motion.div
       layout
@@ -53,75 +27,74 @@ export function EventCard({ event, posterUrl, index = 0 }: EventCardProps) {
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, scale: 0.95 }}
       transition={{ duration: 0.35, delay: Math.min(index * 0.05, 0.3), ease: "easeOut" }}
-      whileHover={{ y: -3 }}
-      className="bg-[#13243b] border border-white/20 rounded-2xl p-6 hover:border-white/40 transition-colors flex flex-col md:flex-row gap-6 shadow-xl"
+      whileHover={{ y: -4 }}
+      className="bg-[#121212] border border-white/12 rounded-md p-5 hover:border-[#3be1fe]/50 transition-all duration-300 flex flex-col justify-between shadow-xl group h-full"
     >
-      {/* Event Poster Image Container */}
-      <div className="relative w-full md:w-56 h-48 rounded-xl overflow-hidden bg-[#0a1526] border border-white/18 shrink-0 flex items-center justify-center shadow-md">
-        {posterUrl ? (
-          <>
-            {/* Ambient Blurred Backdrop */}
-            <Image
-              src={posterUrl}
-              alt=""
-              fill
-              unoptimized
-              aria-hidden="true"
-              className="object-cover blur-xl opacity-35 scale-110 pointer-events-none"
-            />
-            {/* Main Poster Image Maintaining Exact Aspect Ratio */}
-            <Image
-              src={posterUrl}
-              alt={eventTitle}
-              fill
-              unoptimized
-              className="object-contain p-2 relative z-10"
-            />
-          </>
-        ) : (
-          <div className="w-full h-full bg-gradient-to-br from-cyan-950 via-[#0a1526] to-sky-950 flex flex-col items-center justify-center p-4 text-center">
-            <svg className="w-10 h-10 text-cyan-400/60 mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-            </svg>
-            <span className="text-xs font-bold text-slate-300 uppercase tracking-wider">
-              NO POSTER
-            </span>
-          </div>
-        )}
-      </div>
-
-      {/* Event Details Content */}
-      <div className="flex-1 flex flex-col justify-between space-y-4">
-        <div className="space-y-3">
-          {/* Top Badges */}
-          <div className="flex flex-wrap items-center gap-2">
-            <span
-              className={`px-3 py-1 rounded-md text-[10px] font-extrabold uppercase tracking-wider border ${
-                isOngoing
-                  ? "bg-emerald-950/80 text-emerald-300 border-emerald-500/40"
-                  : "bg-slate-800 text-slate-300 border-white/15"
-              }`}
-            >
-              {event.status || "STATUS_UNSET"}
-            </span>
-
-            {event.member_per_groups && (
-              <span className="px-3 py-1 rounded-md text-[10px] font-extrabold uppercase tracking-wider bg-cyan-950/80 text-cyan-300 border border-cyan-500/30">
-                MAX {event.member_per_groups} MEMBERS / GROUP
+      <div className="space-y-4">
+        {/* Clean 1-Layer Image Poster Box */}
+        <div className="relative w-full aspect-[16/9] rounded-md overflow-hidden bg-[#050505] border border-white/15 shrink-0 flex items-center justify-center shadow-md">
+          {posterUrl ? (
+            <>
+              {/* Ambient blur backdrop for aspect ratio padding */}
+              <Image
+                src={posterUrl}
+                alt=""
+                fill
+                unoptimized
+                aria-hidden="true"
+                className="object-cover blur-md opacity-25 scale-110 pointer-events-none"
+              />
+              {/* Main Poster Image - fits completely inside container */}
+              <Image
+                src={posterUrl}
+                alt={eventTitle}
+                fill
+                unoptimized
+                className="object-contain p-2 relative z-10 group-hover:scale-105 transition-transform duration-500"
+              />
+            </>
+          ) : (
+            <div className="w-full h-full bg-[#050505] flex flex-col items-center justify-center p-4 text-center">
+              <svg className="w-8 h-8 text-[#3be1fe]/60 mb-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+              </svg>
+              <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider font-mono">
+                NO POSTER
               </span>
-            )}
-          </div>
+            </div>
+          )}
+
+          {/* Status Badge Overlaid Top Right */}
+          <span
+            className={`absolute top-2.5 right-2.5 px-2.5 py-1 rounded-sm text-[9px] font-mono font-black uppercase tracking-wider border shadow-md ${
+              isOngoing
+                ? "bg-emerald-950/90 text-emerald-300 border-emerald-500/50"
+                : "bg-black/90 text-slate-300 border-white/20"
+            }`}
+          >
+            {event.status || "STATUS_UNSET"}
+          </span>
+        </div>
+
+        {/* Event Content Details */}
+        <div className="space-y-2.5">
+          {/* Capacity Badge */}
+          {event.member_per_groups && (
+            <span className="inline-block px-2 py-0.5 rounded-sm text-[9px] font-mono font-bold uppercase tracking-wider bg-[#3be1fe]/10 text-[#3be1fe] border border-[#3be1fe]/30">
+              MAX {event.member_per_groups} MEMBERS / GROUP
+            </span>
+          )}
 
           {/* Event Title */}
-          <h2 className="text-xl sm:text-2xl font-black text-white tracking-tight leading-snug">
+          <h2 className="text-lg font-extrabold text-white tracking-tight leading-snug group-hover:text-[#3be1fe] transition-colors line-clamp-2">
             {eventTitle}
           </h2>
 
-          {/* Metadata Grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs text-slate-300 font-medium">
+          {/* Logistics Metadata */}
+          <div className="space-y-1 text-xs text-slate-300 font-medium pt-1">
             {event.location && (
-              <div className="flex items-center gap-1.5">
-                <svg className="w-4 h-4 text-cyan-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <div className="flex items-center gap-1.5 truncate">
+                <svg className="w-3.5 h-3.5 text-[#3be1fe] shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                 </svg>
@@ -131,49 +104,34 @@ export function EventCard({ event, posterUrl, index = 0 }: EventCardProps) {
 
             {event.organized_date && (
               <div className="flex items-center gap-1.5">
-                <svg className="w-4 h-4 text-cyan-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <svg className="w-3.5 h-3.5 text-[#3be1fe] shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                 </svg>
-                <span>
-                  Organized: {new Date(event.organized_date).toLocaleDateString()}
-                </span>
-              </div>
-            )}
-
-            {(event.start_date || event.end_date) && (
-              <div className="flex items-center gap-1.5 sm:col-span-2 text-slate-400">
-                <svg className="w-4 h-4 text-slate-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-                <span>
-                  {event.start_date ? new Date(event.start_date).toLocaleDateString() : "N/A"}{" "}
-                  - {event.end_date ? new Date(event.end_date).toLocaleDateString() : "N/A"}
-                </span>
+                <span>{new Date(event.organized_date).toLocaleDateString()}</span>
               </div>
             )}
           </div>
-        </div>
 
-        {/* Bottom Section: Short Description & CTA Navigation */}
-        <div className="space-y-4 pt-3 border-t border-white/10">
+          {/* Short Description */}
           {event.short_description && (
-            <p className="text-xs text-slate-400/90 font-normal leading-relaxed line-clamp-3">
+            <p className="text-xs text-slate-400 leading-relaxed line-clamp-3 pt-1">
               {event.short_description}
             </p>
           )}
-
-          <div className="flex justify-end">
-            <Link
-              href={`/events/${event.id}`}
-              className="px-6 py-3 rounded-xl bg-white hover:bg-sky-100 text-slate-950 font-bold text-xs uppercase tracking-widest transition-colors cursor-pointer inline-flex items-center gap-2 shadow-md"
-            >
-              <span>VIEW EVENT DETAILS</span>
-              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M14 5l7 7m0 0l-7 7m7-7H3" />
-              </svg>
-            </Link>
-          </div>
         </div>
+      </div>
+
+      {/* Action Button CTA */}
+      <div className="pt-4 mt-4 border-t border-white/10">
+        <Link
+          href={`/events/${event.id}`}
+          className="w-full py-2.5 rounded-md bg-[#3be1fe] hover:bg-[#6ee7fc] text-black font-bold text-xs uppercase tracking-wider transition-colors cursor-pointer flex items-center justify-center gap-1.5 shadow-md"
+        >
+          <span>VIEW EVENT DETAILS</span>
+          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+          </svg>
+        </Link>
       </div>
     </motion.div>
   );
