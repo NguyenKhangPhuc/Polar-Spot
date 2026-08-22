@@ -1,39 +1,40 @@
 import React from "react";
 import { getSingleEventById } from "@/app/actions/events";
 import { getGroupsByEventId } from "@/app/actions/groups";
+import { createClient } from "@/app/utils/supabase/server";
 import EventGroupsClient from "./components/EventGroupsClient";
 import BackButton from "@/app/components/BackButton";
-
-/**
- * PURPOSE:
- * Server Component for viewing pitching groups registered for a specific event at 'app/events/[id]/groups/page.tsx'.
- * Concurrently fetches event details via getSingleEventById and registered groups (with member profiles) via getGroupsByEventId.
- *
- * CONTEXT/PARENT FILE:
- * Mounted at 'app/events/[id]/groups/page.tsx'.
- *
- * INPUTS / PARAMETERS:
- * - params (Promise<{ id: string }>, Required): Route parameter object containing event UUID.
- */
 
 interface EventGroupsPageProps {
   params: Promise<{ id: string }>;
 }
 
 export default async function EventGroupsPage({ params }: EventGroupsPageProps) {
-  /**
-   * BEHAVIORAL MECHANISM:
-   * Awaits params Promise, concurrently fetches event record and registered groups.
-   * If error occurs or event is missing, renders an Arctic Cyber-Frost 404 error card with a back button.
-   * Otherwise passes resolved event and groups data to EventGroupsClient.
-   *
-   * PARAMETERS:
-   * - props (EventGroupsPageProps): Page props object.
-   *
-   * RETURNS:
-   * - JSX.Element: Rendered EventGroupsClient or error feedback UI.
-   */
   const { id } = await params;
+
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  let userRole: string | null =
+    user?.user_metadata?.role || user?.app_metadata?.role || null;
+
+  if (user && !userRole) {
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("role")
+      .eq("id", user.id)
+      .maybeSingle();
+
+    if (profile && (profile as any).role) {
+      userRole = (profile as any).role;
+    }
+  }
+
+  const roleStr = userRole ? String(userRole).toLowerCase() : "";
+  const canGrade =
+    roleStr === "admin" || roleStr === "judge" || roleStr === "judges";
 
   const [eventRes, groupsRes] = await Promise.all([
     getSingleEventById(id),
@@ -46,26 +47,26 @@ export default async function EventGroupsPage({ params }: EventGroupsPageProps) 
 
   if (serverError || !event) {
     return (
-      <div className="w-full min-h-screen py-10 px-4 sm:px-6 lg:px-8 space-y-8 select-none text-slate-100 font-sans relative flex flex-col items-center justify-center">
-        <div className="bg-[#13243b] border border-red-500/30 rounded-2xl p-8 sm:p-12 max-w-lg w-full text-center space-y-6 shadow-2xl backdrop-blur-md">
-          <div className="w-16 h-16 rounded-2xl bg-red-950/80 border border-red-500/40 text-red-400 flex items-center justify-center mx-auto text-2xl font-black shadow-lg">
+      <div className="w-full min-h-screen py-12 px-6 sm:px-10 lg:px-16 space-y-8 select-none text-slate-100 font-sans relative flex flex-col items-center justify-center max-w-7xl mx-auto">
+        <div className="bg-[#121212] border border-red-500/30 rounded-md p-8 sm:p-12 max-w-lg w-full text-center space-y-6 shadow-2xl backdrop-blur-md">
+          <div className="w-14 h-14 rounded-md bg-red-950/80 border border-red-500/40 text-red-400 flex items-center justify-center mx-auto text-xl font-black font-mono shadow-lg">
             !
           </div>
           <div className="space-y-2">
-            <h2 className="text-2xl font-black text-white tracking-tight">
+            <h2 className="text-2xl font-black text-white tracking-tight font-sans">
               Event Groups Not Found
             </h2>
-            <p className="text-sm text-slate-300 leading-relaxed">
+            <p className="text-sm text-slate-300 leading-relaxed font-mono">
               {serverError || "The event record or registered groups could not be loaded."}
             </p>
           </div>
           <div className="pt-2 flex justify-center">
-            <BackButton />
+            <BackButton href={`/events/${id}`} label="BACK TO EVENT DETAILS" />
           </div>
         </div>
       </div>
     );
   }
 
-  return <EventGroupsClient event={event} groups={groups || []} />;
+  return <EventGroupsClient event={event} groups={groups || []} canGrade={canGrade} />;
 }

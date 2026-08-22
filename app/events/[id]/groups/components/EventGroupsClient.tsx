@@ -1,19 +1,5 @@
 "use client";
 
-/**
- * PURPOSE:
- * Orchestrator client component for the Event Pitching Groups roster portal at app/events/[id]/groups.
- * Manages state for real-time text searching (group name/description) and sorting (created_at date, group name alphabetical),
- * delegating UI rendering to modular subcomponents (HeaderSection, GroupFilterControls, GroupGrid).
- *
- * CONTEXT/PARENT FILE:
- * Rendered by 'app/events/[id]/groups/page.tsx' Server Component.
- *
- * INPUTS / PARAMETERS:
- * - event (Event, Required): Single event record payload.
- * - groups (GroupWithMembersAndEvent[], Required): List of groups registered for this event.
- */
-
 import React, { useState, useMemo } from "react";
 import { Event } from "@/app/types/event";
 import { GroupWithMembersAndEvent } from "@/app/types/groups";
@@ -24,27 +10,16 @@ import GroupGrid from "./GroupGrid";
 interface EventGroupsClientProps {
   event: Event;
   groups: GroupWithMembersAndEvent[];
+  canGrade?: boolean;
 }
 
-export function EventGroupsClient({ event, groups }: EventGroupsClientProps) {
+export function EventGroupsClient({ event, groups, canGrade = false }: EventGroupsClientProps) {
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [sortOrder, setSortOrder] = useState<GroupSortOrder>("newest");
 
-  /**
-   * BEHAVIORAL MECHANISM:
-   * Memoized computation filtering groups by text search query and sorting by created_at timestamp
-   * or alphabetical group_name.
-   *
-   * PARAMETERS:
-   * None.
-   *
-   * RETURNS:
-   * - GroupWithMembersAndEvent[]: Filtered and sorted group records.
-   */
   const processedGroups = useMemo(() => {
     let result = [...groups];
 
-    // 1. Search query filter
     if (searchQuery.trim()) {
       const q = searchQuery.toLowerCase();
       result = result.filter(
@@ -54,7 +29,6 @@ export function EventGroupsClient({ event, groups }: EventGroupsClientProps) {
       );
     }
 
-    // 2. Sort order logic
     result.sort((a, b) => {
       if (sortOrder === "newest" || sortOrder === "oldest") {
         const dateA = new Date(a.created_at || 0).getTime();
@@ -74,29 +48,19 @@ export function EventGroupsClient({ event, groups }: EventGroupsClientProps) {
     return result;
   }, [groups, searchQuery, sortOrder]);
 
-  /**
-   * BEHAVIORAL MECHANISM:
-   * Resets search query string and sort order state back to default values.
-   *
-   * PARAMETERS:
-   * None.
-   *
-   * RETURNS:
-   * - void
-   */
   const handleResetFilters = (): void => {
     setSearchQuery("");
     setSortOrder("newest");
   };
 
   return (
-    <div className="w-full min-h-screen py-10 px-4 sm:px-6 lg:px-8 space-y-8 select-none text-slate-100 font-sans relative">
+    <div className="w-full min-h-screen py-12 px-6 sm:px-10 lg:px-16 space-y-8 select-none text-slate-100 font-sans relative max-w-7xl mx-auto">
       {/* Header Section */}
       <HeaderSection event={event} totalFound={processedGroups.length} />
 
       {/* Main 2-Column Grid Layout */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-start">
-        {/* Left Column: Narrower Sticky Filter Panel (lg:col-span-4) */}
+        {/* Left Column: Filter Control Panel */}
         <GroupFilterControls
           searchQuery={searchQuery}
           setSearchQuery={setSearchQuery}
@@ -105,11 +69,12 @@ export function EventGroupsClient({ event, groups }: EventGroupsClientProps) {
           onResetFilters={handleResetFilters}
         />
 
-        {/* Right Column: 2-Groups-Per-Row Grid (lg:col-span-8) */}
+        {/* Right Column: Groups Grid */}
         <main className="lg:col-span-8">
           <GroupGrid
             groups={processedGroups}
             onResetFilters={handleResetFilters}
+            canGrade={canGrade}
           />
         </main>
       </div>
