@@ -12,18 +12,6 @@ import CreateEventModal from "./components/CreateEventModal";
 
 type SortOrder = "asc" | "desc";
 
-/**
- * PURPOSE:
- * Orchestrator client component for the Events Management dashboard. Coordinates state for events,
- * real-time text searching, status filtering, title sorting, modal toggles, and delegating UI rendering to modular sub-components.
- *
- * CONTEXT/PARENT FILE:
- * Rendered by app/events-management/page.tsx Server Component.
- *
- * INPUTS / PARAMETERS:
- * - initialEvents (Event[], Required): Initial list of events fetched from Supabase server side.
- */
-
 interface EventsManagementClientProps {
   initialEvents: Event[];
 }
@@ -40,21 +28,9 @@ export default function EventsManagementClient({
   const [sortBy, setSortBy] = useState<SortOrder>("asc");
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  /**
-   * BEHAVIORAL MECHANISM:
-   * Computes filtered and sorted events using memoization to avoid unnecessary re-renders.
-   * Applies title/location search filter, status filter, and title sorting.
-   *
-   * PARAMETERS:
-   * None (uses eventsList, searchQuery, statusFilter, sortBy from state).
-   *
-   * RETURNS:
-   * - Event[]: Filtered and sorted list of events.
-   */
   const filteredAndSortedEvents = useMemo(() => {
     let result = [...eventsList];
 
-    // 1. Search filter by title / description / location
     if (searchQuery.trim()) {
       const q = searchQuery.toLowerCase().trim();
       result = result.filter((event) => {
@@ -69,12 +45,10 @@ export default function EventsManagementClient({
       });
     }
 
-    // 2. Status filter
     if (statusFilter) {
       result = result.filter((event) => event.status === statusFilter);
     }
 
-    // 3. Sorting (by short_description or content)
     result.sort((a, b) => {
       const descA = typeof a.short_description === "string" ? a.short_description : "";
       const descB = typeof b.short_description === "string" ? b.short_description : "";
@@ -88,18 +62,6 @@ export default function EventsManagementClient({
     return result;
   }, [eventsList, searchQuery, statusFilter, sortBy]);
 
-  /**
-   * BEHAVIORAL MECHANISM:
-   * Callback invoked when an event's status is updated inline from the EventsTable.
-   * Updates local state and triggers router refresh for server cache sync.
-   *
-   * PARAMETERS:
-   * - eventId (string): Unique identifier of the updated event.
-   * - newStatus (EVENT_STATUS): Newly assigned status.
-   *
-   * RETURNS:
-   * - void
-   */
   const handleStatusUpdated = (eventId: string, newStatus: EVENT_STATUS) => {
     setEventsList((prev) =>
       prev.map((item) =>
@@ -109,24 +71,13 @@ export default function EventsManagementClient({
     router.refresh();
   };
 
-  /**
-   * BEHAVIORAL MECHANISM:
-   * Callback invoked when a new event is created via CreateEventModal.
-   * Prepends the created event to local state list and triggers router refresh.
-   *
-   * PARAMETERS:
-   * - newEvent (Event): Newly created event record.
-   *
-   * RETURNS:
-   * - void
-   */
   const handleEventCreated = (newEvent: Event) => {
     setEventsList((prev) => [newEvent, ...prev]);
     router.refresh();
   };
 
   return (
-    <div className="w-full min-h-screen py-10 px-4 sm:px-6 lg:px-8 space-y-8 select-none text-slate-100">
+    <div className="w-full min-h-screen py-12 px-6 sm:px-10 lg:px-16 space-y-8 select-none text-slate-100 font-sans relative max-w-7xl mx-auto">
       {/* Header Title & Trigger Section */}
       <HeaderSection onOpenModal={() => setIsModalOpen(true)} />
 

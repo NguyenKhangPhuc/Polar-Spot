@@ -6,20 +6,6 @@ import { updateEventStatus } from "../../actions/events";
 import { useLoader } from "../../context/LoaderContext";
 import { useNotification } from "../../context/NotificationContext";
 
-/**
- * PURPOSE:
- * Interactive status dropdown rendered inside events table rows. Allows instant updating of an event's status
- * while triggering global Loader backdrop and Notification toasts.
- *
- * CONTEXT/PARENT FILE:
- * Extracted from app/events-management/EventsManagementClient.tsx to encapsulate status modification logic and server action execution.
- *
- * INPUTS / PARAMETERS:
- * - eventId (string, Required): Unique identifier of the target event.
- * - currentStatus (string | null, Required): Active status value of the event.
- * - onStatusChanged (function, Required): Callback invoked after successful server status update.
- */
-
 interface EventStatusSelectProps {
   eventId: string;
   currentStatus: string | null;
@@ -39,17 +25,6 @@ export function EventStatusSelect({
   );
   const [isUpdating, setIsUpdating] = useState(false);
 
-  /**
-   * BEHAVIORAL MECHANISM:
-   * Triggers updateEventStatus server action when the dropdown selection changes.
-   * Activates global loader, notifies user via toast, and updates local state.
-   *
-   * PARAMETERS:
-   * - e (React.ChangeEvent<HTMLSelectElement>): Dropdown change event.
-   *
-   * RETURNS:
-   * - Promise<void>: Asynchronous update execution.
-   */
   const handleChangeStatus = async (
     e: React.ChangeEvent<HTMLSelectElement>
   ) => {
@@ -62,7 +37,6 @@ export function EventStatusSelect({
       const { data, error } = await updateEventStatus(eventId, newStatus);
 
       if (error || !data) {
-        // Rollback to original status if server update fails
         setSelectedStatus(currentStatus || EVENT_STATUS.ONGOING);
         showNotification(error || "Fail to update event status");
         return;
@@ -82,19 +56,19 @@ export function EventStatusSelect({
   const isOngoing = selectedStatus === EVENT_STATUS.ONGOING;
 
   return (
-    <div className="relative inline-flex items-center">
+    <div className="relative inline-flex items-center font-mono">
       <select
         value={selectedStatus}
         onChange={handleChangeStatus}
         disabled={isUpdating}
-        className={`px-3 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wider outline-none cursor-pointer transition-colors border appearance-none pr-7 ${
+        className={`px-3 py-1.5 rounded-md text-[11px] font-bold uppercase tracking-wider outline-none cursor-pointer transition-colors border appearance-none pr-7 ${
           isOngoing
-            ? "bg-emerald-950/80 text-emerald-300 border-emerald-500/40 hover:bg-emerald-900/80"
-            : "bg-slate-800 text-slate-300 border-slate-600/40 hover:bg-slate-700"
+            ? "bg-emerald-950/90 text-emerald-300 border-emerald-500/50 hover:bg-emerald-900/90"
+            : "bg-[#050505] text-slate-300 border-white/20 hover:bg-white/10"
         } ${isUpdating ? "opacity-50 cursor-wait" : ""}`}
       >
         {Object.entries(EVENT_STATUS).map(([key, val]) => (
-          <option key={key} value={val} className="bg-[#13243b] text-white">
+          <option key={key} value={val} className="bg-[#050505] text-white">
             {key.toUpperCase()}
           </option>
         ))}

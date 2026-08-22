@@ -1,19 +1,5 @@
 "use client";
 
-/**
- * PURPOSE:
- * 2-column pop-up modal component for creating a new event record. Utilizes React Hook Form for client-side
- * input validation (title, short description, logistics) and Plate RichTextEditor for event content.
- *
- * CONTEXT/PARENT FILE:
- * Extracted from app/events-management/EventsManagementClient.tsx to isolate form submission, validation rules, and modal dialog UI.
- *
- * INPUTS / PARAMETERS:
- * - isOpen (boolean, Required): Controls modal visibility.
- * - onClose (function, Required): Callback triggered to close the modal dialog.
- * - onEventCreated (function, Required): Callback invoked when an event is successfully created.
- */
-
 import React, { useState } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { AnimatePresence, motion } from "framer-motion";
@@ -73,17 +59,6 @@ export function CreateEventModal({
     },
   });
 
-  /**
-   * BEHAVIORAL MECHANISM:
-   * Validates form fields, triggers global loader, submits payload to createEvent server action,
-   * shows success/error notification toasts, and updates parent state upon success.
-   *
-   * PARAMETERS:
-   * - formData (CreateEventFormValues): Validated form data payload.
-   *
-   * RETURNS:
-   * - Promise<void>: Asynchronous submission handler.
-   */
   const onFormSubmit = async (formData: CreateEventFormValues) => {
     setIsSubmitting(true);
     setSubmitError(null);
@@ -128,16 +103,16 @@ export function CreateEventModal({
   return (
     <AnimatePresence>
       {isOpen && (
-        <div className="fixed inset-0 top-16 lg:top-0 lg:left-64 z-30 overflow-y-auto bg-slate-950/85 backdrop-blur-md p-4 sm:p-6 lg:p-8 flex items-center justify-center min-h-[calc(100vh-4rem)] lg:min-h-screen">
+        <div className="fixed inset-0 top-16 lg:top-0 lg:left-64 z-30 overflow-y-auto bg-black/85 backdrop-blur-md p-4 sm:p-6 lg:p-8 flex items-center justify-center min-h-[calc(100vh-4rem)] lg:min-h-screen">
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.95 }}
-            className="relative my-auto w-full max-w-7xl bg-[#13243b] border border-white/25 rounded-2xl p-6 sm:p-8 space-y-6 shadow-2xl shadow-black/90 max-h-[85vh] overflow-y-auto text-slate-100"
+            className="relative my-auto w-full max-w-7xl bg-[#121212] border border-white/15 rounded-md p-6 sm:p-8 space-y-6 shadow-2xl max-h-[85vh] overflow-y-auto text-slate-100"
           >
             {/* Modal Header */}
-            <div className="flex items-center justify-between border-b border-white/15 pb-4">
-              <h2 className="text-2xl font-black text-white uppercase tracking-tight">
+            <div className="flex items-center justify-between border-b border-white/12 pb-4">
+              <h2 className="text-xl sm:text-2xl font-black text-white uppercase tracking-tight font-sans">
                 CREATE NEW EVENT
               </h2>
               <button
@@ -153,13 +128,13 @@ export function CreateEventModal({
 
             {/* Submission Error Banner */}
             {submitError && (
-              <div className="p-4 rounded-xl bg-red-950/80 border border-red-500/40 text-red-300 text-sm font-semibold">
+              <div className="p-4 rounded-md bg-red-950/80 border border-red-500/40 text-red-300 text-xs font-mono font-semibold">
                 [ERROR]: {submitError}
               </div>
             )}
 
             {/* Form using react-hook-form in 2 Columns */}
-            <form onSubmit={handleSubmit(onFormSubmit)} className="space-y-6">
+            <form onSubmit={handleSubmit(onFormSubmit)} className="space-y-6 font-mono text-xs">
               <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
                 
                 {/* Left Column (lg:col-span-5): Title, Short Description Textarea & Logistics */}
@@ -167,8 +142,8 @@ export function CreateEventModal({
                   
                   {/* Field 1: Event Title */}
                   <div className="flex flex-col gap-1.5">
-                    <label className="text-xs sm:text-sm font-semibold text-slate-200 uppercase tracking-wider">
-                      EVENT TITLE <span className="text-red-400">*</span>
+                    <label className="text-xs font-bold text-slate-200 uppercase tracking-wider">
+                      EVENT TITLE <span className="text-[#3be1fe]">*</span>
                     </label>
                     <input
                       {...register("title", {
@@ -176,10 +151,10 @@ export function CreateEventModal({
                       })}
                       type="text"
                       placeholder="e.g. Polar Bear Pitching Main Stage 2026"
-                      className={`bg-[#0a1526] text-white border text-sm sm:text-base p-3.5 rounded-xl w-full outline-none transition-colors ${
+                      className={`bg-[#050505] text-white border text-xs p-3.5 rounded-md w-full outline-none transition-colors ${
                         errors.title
                           ? "border-red-500/70 focus:border-red-400"
-                          : "border-white/15 focus:border-white/50"
+                          : "border-white/15 focus:border-[#3be1fe]/70"
                       }`}
                     />
                     {errors.title && (
@@ -189,21 +164,21 @@ export function CreateEventModal({
                     )}
                   </div>
 
-                  {/* Field 2: Short Description (Textarea) */}
+                  {/* Field 2: Short Description Textarea */}
                   <div className="flex flex-col gap-1.5">
-                    <label className="text-xs sm:text-sm font-semibold text-slate-200 uppercase tracking-wider">
-                      SHORT DESCRIPTION <span className="text-red-400">*</span>
+                    <label className="text-xs font-bold text-slate-200 uppercase tracking-wider">
+                      SHORT DESCRIPTION SUMMARY <span className="text-[#3be1fe]">*</span>
                     </label>
                     <textarea
                       {...register("short_description", {
                         required: "Short description is required",
                       })}
                       rows={3}
-                      placeholder="Write a brief overview of the pitching event..."
-                      className={`bg-[#0a1526] text-white border text-sm sm:text-base p-3.5 rounded-xl w-full outline-none transition-colors resize-none ${
+                      placeholder="Brief overview summary displayed on cards..."
+                      className={`bg-[#050505] text-white border text-xs p-3.5 rounded-md w-full outline-none transition-colors resize-none ${
                         errors.short_description
                           ? "border-red-500/70 focus:border-red-400"
-                          : "border-white/15 focus:border-white/50"
+                          : "border-white/15 focus:border-[#3be1fe]/70"
                       }`}
                     />
                     {errors.short_description && (
@@ -213,53 +188,41 @@ export function CreateEventModal({
                     )}
                   </div>
 
-                  {/* Status & Max Members */}
+                  {/* Logistics Row 1: Status Select & Member Limit */}
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    {/* Status Dropdown */}
+                    {/* Status Select */}
                     <div className="flex flex-col gap-1.5">
-                      <label className="text-xs sm:text-sm font-semibold text-slate-200 uppercase tracking-wider">
-                        EVENT STATUS <span className="text-red-400">*</span>
+                      <label className="text-xs font-bold text-slate-200 uppercase tracking-wider">
+                        INITIAL STATUS <span className="text-[#3be1fe]">*</span>
                       </label>
                       <select
-                        {...register("status", {
-                          required: "Event status is required",
-                        })}
-                        className={`bg-[#0a1526] text-white border text-sm sm:text-base p-3.5 rounded-xl w-full outline-none transition-colors uppercase ${
-                          errors.status
-                            ? "border-red-500/70 focus:border-red-400"
-                            : "border-white/15 focus:border-white/50"
-                        }`}
+                        {...register("status")}
+                        className="bg-[#050505] text-white border border-white/15 text-xs p-3.5 rounded-md w-full outline-none focus:border-[#3be1fe]/70 transition-colors uppercase cursor-pointer"
                       >
                         {Object.entries(EVENT_STATUS).map(([key, val]) => (
-                          <option key={key} value={val}>
-                            {key.toUpperCase()} ({val})
+                          <option key={key} value={val} className="bg-[#050505] text-white">
+                            {key.toUpperCase()}
                           </option>
                         ))}
                       </select>
-                      {errors.status && (
-                        <span className="text-xs text-red-400 font-medium mt-0.5">
-                          {errors.status.message}
-                        </span>
-                      )}
                     </div>
 
-                    {/* Max Members Per Group */}
+                    {/* Member Limit */}
                     <div className="flex flex-col gap-1.5">
-                      <label className="text-xs sm:text-sm font-semibold text-slate-200 uppercase tracking-wider">
-                        MEMBERS / GROUP <span className="text-red-400">*</span>
+                      <label className="text-xs font-bold text-slate-200 uppercase tracking-wider">
+                        MEMBERS / GROUP <span className="text-[#3be1fe]">*</span>
                       </label>
                       <input
                         {...register("member_per_groups", {
-                          required: "Members per group is required",
-                          valueAsNumber: true,
-                          min: { value: 1, message: "Minimum 1 member required" },
+                          required: "Capacity is required",
+                          min: { value: 1, message: "Minimum 1 member" },
                         })}
                         type="number"
-                        placeholder="e.g. 5"
-                        className={`bg-[#0a1526] text-white border text-sm sm:text-base p-3.5 rounded-xl w-full outline-none transition-colors ${
+                        placeholder="5"
+                        className={`bg-[#050505] text-white border text-xs p-3.5 rounded-md w-full outline-none transition-colors ${
                           errors.member_per_groups
                             ? "border-red-500/70 focus:border-red-400"
-                            : "border-white/15 focus:border-white/50"
+                            : "border-white/15 focus:border-[#3be1fe]/70"
                         }`}
                       />
                       {errors.member_per_groups && (
@@ -270,21 +233,21 @@ export function CreateEventModal({
                     </div>
                   </div>
 
-                  {/* Location */}
+                  {/* Location Input */}
                   <div className="flex flex-col gap-1.5">
-                    <label className="text-xs sm:text-sm font-semibold text-slate-200 uppercase tracking-wider">
-                      LOCATION <span className="text-red-400">*</span>
+                    <label className="text-xs font-bold text-slate-200 uppercase tracking-wider">
+                      LOCATION / STAGE NODE <span className="text-[#3be1fe]">*</span>
                     </label>
                     <input
                       {...register("location", {
-                        required: "Event location is required",
+                        required: "Location is required",
                       })}
                       type="text"
-                      placeholder="e.g. Oulu Harbor Ice-Hole Stage, Finland"
-                      className={`bg-[#0a1526] text-white border text-sm sm:text-base p-3.5 rounded-xl w-full outline-none transition-colors ${
+                      placeholder="e.g. Oulu Market Square Ice Hole, Finland"
+                      className={`bg-[#050505] text-white border text-xs p-3.5 rounded-md w-full outline-none transition-colors ${
                         errors.location
                           ? "border-red-500/70 focus:border-red-400"
-                          : "border-white/15 focus:border-white/50"
+                          : "border-white/15 focus:border-[#3be1fe]/70"
                       }`}
                     />
                     {errors.location && (
@@ -294,21 +257,21 @@ export function CreateEventModal({
                     )}
                   </div>
 
-                  {/* Start Date & End Date */}
+                  {/* Dates Grid: Start & End Date */}
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div className="flex flex-col gap-1.5">
-                      <label className="text-xs sm:text-sm font-semibold text-slate-200 uppercase tracking-wider">
-                        START DATE <span className="text-red-400">*</span>
+                      <label className="text-xs font-bold text-slate-200 uppercase tracking-wider">
+                        START DATE <span className="text-[#3be1fe]">*</span>
                       </label>
                       <input
                         {...register("start_date", {
                           required: "Start date is required",
                         })}
                         type="date"
-                        className={`bg-[#0a1526] text-white border text-sm sm:text-base p-3 rounded-xl w-full outline-none transition-colors ${
+                        className={`bg-[#050505] text-white border text-xs p-3 rounded-md w-full outline-none transition-colors ${
                           errors.start_date
                             ? "border-red-500/70 focus:border-red-400"
-                            : "border-white/15 focus:border-white/50"
+                            : "border-white/15 focus:border-[#3be1fe]/70"
                         }`}
                       />
                       {errors.start_date && (
@@ -319,18 +282,18 @@ export function CreateEventModal({
                     </div>
 
                     <div className="flex flex-col gap-1.5">
-                      <label className="text-xs sm:text-sm font-semibold text-slate-200 uppercase tracking-wider">
-                        END DATE <span className="text-red-400">*</span>
+                      <label className="text-xs font-bold text-slate-200 uppercase tracking-wider">
+                        END DATE <span className="text-[#3be1fe]">*</span>
                       </label>
                       <input
                         {...register("end_date", {
                           required: "End date is required",
                         })}
                         type="date"
-                        className={`bg-[#0a1526] text-white border text-sm sm:text-base p-3 rounded-xl w-full outline-none transition-colors ${
+                        className={`bg-[#050505] text-white border text-xs p-3 rounded-md w-full outline-none transition-colors ${
                           errors.end_date
                             ? "border-red-500/70 focus:border-red-400"
-                            : "border-white/15 focus:border-white/50"
+                            : "border-white/15 focus:border-[#3be1fe]/70"
                         }`}
                       />
                       {errors.end_date && (
@@ -343,18 +306,18 @@ export function CreateEventModal({
 
                   {/* Organized Date */}
                   <div className="flex flex-col gap-1.5">
-                    <label className="text-xs sm:text-sm font-semibold text-slate-200 uppercase tracking-wider">
-                      ORGANIZED DATE &amp; TIME <span className="text-red-400">*</span>
+                    <label className="text-xs font-bold text-slate-200 uppercase tracking-wider">
+                      ORGANIZED DATE &amp; TIME <span className="text-[#3be1fe]">*</span>
                     </label>
                     <input
                       {...register("organized_date", {
                         required: "Organized date & time is required",
                       })}
                       type="datetime-local"
-                      className={`bg-[#0a1526] text-white border text-sm sm:text-base p-3.5 rounded-xl w-full outline-none transition-colors ${
+                      className={`bg-[#050505] text-white border text-xs p-3.5 rounded-md w-full outline-none transition-colors ${
                         errors.organized_date
                           ? "border-red-500/70 focus:border-red-400"
-                          : "border-white/15 focus:border-white/50"
+                          : "border-white/15 focus:border-[#3be1fe]/70"
                       }`}
                     />
                     {errors.organized_date && (
@@ -367,8 +330,8 @@ export function CreateEventModal({
 
                 {/* Right Column (lg:col-span-7): Plate Rich Text Editor for Content */}
                 <div className="lg:col-span-7 flex flex-col gap-1.5">
-                  <label className="text-xs sm:text-sm font-semibold text-slate-200 uppercase tracking-wider">
-                    EVENT CONTENT (RICH TEXT DETAILS) <span className="text-red-400">*</span>
+                  <label className="text-xs font-bold text-slate-200 uppercase tracking-wider">
+                    EVENT CONTENT (RICH TEXT DETAILS) <span className="text-[#3be1fe]">*</span>
                   </label>
                   <Controller
                     name="content"
@@ -399,18 +362,18 @@ export function CreateEventModal({
               </div>
 
               {/* Form Action Buttons */}
-              <div className="pt-4 flex items-center justify-end gap-3 border-t border-white/15">
+              <div className="pt-4 flex items-center justify-end gap-3 border-t border-white/12">
                 <button
                   type="button"
                   onClick={onClose}
-                  className="px-5 py-3 rounded-xl text-sm font-semibold text-slate-300 hover:text-white border border-white/15 hover:bg-white/10 uppercase transition-colors cursor-pointer"
+                  className="px-5 py-2.5 rounded-md text-xs font-mono font-bold text-slate-300 hover:text-white border border-white/15 hover:bg-white/10 uppercase transition-colors cursor-pointer"
                 >
                   CANCEL
                 </button>
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="px-6 py-3 rounded-xl text-sm font-bold text-slate-950 bg-white hover:bg-sky-100 uppercase transition-colors disabled:opacity-50 cursor-pointer"
+                  className="px-6 py-2.5 rounded-md text-xs font-mono font-bold text-black bg-[#3be1fe] hover:bg-[#6ee7fc] uppercase transition-colors disabled:opacity-50 cursor-pointer shadow-md"
                 >
                   {isSubmitting ? "CREATING..." : "CONFIRM & CREATE"}
                 </button>
