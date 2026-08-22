@@ -14,6 +14,7 @@ import GroupsTable from "./components/GroupsTable";
 import CreateGroupModal from "./components/CreateGroupModal";
 import EditGroupModal from "./components/EditGroupModal";
 import AddMemberModal from "./components/AddMemberModal";
+import EditMemberModal from "./components/EditMemberModal";
 
 type SortOrder = "asc" | "desc";
 
@@ -53,6 +54,7 @@ export default function GroupManagementClient({
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [editingGroup, setEditingGroup] = useState<GroupWithMembersAndEvent | null>(null);
   const [addMemberGroup, setAddMemberGroup] = useState<GroupWithMembersAndEvent | null>(null);
+  const [editingMember, setEditingMember] = useState<GroupMember | null>(null);
 
   /**
    * BEHAVIORAL MECHANISM:
@@ -181,6 +183,23 @@ export default function GroupManagementClient({
     router.refresh();
   };
 
+  const handleMemberUpdated = (updatedMemberRecord: GroupMember) => {
+    setGroupsList((prev) =>
+      prev.map((g) => {
+        if (g.id === updatedMemberRecord.group_id) {
+          return {
+            ...g,
+            group_members: g.group_members.map((m) =>
+              m.id === updatedMemberRecord.id ? updatedMemberRecord : m
+            ),
+          };
+        }
+        return g;
+      })
+    );
+    router.refresh();
+  };
+
   /**
    * BEHAVIORAL MECHANISM:
    * Callback invoked when a group is created or updated via modal dialogs.
@@ -219,6 +238,7 @@ export default function GroupManagementClient({
         groups={filteredAndSortedGroups}
         onOpenEditModal={(group) => setEditingGroup(group)}
         onOpenAddMemberModal={(group) => setAddMemberGroup(group)}
+        onOpenEditMemberModal={(member) => setEditingMember(member)}
         onDeleteGroup={handleDeleteGroup}
         onMemberRemoved={handleMemberRemoved}
       />
@@ -246,6 +266,14 @@ export default function GroupManagementClient({
         isOpen={Boolean(addMemberGroup)}
         onClose={() => setAddMemberGroup(null)}
         onMemberAdded={handleMemberAdded}
+      />
+
+      {/* Edit Member Modal */}
+      <EditMemberModal
+        member={editingMember}
+        isOpen={Boolean(editingMember)}
+        onClose={() => setEditingMember(null)}
+        onMemberUpdated={handleMemberUpdated}
       />
     </div>
   );

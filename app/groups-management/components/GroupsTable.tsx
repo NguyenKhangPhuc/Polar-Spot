@@ -20,7 +20,7 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
-import { GroupWithMembersAndEvent } from "../../types/groups";
+import { GroupWithMembersAndEvent, GroupMember } from "../../types/groups";
 import { deleteGroupMember } from "../../actions/group_members";
 import { useLoader } from "../../context/LoaderContext";
 import { useNotification } from "../../context/NotificationContext";
@@ -29,6 +29,7 @@ interface GroupsTableProps {
   groups: GroupWithMembersAndEvent[];
   onOpenEditModal: (group: GroupWithMembersAndEvent) => void;
   onOpenAddMemberModal: (group: GroupWithMembersAndEvent) => void;
+  onOpenEditMemberModal?: (member: GroupMember) => void;
   onDeleteGroup: (groupId: string) => void;
   onMemberRemoved: (groupId: string, memberRecordId: string) => void;
 }
@@ -37,6 +38,7 @@ export function GroupsTable({
   groups,
   onOpenEditModal,
   onOpenAddMemberModal,
+  onOpenEditMemberModal,
   onDeleteGroup,
   onMemberRemoved,
 }: GroupsTableProps) {
@@ -275,16 +277,30 @@ export function GroupsTable({
                                           {emailStr}
                                         </span>
                                       </div>
-                                      <button
-                                        type="button"
-                                        onClick={(e) => {
-                                          e.stopPropagation();
-                                          handleRemoveMember(group.id, member.id);
-                                        }}
-                                        className="px-3 py-1.5 bg-red-950/70 border border-red-500/40 hover:bg-red-900/90 text-red-300 text-xs uppercase font-bold tracking-wider rounded-xl transition-colors cursor-pointer shrink-0"
-                                      >
-                                        REMOVE
-                                      </button>
+                                      <div className="flex items-center gap-2 shrink-0">
+                                        {onOpenEditMemberModal && (
+                                          <button
+                                            type="button"
+                                            onClick={(e) => {
+                                              e.stopPropagation();
+                                              onOpenEditMemberModal(member);
+                                            }}
+                                            className="px-3 py-1.5 bg-white/15 hover:bg-white/30 text-white border border-white/25 text-xs font-bold uppercase tracking-wider rounded-xl transition-colors cursor-pointer"
+                                          >
+                                            EDIT
+                                          </button>
+                                        )}
+                                        <button
+                                          type="button"
+                                          onClick={(e) => {
+                                            e.stopPropagation();
+                                            handleRemoveMember(group.id, member.id);
+                                          }}
+                                          className="px-3 py-1.5 bg-red-950/70 border border-red-500/40 hover:bg-red-900/90 text-red-300 text-xs uppercase font-bold tracking-wider rounded-xl transition-colors cursor-pointer shrink-0"
+                                        >
+                                          REMOVE
+                                        </button>
+                                      </div>
                                     </div>
                                   );
                                 })}

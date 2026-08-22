@@ -57,7 +57,7 @@ export function SingleEventClient({ event }: SingleEventClientProps) {
   return (
     <div className="w-full min-h-screen py-10 px-4 sm:px-6 lg:px-8 space-y-8 select-none text-slate-100 font-sans relative">
       {/* Top Navigation Bar */}
-      <TopNavigationBar />
+      <TopNavigationBar eventId={event.id} />
 
       {/* Hero Banner (w-full) - Standalone First Component with Overlaid Title */}
       <HeroBanner event={event} posterUrl={posterUrl} />

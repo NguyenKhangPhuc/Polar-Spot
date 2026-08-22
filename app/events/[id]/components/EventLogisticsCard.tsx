@@ -118,8 +118,8 @@ export function EventLogisticsCard({ event }: EventLogisticsCardProps) {
         )}
       </div>
 
-      {/* Navigation Button to Event Pitching Groups Roster */}
-      <div className="pt-2">
+      {/* Navigation Buttons */}
+      <div className="pt-2 space-y-2.5">
         <Link
           href={`/events/${event.id}/groups`}
           className="w-full py-3.5 bg-white hover:bg-sky-100 text-slate-950 font-bold text-xs uppercase tracking-widest rounded-xl transition-colors cursor-pointer flex items-center justify-center gap-2 shadow-lg"
@@ -127,6 +127,16 @@ export function EventLogisticsCard({ event }: EventLogisticsCardProps) {
           <span>VIEW PITCHING GROUPS</span>
           <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+          </svg>
+        </Link>
+
+        <Link
+          href={`/events/${event.id}/result`}
+          className="w-full py-3.5 bg-cyan-950 hover:bg-cyan-900 text-cyan-300 border border-cyan-500/40 font-bold text-xs uppercase tracking-widest rounded-xl transition-colors cursor-pointer flex items-center justify-center gap-2 shadow-md"
+        >
+          <span>VIEW EVALUATION RESULTS</span>
+          <svg className="w-4 h-4 text-cyan-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 012-2h2a2 2 0 012 2v6m-6 0h10" />
           </svg>
         </Link>
       </div>

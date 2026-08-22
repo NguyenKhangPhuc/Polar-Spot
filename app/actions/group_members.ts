@@ -77,3 +77,38 @@ export async function addGroupMember(groupMember: GroupMemberInsert) {
     return { data: data as GroupMember, error: null };
 }
 
+/**
+ * PURPOSE:
+ * Updates a group member record's member_name and member_email.
+ *
+ * CONTEXT/PARENT FILE:
+ * Called by EditMemberModal component inside app/groups-management/components/EditMemberModal.tsx.
+ *
+ * INPUTS / PARAMETERS:
+ * - groupMemberId (string, Required): Unique identifier of the target group_members record.
+ * - memberName (string, Required): Updated full name of member.
+ * - memberEmail (string, Required): Updated email address of member.
+ */
+export async function updateGroupMember(groupMemberId: string, memberName: string, memberEmail: string) {
+    const supabase = await createClient();
+    const sanitizedEmail = memberEmail.toLowerCase().trim();
+    const sanitizedName = memberName.trim();
+
+    const { data: updatedMember, error } = await supabase
+        .from('group_members')
+        .update({
+            member_name: sanitizedName,
+            member_email: sanitizedEmail,
+        })
+        .eq('id', groupMemberId)
+        .select()
+        .single();
+
+    if (error || !updatedMember) {
+        console.log(error);
+        return { data: null, error: "Fail to update group member" };
+    }
+
+    return { data: updatedMember as GroupMember, error: null };
+}
+
