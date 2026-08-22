@@ -9,22 +9,6 @@ import { updateGroup } from "../../actions/groups";
 import { useLoader } from "../../context/LoaderContext";
 import { useNotification } from "../../context/NotificationContext";
 
-/**
- * PURPOSE:
- * Pop-up modal dialog for editing an existing group record. Uses an independent react-hook-form instance
- * and populates initial values via reset() when a group is selected for editing, integrated with global Loader and Notification feedback.
- *
- * CONTEXT/PARENT FILE:
- * Extracted from app/groups-management/GroupManagementClient.tsx to encapsulate group modification logic and modal UI.
- *
- * INPUTS / PARAMETERS:
- * - group (GroupWithMembersAndEvent | null, Required): Target group selected for editing.
- * - isOpen (boolean, Required): Controls modal visibility.
- * - onClose (function, Required): Callback to close modal dialog.
- * - eventsList (Event[], Required): Array of events for event_id selection.
- * - onGroupUpdated (function, Required): Callback invoked when group is successfully updated.
- */
-
 interface EditGroupFormValues {
   group_name: string;
   event_id: string;
@@ -59,7 +43,6 @@ export function EditGroupModal({
     formState: { errors },
   } = useForm<EditGroupFormValues>();
 
-  // Pre-fill form values using reset() whenever the active group changes
   useEffect(() => {
     if (group) {
       reset({
@@ -70,17 +53,6 @@ export function EditGroupModal({
     }
   }, [group, reset, eventsList]);
 
-  /**
-   * BEHAVIORAL MECHANISM:
-   * Submits form payload to updateGroup server action.
-   * Displays global loader backdrop, notifies user via toast, and updates parent state upon success.
-   *
-   * PARAMETERS:
-   * - formData (EditGroupFormValues): Validated form data.
-   *
-   * RETURNS:
-   * - Promise<void>: Asynchronous update handling.
-   */
   const onFormSubmit = async (formData: EditGroupFormValues) => {
     if (!group) return;
 
@@ -134,16 +106,16 @@ export function EditGroupModal({
   return (
     <AnimatePresence>
       {isOpen && group && (
-        <div className="fixed inset-0 top-16 lg:top-0 lg:left-64 z-30 overflow-y-auto bg-slate-950/85 backdrop-blur-md p-4 sm:p-6 lg:p-8 flex items-center justify-center min-h-[calc(100vh-4rem)] lg:min-h-screen">
+        <div className="fixed inset-0 top-16 lg:top-0 lg:left-64 z-30 overflow-y-auto bg-black/85 backdrop-blur-md p-4 sm:p-6 lg:p-8 flex items-center justify-center min-h-[calc(100vh-4rem)] lg:min-h-screen">
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.95 }}
-            className="relative my-auto w-full max-w-xl bg-[#13243b] border border-white/25 rounded-2xl p-6 sm:p-8 space-y-6 shadow-2xl shadow-black/90 text-slate-100"
+            className="relative my-auto w-full max-w-xl bg-[#121212] border border-white/15 rounded-md p-6 sm:p-8 space-y-6 shadow-2xl text-slate-100 font-mono text-xs"
           >
             {/* Modal Header */}
-            <div className="flex items-center justify-between border-b border-white/15 pb-4">
-              <h2 className="text-2xl font-black text-white uppercase tracking-tight">
+            <div className="flex items-center justify-between border-b border-white/12 pb-4">
+              <h2 className="text-xl sm:text-2xl font-black text-white uppercase tracking-tight font-sans">
                 EDIT GROUP DETAILS
               </h2>
               <button
@@ -159,7 +131,7 @@ export function EditGroupModal({
 
             {/* Submission Error Banner */}
             {submitError && (
-              <div className="p-4 rounded-xl bg-red-950/80 border border-red-500/40 text-red-300 text-sm font-semibold">
+              <div className="p-4 rounded-md bg-red-950/80 border border-red-500/40 text-red-300 text-xs font-semibold">
                 [ERROR]: {submitError}
               </div>
             )}
@@ -168,8 +140,8 @@ export function EditGroupModal({
             <form onSubmit={handleSubmit(onFormSubmit)} className="space-y-4">
               {/* Field 1: Group Name */}
               <div className="flex flex-col gap-1.5">
-                <label className="text-xs sm:text-sm font-semibold text-slate-200 uppercase tracking-wider">
-                  GROUP NAME <span className="text-red-400">*</span>
+                <label className="text-xs font-bold text-slate-200 uppercase tracking-wider">
+                  GROUP NAME <span className="text-[#3be1fe]">*</span>
                 </label>
                 <input
                   {...register("group_name", {
@@ -177,10 +149,10 @@ export function EditGroupModal({
                   })}
                   type="text"
                   placeholder="e.g. Arctic Ice Pitchers"
-                  className={`bg-[#0a1526] text-white border text-sm sm:text-base p-3.5 rounded-xl w-full outline-none transition-colors ${
+                  className={`bg-[#050505] text-white border text-xs p-3.5 rounded-md w-full outline-none transition-colors ${
                     errors.group_name
                       ? "border-red-500/70 focus:border-red-400"
-                      : "border-white/15 focus:border-white/50"
+                      : "border-white/15 focus:border-[#3be1fe]/70"
                   }`}
                 />
                 {errors.group_name && (
@@ -192,22 +164,22 @@ export function EditGroupModal({
 
               {/* Field 2: Target Event Selector */}
               <div className="flex flex-col gap-1.5">
-                <label className="text-xs sm:text-sm font-semibold text-slate-200 uppercase tracking-wider">
-                  TARGET EVENT <span className="text-red-400">*</span>
+                <label className="text-xs font-bold text-slate-200 uppercase tracking-wider">
+                  TARGET EVENT <span className="text-[#3be1fe]">*</span>
                 </label>
                 <select
                   {...register("event_id", {
                     required: "Please select an event for this group",
                   })}
-                  className={`bg-[#0a1526] text-white border text-sm sm:text-base p-3.5 rounded-xl w-full outline-none transition-colors uppercase ${
+                  className={`bg-[#050505] text-white border text-xs p-3.5 rounded-md w-full outline-none transition-colors uppercase ${
                     errors.event_id
                       ? "border-red-500/70 focus:border-red-400"
-                      : "border-white/15 focus:border-white/50"
+                      : "border-white/15 focus:border-[#3be1fe]/70"
                   }`}
                 >
-                  <option value="">-- SELECT TARGET EVENT --</option>
+                  <option value="" className="bg-[#050505] text-slate-400">-- SELECT TARGET EVENT --</option>
                   {eventsList.map((evt) => (
-                    <option key={evt.id} value={evt.id}>
+                    <option key={evt.id} value={evt.id} className="bg-[#050505] text-white">
                       {evt.short_description || evt.location || evt.id}
                     </option>
                   ))}
@@ -221,8 +193,8 @@ export function EditGroupModal({
 
               {/* Field 3: Short Description */}
               <div className="flex flex-col gap-1.5">
-                <label className="text-xs sm:text-sm font-semibold text-slate-200 uppercase tracking-wider">
-                  SHORT DESCRIPTION <span className="text-red-400">*</span>
+                <label className="text-xs font-bold text-slate-200 uppercase tracking-wider">
+                  SHORT DESCRIPTION <span className="text-[#3be1fe]">*</span>
                 </label>
                 <textarea
                   {...register("short_description", {
@@ -230,10 +202,10 @@ export function EditGroupModal({
                   })}
                   rows={3}
                   placeholder="Describe the group's startup project, goals, or pitching category..."
-                  className={`bg-[#0a1526] text-white border text-sm sm:text-base p-3.5 rounded-xl w-full outline-none transition-colors resize-none ${
+                  className={`bg-[#050505] text-white border text-xs p-3.5 rounded-md w-full outline-none transition-colors resize-none ${
                     errors.short_description
                       ? "border-red-500/70 focus:border-red-400"
-                      : "border-white/15 focus:border-white/50"
+                      : "border-white/15 focus:border-[#3be1fe]/70"
                   }`}
                 />
                 {errors.short_description && (
@@ -244,18 +216,18 @@ export function EditGroupModal({
               </div>
 
               {/* Action Buttons */}
-              <div className="pt-4 flex items-center justify-end gap-3 border-t border-white/15">
+              <div className="pt-4 flex items-center justify-end gap-3 border-t border-white/12">
                 <button
                   type="button"
                   onClick={onClose}
-                  className="px-5 py-3 rounded-xl text-sm font-semibold text-slate-300 hover:text-white border border-white/15 hover:bg-white/10 uppercase transition-colors cursor-pointer"
+                  className="px-5 py-2.5 rounded-md text-xs font-bold text-slate-300 hover:text-white border border-white/15 hover:bg-white/10 uppercase transition-colors cursor-pointer"
                 >
                   CANCEL
                 </button>
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="px-6 py-3 rounded-xl text-sm font-bold text-slate-950 bg-white hover:bg-sky-100 uppercase transition-colors disabled:opacity-50 cursor-pointer"
+                  className="px-6 py-2.5 rounded-md text-xs font-bold text-black bg-[#3be1fe] hover:bg-[#6ee7fc] uppercase transition-colors disabled:opacity-50 cursor-pointer shadow-md"
                 >
                   {isSubmitting ? "SAVING..." : "SAVE CHANGES"}
                 </button>

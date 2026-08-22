@@ -18,19 +18,6 @@ import EditMemberModal from "./components/EditMemberModal";
 
 type SortOrder = "asc" | "desc";
 
-/**
- * PURPOSE:
- * Orchestrator client component for the Groups Management dashboard. Manages state for group records,
- * text searching, event filtering, title sorting, modal visibility, and delegating UI rendering to modular sub-components.
- *
- * CONTEXT/PARENT FILE:
- * Rendered by app/groups-management/page.tsx Server Component.
- *
- * INPUTS / PARAMETERS:
- * - initialGroups (GroupWithMembersAndEvent[], Required): Initial list of groups joined with event and member info.
- * - eventsList (Event[], Required): List of all events available for group assignment.
- */
-
 interface GroupManagementClientProps {
   initialGroups: GroupWithMembersAndEvent[];
   eventsList: Event[];
@@ -56,21 +43,9 @@ export default function GroupManagementClient({
   const [addMemberGroup, setAddMemberGroup] = useState<GroupWithMembersAndEvent | null>(null);
   const [editingMember, setEditingMember] = useState<GroupMember | null>(null);
 
-  /**
-   * BEHAVIORAL MECHANISM:
-   * Memoized computation to filter groups by group_name text search and target event ID,
-   * then sorts by group_name in ascending or descending order.
-   *
-   * PARAMETERS:
-   * None (uses state variables groupsList, searchQuery, selectedEventFilter, sortOrder).
-   *
-   * RETURNS:
-   * - GroupWithMembersAndEvent[]: Filtered and sorted groups array.
-   */
   const filteredAndSortedGroups = useMemo(() => {
     let result = [...groupsList];
 
-    // 1. Search filter by group_name or short_description
     if (searchQuery.trim()) {
       const q = searchQuery.toLowerCase().trim();
       result = result.filter(
@@ -80,12 +55,10 @@ export default function GroupManagementClient({
       );
     }
 
-    // 2. Event filter
     if (selectedEventFilter && selectedEventFilter !== "all") {
       result = result.filter((group) => group.event_id === selectedEventFilter);
     }
 
-    // 3. Sorting by group_name
     result.sort((a, b) => {
       const nameA = (a.group_name || "").toLowerCase();
       const nameB = (b.group_name || "").toLowerCase();
@@ -99,17 +72,6 @@ export default function GroupManagementClient({
     return result;
   }, [groupsList, searchQuery, selectedEventFilter, sortOrder]);
 
-  /**
-   * BEHAVIORAL MECHANISM:
-   * Deletes a group by ID using deleteGroup server action after user confirmation.
-   * Triggers global loader spinner and toast notification on success/error.
-   *
-   * PARAMETERS:
-   * - groupId (string): Unique identifier of target group to delete.
-   *
-   * RETURNS:
-   * - Promise<void>
-   */
   const handleDeleteGroup = async (groupId: string) => {
     if (!confirm("Are you sure you want to delete this group?")) return;
 
@@ -131,17 +93,6 @@ export default function GroupManagementClient({
     }
   };
 
-  /**
-   * BEHAVIORAL MECHANISM:
-   * Updates local groups state when a member is removed from a group's roster.
-   *
-   * PARAMETERS:
-   * - groupId (string): Target group UUID.
-   * - memberRecordId (string): Removed group_members record ID.
-   *
-   * RETURNS:
-   * - void
-   */
   const handleMemberRemoved = (groupId: string, memberRecordId: string) => {
     setGroupsList((prev) =>
       prev.map((g) => {
@@ -157,17 +108,6 @@ export default function GroupManagementClient({
     router.refresh();
   };
 
-  /**
-   * BEHAVIORAL MECHANISM:
-   * Updates local groups state when a new member is added to a group.
-   *
-   * PARAMETERS:
-   * - groupId (string): Target group UUID.
-   * - newMemberRecord (GroupMemberWithProfile): Newly created member record with profile data.
-   *
-   * RETURNS:
-   * - void
-   */
   const handleMemberAdded = (groupId: string, newMemberRecord: GroupMember) => {
     setGroupsList((prev) =>
       prev.map((g) => {
@@ -200,11 +140,6 @@ export default function GroupManagementClient({
     router.refresh();
   };
 
-  /**
-   * BEHAVIORAL MECHANISM:
-   * Callback invoked when a group is created or updated via modal dialogs.
-   * Updates local state and triggers router refresh.
-   */
   const handleGroupCreated = (newGroup: GroupWithMembersAndEvent) => {
     setGroupsList((prev) => [newGroup, ...prev]);
     router.refresh();
@@ -218,7 +153,7 @@ export default function GroupManagementClient({
   };
 
   return (
-    <div className="w-full min-h-screen py-10 px-4 sm:px-6 lg:px-8 space-y-8 select-none text-slate-100">
+    <div className="w-full min-h-screen py-12 px-6 sm:px-10 lg:px-16 space-y-8 select-none text-slate-100 font-sans relative max-w-7xl mx-auto">
       {/* Top Section Header */}
       <HeaderSection onOpenCreateModal={() => setIsCreateModalOpen(true)} />
 
