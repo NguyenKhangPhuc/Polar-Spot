@@ -157,7 +157,7 @@ export function RichTextEditor({
   };
 
   return (
-    <div className={`flex flex-col border border-white/15 rounded-xl bg-[#0a1526] overflow-hidden ${className}`}>
+    <div className={`flex flex-col border border-white/12 rounded-md bg-[#000000] overflow-hidden ${className}`}>
       <TooltipProvider>
         <Plate editor={editor} onChange={handleEditorChange} readOnly={readOnly}>
           <EditorContainer>
