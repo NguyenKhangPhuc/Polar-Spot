@@ -15,23 +15,20 @@ import { createClient } from "../utils/supabase/server";
  * - feedback (GroupFeedbackInsert, Required): Payload containing group_id, display_name, and description.
  */
 export async function upsertGroupFeedback(feedback: GroupFeedbackInsert) {
-    /**
-     * BEHAVIORAL MECHANISM:
-     * Resolves active Supabase user session and executes upsert on 'group_feedbacks' table.
-     * Returns newly created or updated feedback record.
-     *
-     * PARAMETERS:
-     * - feedback (GroupFeedbackInsert): Feedback row payload.
-     *
-     * RETURNS:
-     * - Object: { data: GroupFeedback[] | null, error: string | null }
-     */
     const supabase = await createClient();
 
+    const {
+        data: { user },
+    } = await supabase.auth.getUser();
+
+    const payload: GroupFeedbackInsert = {
+        ...feedback,
+        user_id: user?.id || feedback.user_id || null,
+    };
 
     const { data, error } = await supabase
         .from('group_feedbacks')
-        .upsert(feedback, { onConflict: 'group_id, user_id' })
+        .upsert(payload as any)
         .select();
 
     if (error) {
@@ -67,4 +64,18 @@ export async function getGroupFeedbacksByGroupId(groupId: string) {
     }
 
     return { data: data as GroupFeedback[], error: null };
+}
+
+/**
+ * PURPOSE:
+ * Alias function for fetching all feedback records assigned to a specific group by ID.
+ *
+ * CONTEXT/PARENT FILE:
+ * Called by app/groups/[id]/feedbacks/page.tsx Server Component.
+ *
+ * INPUTS / PARAMETERS:
+ * - groupId (string, Required): Unique identifier of target group.
+ */
+export async function fetchAllFeedbacksByGroupId(groupId: string) {
+    return getGroupFeedbacksByGroupId(groupId);
 }
