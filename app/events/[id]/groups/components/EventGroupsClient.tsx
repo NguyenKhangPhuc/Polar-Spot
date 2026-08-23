@@ -6,14 +6,16 @@ import { GroupWithMembersAndEvent } from "@/app/types/groups";
 import HeaderSection from "./HeaderSection";
 import GroupFilterControls, { GroupSortOrder } from "./GroupFilterControls";
 import GroupGrid from "./GroupGrid";
+import { ProfileInsert } from "@/app/types/profile";
 
 interface EventGroupsClientProps {
   event: Event;
   groups: GroupWithMembersAndEvent[];
   canGrade?: boolean;
+  profile: ProfileInsert
 }
 
-export function EventGroupsClient({ event, groups, canGrade = false }: EventGroupsClientProps) {
+export function EventGroupsClient({ event, groups, canGrade = false, profile }: EventGroupsClientProps) {
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [sortOrder, setSortOrder] = useState<GroupSortOrder>("newest");
 
@@ -70,11 +72,12 @@ export function EventGroupsClient({ event, groups, canGrade = false }: EventGrou
         />
 
         {/* Right Column: Groups Grid */}
-        <main className="lg:col-span-8">
+        <main className="lg:col-span-9">
           <GroupGrid
             groups={processedGroups}
             onResetFilters={handleResetFilters}
             canGrade={canGrade}
+            profile={profile}
           />
         </main>
       </div>

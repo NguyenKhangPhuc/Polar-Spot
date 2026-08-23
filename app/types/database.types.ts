@@ -111,6 +111,55 @@ export type Database = {
         }
         Relationships: []
       }
+      group_feedbacks: {
+        Row: {
+          created_at: string
+          description: string | null
+          display_name: string | null
+          group_id: string | null
+          id: string
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          display_name?: string | null
+          group_id?: string | null
+          id?: string
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          display_name?: string | null
+          group_id?: string | null
+          id?: string
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "group_feedbacks_group_id_fkey"
+            columns: ["group_id"]
+            isOneToOne: false
+            referencedRelation: "group_final_scores"
+            referencedColumns: ["group_id"]
+          },
+          {
+            foreignKeyName: "group_feedbacks_group_id_fkey"
+            columns: ["group_id"]
+            isOneToOne: false
+            referencedRelation: "groups"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "group_feedbacks_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       group_members: {
         Row: {
           created_at: string
@@ -199,6 +248,7 @@ export type Database = {
           job_title: string | null
           linkedIn: string | null
           programme: string | null
+          role: Database["public"]["Enums"]["PROFILE_ROLE"] | null
           university: string | null
           year: string | null
         }
@@ -215,6 +265,7 @@ export type Database = {
           job_title?: string | null
           linkedIn?: string | null
           programme?: string | null
+          role?: Database["public"]["Enums"]["PROFILE_ROLE"] | null
           university?: string | null
           year?: string | null
         }
@@ -231,6 +282,7 @@ export type Database = {
           job_title?: string | null
           linkedIn?: string | null
           programme?: string | null
+          role?: Database["public"]["Enums"]["PROFILE_ROLE"] | null
           university?: string | null
           year?: string | null
         }
@@ -439,11 +491,12 @@ export type Database = {
       }
     }
     Functions: {
-      [_ in never]: never
+      is_admin_or_judge: { Args: never; Returns: boolean }
     }
     Enums: {
       EVENT_STATUS: "ongoing" | "finished"
       INVITATION_STATUS: "pending" | "accepted" | "rejected"
+      PROFILE_ROLE: "admin" | "judge" | "student"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -576,6 +629,7 @@ export const Constants = {
     Enums: {
       EVENT_STATUS: ["ongoing", "finished"],
       INVITATION_STATUS: ["pending", "accepted", "rejected"],
+      PROFILE_ROLE: ["admin", "judge", "student"],
     },
   },
 } as const

@@ -4,14 +4,16 @@ import React from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { GroupWithMembersAndEvent } from "@/app/types/groups";
 import GroupCard from "./GroupCard";
+import { ProfileInsert } from "@/app/types/profile";
 
 interface GroupGridProps {
   groups: GroupWithMembersAndEvent[];
   onResetFilters: () => void;
   canGrade?: boolean;
+  profile: ProfileInsert
 }
 
-export function GroupGrid({ groups, onResetFilters, canGrade = false }: GroupGridProps) {
+export function GroupGrid({ groups, onResetFilters, canGrade = false, profile }: GroupGridProps) {
   if (groups.length === 0) {
     return (
       <motion.div
@@ -43,6 +45,7 @@ export function GroupGrid({ groups, onResetFilters, canGrade = false }: GroupGri
             group={group}
             index={index}
             canGrade={canGrade}
+            profile={profile}
           />
         ))}
       </AnimatePresence>

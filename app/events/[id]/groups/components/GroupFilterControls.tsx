@@ -27,7 +27,7 @@ export function GroupFilterControls({
       initial={{ opacity: 0, x: -20 }}
       animate={{ opacity: 1, x: 0 }}
       transition={{ duration: 0.4, ease: "easeOut" }}
-      className="lg:col-span-4 bg-[#121212] border border-white/12 rounded-md p-5 sm:p-6 shadow-xl space-y-6 sticky top-6 font-mono text-xs"
+      className="lg:col-span-3 bg-[#121212] border border-white/12 rounded-md p-4 sm:p-5 shadow-xl space-y-6 sticky top-6 font-mono text-xs"
     >
       <div className="flex items-center justify-between border-b border-white/12 pb-4">
         <h3 className="text-xs font-mono font-bold text-[#3be1fe] uppercase tracking-wider flex items-center gap-2">
