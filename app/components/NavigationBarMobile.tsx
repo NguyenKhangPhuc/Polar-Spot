@@ -22,6 +22,7 @@ const baseNavItems: NavItem[] = [
 const adminNavItems: NavItem[] = [
   { name: "Events Management", href: "/events-management" },
   { name: "Groups Management", href: "/groups-management" },
+  { name: "User Management", href: "/users-management" },
 ];
 
 interface NavigationBarMobileProps {
