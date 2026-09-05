@@ -18,11 +18,16 @@ export default function BackButton({
   const router = useRouter();
 
   const baseStyles =
-    "inline-flex items-center gap-2 px-3.5 py-2 rounded-md bg-[#121212] hover:bg-[#18181b] border border-white/15 text-[#3be1fe] hover:text-white text-xs font-mono font-bold uppercase tracking-wider transition-colors cursor-pointer w-fit select-none shadow-md";
+    "cursor-pointer duration-300 inline-flex items-center gap-2 text-xs font-mono text-[#83958d] hover:text-[#00ffec] transition-colors mb-6 group select-none";
 
   const content = (
     <>
-      <svg className="w-4 h-4 text-[#3be1fe] shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <svg
+        className="w-3.5 h-3.5 group-hover:-translate-x-1 transition-transform duration-300 text-[#00ffec] shrink-0"
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke="currentColor"
+      >
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
       </svg>
       <span>{label}</span>
