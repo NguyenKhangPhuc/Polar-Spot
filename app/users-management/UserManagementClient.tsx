@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useState, useMemo } from "react";
-import { motion, AnimatePresence } from "framer-motion";
 import BackButton from "@/app/components/BackButton";
 import Pagination from "@/components/Pagination";
 import { Profile } from "@/app/types/profile";
@@ -9,14 +8,15 @@ import { PROFILE_ROLE } from "@/app/types/enum";
 import { updateProfileRole } from "@/app/actions/profile";
 import { useNotification } from "@/app/context/NotificationContext";
 import { useLoader } from "@/app/context/LoaderContext";
+import UserFilters, { SortOrder } from "./components/UserFilters";
+import UserTable from "./components/UserTable";
 
 interface UserManagementClientProps {
   initialProfiles: Profile[];
   totalCount: number;
 }
 
-type SortOrder = "name_asc" | "name_desc" | "email_asc" | "email_desc" | "newest" | "oldest";
-const ITEMS_PER_PAGE = 10;
+const ITEMS_PER_PAGE = 15;
 
 export function UserManagementClient({
   initialProfiles,
@@ -48,7 +48,9 @@ export function UserManagementClient({
     // Role filter
     if (roleFilter !== "all") {
       result = result.filter(
-        (u) => (u.role ? String(u.role).toLowerCase() : "") === roleFilter.toLowerCase()
+        (u) =>
+          (u.role ? String(u.role).toLowerCase() : "") ===
+          roleFilter.toLowerCase()
       );
     }
 
@@ -84,14 +86,22 @@ export function UserManagementClient({
 
   const paginatedUsers = useMemo(() => {
     const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
-    return filteredAndSortedUsers.slice(startIndex, startIndex + ITEMS_PER_PAGE);
+    return filteredAndSortedUsers.slice(
+      startIndex,
+      startIndex + ITEMS_PER_PAGE
+    );
   }, [filteredAndSortedUsers, currentPage]);
+
+  const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
 
   // Role change handler
   const handleRoleChange = async (userId: string, newRole: string) => {
     setIsOpenLoader(true);
     try {
-      const { data, error } = await updateProfileRole(userId, newRole as PROFILE_ROLE);
+      const { data, error } = await updateProfileRole(
+        userId,
+        newRole as PROFILE_ROLE
+      );
       if (error || !data) {
         throw new Error(error || "Failed to update role");
       }
@@ -102,7 +112,8 @@ export function UserManagementClient({
 
       showNotification("User role updated successfully");
     } catch (err) {
-      const msg = err instanceof Error ? err.message : "Failed to update user role";
+      const msg =
+        err instanceof Error ? err.message : "Failed to update user role";
       showNotification(msg);
     } finally {
       setIsOpenLoader(false);
@@ -116,217 +127,78 @@ export function UserManagementClient({
     setCurrentPage(1);
   };
 
+  const hasActiveFilters =
+    Boolean(searchQuery.trim()) ||
+    roleFilter !== "all" ||
+    sortOrder !== "name_asc";
+
   return (
-    <div className="w-full min-h-screen py-12 px-6 sm:px-10 lg:px-16 space-y-8 select-none text-slate-100 font-sans relative max-w-7xl mx-auto">
-      {/* Top Header Section */}
-      <div className="space-y-6 border-b border-white/12 pb-8">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-          <BackButton href="/" label="BACK TO HOME" />
+    <div className="w-full flex flex-col gap-8 select-text">
+      {/* Header Section */}
+      <div className="flex flex-col gap-2">
+        <BackButton href="/" label="BACK TO HOME" className="mb-0" />
 
-          <span className="px-3.5 py-1.5 rounded-md bg-[#000000] border border-[#3be1fe]/50 text-[#3be1fe] font-mono font-bold text-xs uppercase tracking-wider shadow-sm self-start sm:self-auto">
-            {filteredAndSortedUsers.length}{" "}
-            {filteredAndSortedUsers.length === 1 ? "USER" : "USERS"} TOTAL
-          </span>
-        </div>
-
-        <div>
-          <span className="text-[10px] font-mono font-bold text-[#3be1fe] uppercase tracking-widest block">
-            ADMINISTRATION PORTAL
-          </span>
-          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black text-white tracking-tight">
-            User Management &amp; <span className="text-[#3be1fe]">Role Registry</span>
-          </h1>
-          <p className="text-sm sm:text-base text-slate-300 font-medium mt-2">
-            CONTROL USER ACCOUNTS, ASSIGN SYSTEM ROLES &amp; MANAGE ACCESS PERMISSIONS
-          </p>
-        </div>
-      </div>
-
-      {/* Controls Bar: Search, Role Filter, Sort Select */}
-      <div className="grid grid-cols-1 md:grid-cols-12 gap-4 bg-[#121212] p-4 rounded-md border border-white/12 shadow-xl font-mono text-xs items-center">
-        {/* Search Input (md:col-span-5) */}
-        <div className="relative md:col-span-5">
-          <div className="relative flex items-center w-full bg-[#050505] border border-white/15 rounded-md focus-within:border-[#3be1fe]/70 transition-colors text-white">
-            <span className="pl-3.5 text-slate-400 flex items-center shrink-0">
-              <svg className="w-4 h-4 text-[#3be1fe]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-              </svg>
-            </span>
-            <input
-              type="text"
-              value={searchQuery}
-              onChange={(e) => {
-                setSearchQuery(e.target.value);
-                setCurrentPage(1);
-              }}
-              placeholder="Search by full name or email address..."
-              className="w-full bg-transparent text-white placeholder-slate-500 text-xs p-3 outline-none border-none font-mono"
-            />
+        {/* Page Header */}
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 border-b border-white/5 pb-8 mb-2 select-none">
+          <div className="flex gap-4 items-stretch">
+            <div className="w-[3px] bg-[#00ffec]" />
+            <div className="flex flex-col gap-1.5">
+              <h1 className="text-3xl font-extrabold text-[#e8e1df] tracking-tight uppercase leading-tight font-mono">
+                USER MANAGEMENT
+              </h1>
+            </div>
           </div>
         </div>
-
-        {/* Role Filter Select (md:col-span-3) */}
-        <div className="relative md:col-span-3">
-          <select
-            value={roleFilter}
-            onChange={(e) => {
-              setRoleFilter(e.target.value);
-              setCurrentPage(1);
-            }}
-            className="w-full bg-[#050505] border border-white/15 rounded-md text-white text-xs p-3 pr-8 outline-none focus:border-[#3be1fe]/70 transition-colors cursor-pointer uppercase font-mono appearance-none"
-          >
-            <option value="all">FILTER BY: ALL ROLES</option>
-            <option value={PROFILE_ROLE.STUDENT}>ROLE: STUDENT</option>
-            <option value={PROFILE_ROLE.JUDGES}>ROLE: JUDGE</option>
-            <option value={PROFILE_ROLE.ADMIN}>ROLE: ADMIN</option>
-          </select>
-          <svg
-            className="w-4 h-4 absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-          </svg>
-        </div>
-
-        {/* Sort Select (md:col-span-3) */}
-        <div className="relative md:col-span-3">
-          <select
-            value={sortOrder}
-            onChange={(e) => {
-              setSortOrder(e.target.value as SortOrder);
-              setCurrentPage(1);
-            }}
-            className="w-full bg-[#050505] border border-white/15 rounded-md text-white text-xs p-3 pr-8 outline-none focus:border-[#3be1fe]/70 transition-colors cursor-pointer uppercase font-mono appearance-none"
-          >
-            <option value="name_asc">SORT: NAME A TO Z</option>
-            <option value="name_desc">SORT: NAME Z TO A</option>
-            <option value="email_asc">SORT: EMAIL A TO Z</option>
-            <option value="email_desc">SORT: EMAIL Z TO A</option>
-            <option value="newest">SORT: NEWEST CREATED</option>
-            <option value="oldest">SORT: OLDEST CREATED</option>
-          </select>
-          <svg
-            className="w-4 h-4 absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-          </svg>
-        </div>
-
-        {/* Reset Filter Button */}
-        {(searchQuery || roleFilter !== "all" || sortOrder !== "name_asc") && (
-          <button
-            type="button"
-            onClick={handleResetFilters}
-            className="md:col-span-1 text-[10px] font-bold font-mono text-[#3be1fe] hover:underline uppercase tracking-wider text-center cursor-pointer"
-          >
-            RESET
-          </button>
-        )}
       </div>
 
-      {/* Users Table Container */}
-      <div className="bg-[#121212] border border-white/12 rounded-md overflow-x-auto shadow-2xl">
-        <table className="w-full border-collapse font-mono text-xs text-slate-200 text-left min-w-[700px]">
-          <thead>
-            <tr className="border-b border-white/12 bg-[#000000] text-[#3be1fe] select-none text-[11px] uppercase tracking-wider font-bold">
-              <th className="py-3.5 px-4 w-16 text-center">NO.</th>
-              <th className="py-3.5 px-4 min-w-[200px]">FULL NAME</th>
-              <th className="py-3.5 px-4 min-w-[220px]">EMAIL ADDRESS</th>
-              <th className="py-3.5 px-4 min-w-[150px]">CREATED AT</th>
-              <th className="py-3.5 px-4 w-44 text-center border-l border-white/10">USER ROLE</th>
-            </tr>
-          </thead>
-          <tbody>
-            <AnimatePresence mode="popLayout">
-              {paginatedUsers.length > 0 ? (
-                paginatedUsers.map((user, index) => {
-                  const globalIndex = (currentPage - 1) * ITEMS_PER_PAGE + index + 1;
-                  const formattedIndex = String(globalIndex).padStart(2, "0");
-                  const userRole = user.role ? String(user.role).toLowerCase() : PROFILE_ROLE.STUDENT;
-                  const createdAtStr = user.created_at
-                    ? new Date(user.created_at).toLocaleDateString()
-                    : "N/A";
-
-                  return (
-                    <motion.tr
-                      key={user.id}
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, scale: 0.95 }}
-                      transition={{ duration: 0.2, delay: index * 0.02 }}
-                      className="border-b border-white/10 last:border-0 hover:bg-white/[0.04] transition-colors"
-                    >
-                      {/* Sequential Index Number */}
-                      <td className="py-3 px-4 text-center text-slate-500 font-mono text-xs font-semibold">
-                        {formattedIndex}.
-                      </td>
-
-                      {/* Full Name */}
-                      <td className="py-3 px-4 font-bold text-white max-w-[200px] truncate font-sans text-xs">
-                        {user.full_name || "Unnamed User"}
-                      </td>
-
-                      {/* Email Address */}
-                      <td className="py-3 px-4 text-slate-300 font-mono text-xs truncate">
-                        {user.email || "N/A"}
-                      </td>
-
-                      {/* Created At Date */}
-                      <td className="py-3 px-4 text-slate-400 font-mono text-xs truncate">
-                        {createdAtStr}
-                      </td>
-
-                      {/* Role Select Dropdown */}
-                      <td className="py-3 px-4 text-center border-l border-white/10">
-                        <div className="relative inline-block w-36">
-                          <select
-                            value={userRole}
-                            onChange={(e) => handleRoleChange(user.id, e.target.value)}
-                            className="w-full bg-[#050505] border border-white/15 rounded-md text-xs p-2 pr-7 text-white font-mono uppercase font-bold outline-none focus:border-[#3be1fe]/70 cursor-pointer appearance-none"
-                          >
-                            <option value={PROFILE_ROLE.STUDENT}>STUDENT</option>
-                            <option value={PROFILE_ROLE.JUDGES}>JUDGE</option>
-                            <option value={PROFILE_ROLE.ADMIN}>ADMIN</option>
-                          </select>
-                          <svg
-                            className="w-3.5 h-3.5 absolute right-2 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            stroke="currentColor"
-                          >
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                          </svg>
-                        </div>
-                      </td>
-                    </motion.tr>
-                  );
-                })
-              ) : (
-                <tr>
-                  <td
-                    colSpan={5}
-                    className="p-12 text-center text-slate-400 italic select-none text-xs font-mono"
-                  >
-                    NO USER PROFILES MATCHING ACTIVE FILTER PARAMETERS
-                  </td>
-                </tr>
-              )}
-            </AnimatePresence>
-          </tbody>
-        </table>
-      </div>
-
-      {/* Pagination Controls */}
-      <Pagination
-        currentPage={currentPage}
-        totalPages={totalPages}
-        onPageChange={(page) => setCurrentPage(page)}
+      {/* Filters Area Component */}
+      <UserFilters
+        searchQuery={searchQuery}
+        setSearchQuery={(q) => {
+          setSearchQuery(q);
+          setCurrentPage(1);
+        }}
+        roleFilter={roleFilter}
+        setRoleFilter={(r) => {
+          setRoleFilter(r);
+          setCurrentPage(1);
+        }}
+        sortOrder={sortOrder}
+        setSortOrder={(s) => {
+          setSortOrder(s);
+          setCurrentPage(1);
+        }}
+        onResetFilters={handleResetFilters}
+        hasActiveFilters={hasActiveFilters}
       />
+
+      {/* Users Database Table Section */}
+      <div className="flex flex-col gap-4">
+        {/* Table Metrics Bar */}
+        <div className="flex items-center justify-between select-none">
+          <div className="flex items-center gap-2 text-xs font-mono font-bold text-[#e8e1df] uppercase tracking-wider">
+            <div className="w-[3px] h-3 bg-[#00ffec]" />
+            <span>01 MEMBER REGISTRY DATABASE</span>
+          </div>
+          <span className="font-mono text-[9px] text-[#83958d]">
+            TOTAL MEMBERS: {filteredAndSortedUsers.length}
+          </span>
+        </div>
+
+        {/* User Table Component */}
+        <UserTable
+          paginatedUsers={paginatedUsers}
+          startIndex={startIndex}
+          handleRoleChange={handleRoleChange}
+        />
+
+        {/* Dynamic Pagination */}
+        <Pagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          onPageChange={(page) => setCurrentPage(page)}
+        />
+      </div>
     </div>
   );
 }

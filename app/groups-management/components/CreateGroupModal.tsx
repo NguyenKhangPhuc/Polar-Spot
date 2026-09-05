@@ -98,22 +98,24 @@ export function CreateGroupModal({
   return (
     <AnimatePresence>
       {isOpen && (
-        <div className="fixed inset-0 top-16 lg:top-0 lg:left-64 z-30 overflow-y-auto bg-black/85 backdrop-blur-md p-4 sm:p-6 lg:p-8 flex items-center justify-center min-h-[calc(100vh-4rem)] lg:min-h-screen">
+        <div className="fixed inset-0 z-50 overflow-y-auto bg-black/80 backdrop-blur-md p-4 sm:p-6 lg:p-8 flex items-center justify-center min-h-screen">
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.95 }}
-            className="relative my-auto w-full max-w-xl bg-[#121212] border border-white/15 rounded-md p-6 sm:p-8 space-y-6 shadow-2xl text-slate-100 font-mono text-xs"
+            className="relative my-auto w-full max-w-xl bg-[#1d1b1a] border border-white/10 rounded-sm p-6 sm:p-8 space-y-6 shadow-2xl text-[#e8e1df] font-mono text-xs"
           >
             {/* Modal Header */}
-            <div className="flex items-center justify-between border-b border-white/12 pb-4">
-              <h2 className="text-xl sm:text-2xl font-black text-white uppercase tracking-tight font-sans">
-                CREATE NEW GROUP
-              </h2>
+            <div className="flex items-center justify-between border-b border-white/10 pb-4">
+              <div className="flex flex-col">
+                <h2 className="text-xl sm:text-2xl font-black text-[#e8e1df] uppercase tracking-tight font-sans">
+                  CREATE NEW GROUP
+                </h2>
+              </div>
               <button
                 type="button"
                 onClick={onClose}
-                className="text-slate-400 hover:text-white p-1 cursor-pointer"
+                className="text-[#83958d] hover:text-[#e8e1df] p-1 cursor-pointer transition-colors"
               >
                 <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -123,7 +125,7 @@ export function CreateGroupModal({
 
             {/* Submission Error Banner */}
             {submitError && (
-              <div className="p-4 rounded-md bg-red-950/80 border border-red-500/40 text-red-300 text-xs font-semibold">
+              <div className="p-4 rounded-sm bg-red-950/40 border border-red-500/30 text-red-300 text-xs font-semibold">
                 [ERROR]: {submitError}
               </div>
             )}
@@ -132,8 +134,8 @@ export function CreateGroupModal({
             <form onSubmit={handleSubmit(onFormSubmit)} className="space-y-4">
               {/* Field 1: Group Name */}
               <div className="flex flex-col gap-1.5">
-                <label className="text-xs font-bold text-slate-200 uppercase tracking-wider">
-                  GROUP NAME <span className="text-[#3be1fe]">*</span>
+                <label className="text-[11px] font-bold text-[#83958d] uppercase tracking-wider">
+                  GROUP NAME <span className="text-[#00ffec]">*</span>
                 </label>
                 <input
                   {...register("group_name", {
@@ -141,10 +143,10 @@ export function CreateGroupModal({
                   })}
                   type="text"
                   placeholder="e.g. Arctic Ice Pitchers"
-                  className={`bg-[#050505] text-white border text-xs p-3.5 rounded-md w-full outline-none transition-colors ${
+                  className={`bg-[#151312] text-[#e8e1df] placeholder-[#83958d]/50 border text-xs p-3.5 rounded-sm w-full outline-none transition-colors ${
                     errors.group_name
                       ? "border-red-500/70 focus:border-red-400"
-                      : "border-white/15 focus:border-[#3be1fe]/70"
+                      : "border-white/10 focus:border-[#00ffec]/60"
                   }`}
                 />
                 {errors.group_name && (
@@ -156,23 +158,23 @@ export function CreateGroupModal({
 
               {/* Field 2: Target Event Selector */}
               <div className="flex flex-col gap-1.5">
-                <label className="text-xs font-bold text-slate-200 uppercase tracking-wider">
-                  TARGET EVENT <span className="text-[#3be1fe]">*</span>
+                <label className="text-[11px] font-bold text-[#83958d] uppercase tracking-wider">
+                  TARGET EVENT <span className="text-[#00ffec]">*</span>
                 </label>
                 <select
                   {...register("event_id", {
                     required: "Please select an event for this group",
                   })}
-                  className={`bg-[#050505] text-white border text-xs p-3.5 rounded-md w-full outline-none transition-colors uppercase ${
+                  className={`bg-[#151312] text-[#e8e1df] border text-xs p-3.5 rounded-sm w-full outline-none transition-colors uppercase cursor-pointer ${
                     errors.event_id
                       ? "border-red-500/70 focus:border-red-400"
-                      : "border-white/15 focus:border-[#3be1fe]/70"
+                      : "border-white/10 focus:border-[#00ffec]/60"
                   }`}
                 >
-                  <option value="" className="bg-[#050505] text-slate-400">-- SELECT TARGET EVENT --</option>
+                  <option value="" className="bg-[#151312] text-[#83958d]">-- SELECT TARGET EVENT --</option>
                   {eventsList.map((evt) => (
-                    <option key={evt.id} value={evt.id} className="bg-[#050505] text-white">
-                      {evt.short_description || evt.location || evt.id}
+                    <option key={evt.id} value={evt.id} className="bg-[#151312] text-[#e8e1df]">
+                      {(evt as any).title || evt.short_description || evt.location || evt.id}
                     </option>
                   ))}
                 </select>
@@ -185,8 +187,8 @@ export function CreateGroupModal({
 
               {/* Field 3: Short Description */}
               <div className="flex flex-col gap-1.5">
-                <label className="text-xs font-bold text-slate-200 uppercase tracking-wider">
-                  SHORT DESCRIPTION <span className="text-[#3be1fe]">*</span>
+                <label className="text-[11px] font-bold text-[#83958d] uppercase tracking-wider">
+                  SHORT DESCRIPTION <span className="text-[#00ffec]">*</span>
                 </label>
                 <textarea
                   {...register("short_description", {
@@ -194,10 +196,10 @@ export function CreateGroupModal({
                   })}
                   rows={3}
                   placeholder="Describe the group's startup project, goals, or pitching category..."
-                  className={`bg-[#050505] text-white border text-xs p-3.5 rounded-md w-full outline-none transition-colors resize-none ${
+                  className={`bg-[#151312] text-[#e8e1df] placeholder-[#83958d]/50 border text-xs p-3.5 rounded-sm w-full outline-none transition-colors resize-none ${
                     errors.short_description
                       ? "border-red-500/70 focus:border-red-400"
-                      : "border-white/15 focus:border-[#3be1fe]/70"
+                      : "border-white/10 focus:border-[#00ffec]/60"
                   }`}
                 />
                 {errors.short_description && (
@@ -208,18 +210,18 @@ export function CreateGroupModal({
               </div>
 
               {/* Action Buttons */}
-              <div className="pt-4 flex items-center justify-end gap-3 border-t border-white/12">
+              <div className="pt-4 flex items-center justify-end gap-3 border-t border-white/10">
                 <button
                   type="button"
                   onClick={onClose}
-                  className="px-5 py-2.5 rounded-md text-xs font-bold text-slate-300 hover:text-white border border-white/15 hover:bg-white/10 uppercase transition-colors cursor-pointer"
+                  className="px-5 py-2.5 rounded-sm text-xs font-bold text-[#83958d] hover:text-[#e8e1df] border border-white/10 hover:border-white/20 uppercase transition-colors cursor-pointer"
                 >
                   CANCEL
                 </button>
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="px-6 py-2.5 rounded-md text-xs font-bold text-black bg-[#3be1fe] hover:bg-[#6ee7fc] uppercase transition-colors disabled:opacity-50 cursor-pointer shadow-md"
+                  className="px-6 py-2.5 rounded-sm text-xs font-bold text-[#00382b] bg-[#00ffec] hover:bg-[#00e6d4] uppercase transition-colors disabled:opacity-50 cursor-pointer shadow-md"
                 >
                   {isSubmitting ? "CREATING..." : "CONFIRM & CREATE"}
                 </button>

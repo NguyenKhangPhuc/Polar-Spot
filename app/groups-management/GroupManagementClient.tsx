@@ -153,7 +153,7 @@ export default function GroupManagementClient({
   };
 
   return (
-    <div className="w-full min-h-screen py-12 px-6 sm:px-10 lg:px-16 space-y-8 select-none text-slate-100 font-sans relative max-w-7xl mx-auto">
+    <div className="w-full flex flex-col gap-8 select-text">
       {/* Top Section Header */}
       <HeaderSection onOpenCreateModal={() => setIsCreateModalOpen(true)} />
 
@@ -169,14 +169,27 @@ export default function GroupManagementClient({
       />
 
       {/* Tabular Display of Groups */}
-      <GroupsTable
-        groups={filteredAndSortedGroups}
-        onOpenEditModal={(group) => setEditingGroup(group)}
-        onOpenAddMemberModal={(group) => setAddMemberGroup(group)}
-        onOpenEditMemberModal={(member) => setEditingMember(member)}
-        onDeleteGroup={handleDeleteGroup}
-        onMemberRemoved={handleMemberRemoved}
-      />
+      <div className="flex flex-col gap-4">
+        {/* Table Metrics Bar */}
+        <div className="flex items-center justify-between select-none">
+          <div className="flex items-center gap-2 text-xs font-mono font-bold text-[#e8e1df] uppercase tracking-wider">
+            <div className="w-[3px] h-3 bg-[#00ffec]" />
+            <span>01 GROUP REGISTRY DATABASE</span>
+          </div>
+          <span className="font-mono text-[9px] text-[#83958d]">
+            TOTAL GROUPS: {filteredAndSortedGroups.length}
+          </span>
+        </div>
+
+        <GroupsTable
+          groups={filteredAndSortedGroups}
+          onOpenEditModal={(group) => setEditingGroup(group)}
+          onOpenAddMemberModal={(group) => setAddMemberGroup(group)}
+          onOpenEditMemberModal={(member) => setEditingMember(member)}
+          onDeleteGroup={handleDeleteGroup}
+          onMemberRemoved={handleMemberRemoved}
+        />
+      </div>
 
       {/* Create Group Modal */}
       <CreateGroupModal

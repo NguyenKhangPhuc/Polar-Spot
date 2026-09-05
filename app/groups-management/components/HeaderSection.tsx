@@ -9,21 +9,24 @@ interface HeaderSectionProps {
 
 export function HeaderSection({ onOpenCreateModal }: HeaderSectionProps) {
   return (
-    <div className="flex flex-col space-y-4 border-b border-white/12 pb-6">
-      <BackButton />
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <div>
-          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black text-white tracking-tight">
-            Groups Management
-          </h1>
-          <p className="text-sm sm:text-base text-slate-300 font-medium mt-2">
-            ROSTER &amp; TEAMS CONTROL PANEL FOR POLAR BEAR PITCHING
-          </p>
+    <div className="flex flex-col gap-2">
+      <BackButton href="/" label="BACK TO HOME" className="mb-0" />
+
+      {/* Header Banner */}
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 border-b border-white/5 pb-8 mb-2 select-none">
+        <div className="flex gap-4 items-stretch">
+          <div className="w-[3px] bg-[#00ffec]" />
+          <div className="flex flex-col gap-1.5">
+            <h1 className="text-3xl font-extrabold text-[#e8e1df] tracking-tight uppercase leading-tight font-mono">
+              GROUPS MANAGEMENT
+            </h1>
+          </div>
         </div>
 
         <button
+          type="button"
           onClick={onOpenCreateModal}
-          className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-md text-xs font-bold text-black bg-[#3be1fe] hover:bg-[#6ee7fc] transition-colors shadow-lg uppercase tracking-wider shrink-0 cursor-pointer font-mono"
+          className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-sm text-xs font-bold text-[#00382b] bg-[#00ffec] hover:brightness-110 transition-all shadow-[0_0_15px_rgba(0,255,236,0.15)] uppercase tracking-wider font-mono cursor-pointer self-start md:self-auto"
         >
           <span>+ CREATE NEW GROUP</span>
         </button>

@@ -8,16 +8,16 @@ export default async function UserManagementPage() {
 
   if (error) {
     return (
-      <div className="w-full min-h-screen py-12 px-6 sm:px-10 lg:px-16 space-y-8 select-none text-slate-100 font-sans relative flex flex-col items-center justify-center max-w-7xl mx-auto">
-        <div className="bg-[#121212] border border-red-500/30 rounded-md p-8 sm:p-12 max-w-lg w-full text-center space-y-6 shadow-2xl backdrop-blur-md">
-          <div className="w-14 h-14 rounded-md bg-red-950/80 border border-red-500/40 text-red-400 flex items-center justify-center mx-auto text-xl font-black font-mono shadow-lg">
+      <div className="w-full min-h-screen bg-[#151312] text-[#e8e1df] font-mono py-24 px-6 md:px-16 flex flex-col items-center justify-center select-none">
+        <div className="bg-[#1d1b1a] border border-red-500/30 rounded-sm p-8 sm:p-12 max-w-lg w-full text-center space-y-6 shadow-2xl">
+          <div className="w-14 h-14 rounded-sm bg-red-950/40 border border-red-500/40 text-red-400 flex items-center justify-center mx-auto text-xl font-black shadow-lg">
             !
           </div>
           <div className="space-y-2">
-            <h2 className="text-2xl font-black text-white tracking-tight font-sans">
+            <h2 className="text-2xl font-extrabold text-[#e8e1df] tracking-tight">
               Failed to Load Users
             </h2>
-            <p className="text-sm text-slate-300 leading-relaxed font-mono">
+            <p className="text-xs text-[#b9cbc2] leading-relaxed">
               {error || "The user profile records could not be fetched from database."}
             </p>
           </div>
@@ -30,9 +30,13 @@ export default async function UserManagementPage() {
   }
 
   return (
-    <UserManagementClient
-      initialProfiles={profiles || []}
-      totalCount={count || 0}
-    />
+    <div className="w-full min-h-screen bg-[#151312] text-[#e8e1df] font-mono px-6 md:px-16 py-24">
+      <div className="max-w-7xl mx-auto flex flex-col">
+        <UserManagementClient
+          initialProfiles={profiles || []}
+          totalCount={count || 0}
+        />
+      </div>
+    </div>
   );
 }

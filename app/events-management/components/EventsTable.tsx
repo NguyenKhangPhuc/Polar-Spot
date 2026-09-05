@@ -14,18 +14,18 @@ interface EventsTableProps {
 
 export function EventsTable({ events, onStatusUpdated }: EventsTableProps) {
   return (
-    <div className="bg-[#121212] border border-white/12 rounded-md overflow-x-auto shadow-xl">
-      <table className="w-full border-collapse font-mono text-xs text-slate-200 text-left min-w-[950px]">
+    <div className="bg-[#1d1b1a] border border-white/5 rounded-sm overflow-x-auto shadow-xl">
+      <table className="w-full border-collapse font-mono text-[10px] text-[#b9cbc2] text-left min-w-[950px]">
         <thead>
-          <tr className="border-b border-white/12 bg-[#000000] text-[#3be1fe] select-none text-[11px] uppercase tracking-wider font-bold">
-            <th className="p-4 sm:p-5 text-center w-14">NO</th>
-            <th className="p-4 sm:p-5">EVENT_TITLE</th>
-            <th className="p-4 sm:p-5 text-center w-40">STATUS</th>
-            <th className="p-4 sm:p-5">START_DATE</th>
-            <th className="p-4 sm:p-5">END_DATE</th>
-            <th className="p-4 sm:p-5">ORGANIZED_DATE</th>
-            <th className="p-4 sm:p-5">LOCATION</th>
-            <th className="p-4 sm:p-5 text-center w-52">ACTION</th>
+          <tr className="border-b border-white/5 bg-[#151312] text-[#83958d] select-none text-[8.5px] uppercase tracking-wider font-bold">
+            <th className="p-4 text-center w-14">NO</th>
+            <th className="p-4 min-w-[220px]">EVENT TITLE</th>
+            <th className="p-4 text-center w-36">STATUS</th>
+            <th className="p-4 min-w-[110px]">START DATE</th>
+            <th className="p-4 min-w-[110px]">END DATE</th>
+            <th className="p-4 min-w-[140px]">ORGANIZED DATETIME</th>
+            <th className="p-4 min-w-[150px]">LOCATION STAGE</th>
+            <th className="p-4 text-center w-40">ACTIONS</th>
           </tr>
         </thead>
         <tbody>
@@ -33,38 +33,68 @@ export function EventsTable({ events, onStatusUpdated }: EventsTableProps) {
             {events.length > 0 ? (
               events.map((event, index) => {
                 const eventTitle =
-                  typeof event.short_description === "string"
+                  typeof (event as any).title === "string" && (event as any).title.trim()
+                    ? (event as any).title
+                    : typeof event.short_description === "string" && event.short_description.trim()
                     ? event.short_description
-                    : typeof event.content === "string"
-                    ? event.content
-                    : "UNTITLED_EVENT";
+                    : "UNTITLED EVENT";
+
+                const formatDate = (dateStr: string | null | undefined) => {
+                  if (!dateStr) return "NOT SET";
+                  return new Date(dateStr).toLocaleDateString("en-US", {
+                    month: "short",
+                    day: "2-digit",
+                    year: "numeric",
+                  }).toUpperCase();
+                };
+
+                const formatDateTime = (dateStr: string | null | undefined) => {
+                  if (!dateStr) return "NOT SET";
+                  return new Date(dateStr).toLocaleDateString("en-US", {
+                    month: "short",
+                    day: "2-digit",
+                    year: "numeric",
+                    hour: "2-digit",
+                    minute: "2-digit",
+                  }).toUpperCase();
+                };
 
                 return (
                   <tr
                     key={event.id}
-                    className="border-b border-white/10 last:border-0 hover:bg-white/[0.04] transition-colors group"
+                    className="border-b border-white/5 last:border-0 hover:bg-white/[0.01] transition-colors group"
                   >
                     {/* Index */}
-                    <td className="p-4 sm:p-5 text-center font-bold text-slate-500">
+                    <td className="p-4 text-center font-bold text-[#83958d]">
                       {String(index + 1).padStart(3, "0")}
                     </td>
 
-                    {/* Event Title (Clickable Navigation to /events/[id]) */}
-                    <td className="p-4 sm:p-5 text-white font-bold text-sm max-w-[260px] truncate">
+                    {/* Event Title */}
+                    <td className="p-4 text-[#e8e1df] font-bold max-w-[260px] truncate">
                       <Link
                         href={`/events/${event.id}`}
-                        className="hover:text-[#3be1fe] hover:underline transition-colors flex items-center gap-1.5"
+                        className="hover:text-[#00ffec] hover:underline transition-colors flex items-center gap-1.5"
                         title="View Event Details"
                       >
                         <span className="truncate">{eventTitle}</span>
-                        <svg className="w-3.5 h-3.5 text-[#3be1fe] opacity-0 group-hover:opacity-100 transition-opacity shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                        <svg
+                          className="w-3.5 h-3.5 text-[#00ffec] opacity-0 group-hover:opacity-100 transition-opacity shrink-0"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
+                          />
                         </svg>
                       </Link>
                     </td>
 
                     {/* Status Dropdown */}
-                    <td className="p-4 sm:p-5 text-center w-40">
+                    <td className="p-4 text-center w-36 select-none">
                       <EventStatusSelect
                         eventId={event.id}
                         currentStatus={event.status}
@@ -72,41 +102,41 @@ export function EventsTable({ events, onStatusUpdated }: EventsTableProps) {
                       />
                     </td>
 
-                    {/* Dates */}
-                    <td className="p-4 sm:p-5 text-slate-300 whitespace-nowrap">
-                      {event.start_date
-                        ? new Date(event.start_date).toLocaleDateString()
-                        : "NOT_SET"}
+                    {/* Start Date */}
+                    <td className="p-4 text-[#83958d] whitespace-nowrap">
+                      {formatDate(event.start_date)}
                     </td>
-                    <td className="p-4 sm:p-5 text-slate-300 whitespace-nowrap">
-                      {event.end_date
-                        ? new Date(event.end_date).toLocaleDateString()
-                        : "NOT_SET"}
+
+                    {/* End Date */}
+                    <td className="p-4 text-[#83958d] whitespace-nowrap">
+                      {formatDate(event.end_date)}
                     </td>
-                    <td className="p-4 sm:p-5 text-slate-300 whitespace-nowrap">
-                      {event.organized_date
-                        ? new Date(event.organized_date).toLocaleDateString()
-                        : "NOT_SET"}
+
+                    {/* Organized Datetime */}
+                    <td className="p-4 text-[#83958d] whitespace-nowrap">
+                      {formatDateTime(event.organized_date)}
                     </td>
 
                     {/* Location */}
-                    <td className="p-4 sm:p-5 text-white max-w-[180px] truncate uppercase font-medium">
-                      {typeof event.location === "string" ? event.location : "NOT_SPECIFIED"}
+                    <td className="p-4 text-[#b9cbc2] max-w-[180px] truncate uppercase">
+                      {typeof event.location === "string" && event.location.trim()
+                        ? event.location
+                        : "NOT SPECIFIED"}
                     </td>
 
-                    {/* Action Column: View Details & Edit Event */}
-                    <td className="p-4 sm:p-5 text-center w-52">
+                    {/* Action Column */}
+                    <td className="p-4 text-center w-40 select-none">
                       <div className="flex items-center justify-center gap-2">
                         <Link
                           href={`/events/${event.id}`}
-                          className="px-3 py-1.5 rounded-md bg-[#3be1fe] hover:bg-[#6ee7fc] text-black font-bold text-[10px] uppercase tracking-wider transition-colors cursor-pointer"
+                          className="px-2.5 py-1.5 rounded-sm bg-[#00ffec] hover:brightness-110 text-[#00382b] font-bold text-[9px] uppercase tracking-wider transition-all"
                           title="View Details"
                         >
                           VIEW
                         </Link>
                         <Link
                           href={`/events/${event.id}/edit`}
-                          className="px-3 py-1.5 rounded-md bg-[#000000] hover:bg-[#18181b] text-white border border-white/20 text-[10px] font-bold uppercase tracking-wider transition-colors cursor-pointer"
+                          className="px-2.5 py-1.5 rounded-sm bg-[#151312] hover:bg-[#252220] text-[#e8e1df] border border-white/10 hover:border-[#00ffec]/40 text-[9px] font-bold uppercase tracking-wider transition-all"
                           title="Edit Event"
                         >
                           EDIT
@@ -120,7 +150,7 @@ export function EventsTable({ events, onStatusUpdated }: EventsTableProps) {
               <tr>
                 <td
                   colSpan={8}
-                  className="p-16 text-center text-slate-400 select-none text-xs italic"
+                  className="p-12 text-center text-[#83958d] select-none text-xs font-mono"
                 >
                   NO EVENT REGISTRY ENTRIES MATCHING ACTIVE FILTER PARAMETERS
                 </td>

@@ -56,17 +56,17 @@ export function MembersDropdown({
   };
 
   return (
-    <div className="relative inline-block text-left">
+    <div className="relative inline-block text-left font-mono">
       <button
         type="button"
         onClick={() => setIsOpen(!isOpen)}
-        className="inline-flex items-center justify-between gap-2 px-3 py-1.5 rounded-xl bg-slate-900/90 border border-white/20 text-xs font-bold text-slate-200 hover:text-white hover:bg-white/10 transition-colors cursor-pointer"
+        className="inline-flex items-center justify-between gap-2 px-3 py-1.5 rounded-sm bg-[#151312] border border-white/10 text-xs font-bold text-[#e8e1df] hover:border-[#00ffec]/40 transition-colors cursor-pointer"
       >
         <span>
           {members.length} {members.length === 1 ? "MEMBER" : "MEMBERS"}
         </span>
         <svg
-          className={`w-3.5 h-3.5 text-slate-400 transition-transform ${
+          className={`w-3.5 h-3.5 text-[#00ffec] transition-transform ${
             isOpen ? "rotate-180" : ""
           }`}
           fill="none"
@@ -90,7 +90,7 @@ export function MembersDropdown({
             onClick={() => setIsOpen(false)}
           />
 
-          <div className="absolute right-0 mt-2 w-72 bg-[#0f2038] border border-white/25 rounded-xl shadow-2xl z-30 p-2 space-y-1.5 max-h-60 overflow-y-auto">
+          <div className="absolute right-0 mt-2 w-72 bg-[#1d1b1a] border border-white/10 rounded-sm shadow-2xl z-30 p-2 space-y-1.5 max-h-60 overflow-y-auto">
             {members.length > 0 ? (
               members.map((member) => {
                 const displayName =
@@ -100,14 +100,14 @@ export function MembersDropdown({
                 return (
                   <div
                     key={member.id}
-                    className="flex items-center justify-between gap-2 p-2 rounded-lg bg-[#13243b] hover:bg-white/5 border border-white/10 transition-colors"
+                    className="flex items-center justify-between gap-2 p-2 rounded-sm bg-[#151312] hover:bg-white/5 border border-white/10 transition-colors"
                   >
                     <div className="flex flex-col truncate min-w-0">
-                      <span className="text-xs font-bold text-white truncate">
+                      <span className="text-xs font-bold text-[#e8e1df] truncate">
                         {displayName}
                       </span>
                       {member.member_email && (
-                        <span className="text-[10px] text-slate-400 truncate">
+                        <span className="text-[10px] text-[#83958d] truncate">
                           {member.member_email}
                         </span>
                       )}
@@ -117,7 +117,7 @@ export function MembersDropdown({
                       type="button"
                       disabled={isRemoving}
                       onClick={() => handleRemoveMember(member.id)}
-                      className="px-2 py-1 rounded-md text-[10px] font-bold text-red-300 hover:text-red-100 bg-red-950/60 hover:bg-red-900/80 border border-red-500/30 transition-colors uppercase shrink-0 cursor-pointer disabled:opacity-50"
+                      className="px-2 py-1 rounded-sm text-[10px] font-bold text-red-300 hover:text-red-100 bg-red-950/40 hover:bg-red-900/60 border border-red-500/30 transition-colors uppercase shrink-0 cursor-pointer disabled:opacity-50"
                     >
                       {isRemoving ? "REMOVING..." : "REMOVE"}
                     </button>
@@ -125,7 +125,7 @@ export function MembersDropdown({
                 );
               })
             ) : (
-              <div className="p-3 text-center text-xs text-slate-400">
+              <div className="p-3 text-center text-xs text-[#83958d]">
                 NO MEMBERS IN GROUP
               </div>
             )}

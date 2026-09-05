@@ -4,6 +4,8 @@ import React from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 
+import { cn } from "@/lib/utils";
+
 interface BackButtonProps {
   label?: string;
   href?: string;
@@ -36,7 +38,7 @@ export default function BackButton({
 
   if (href) {
     return (
-      <Link href={href} className={`${baseStyles} ${className}`}>
+      <Link href={href} className={cn(baseStyles, className)}>
         {content}
       </Link>
     );
@@ -46,7 +48,7 @@ export default function BackButton({
     <button
       type="button"
       onClick={() => router.back()}
-      className={`${baseStyles} ${className}`}
+      className={cn(baseStyles, className)}
     >
       {content}
     </button>

@@ -56,17 +56,17 @@ export function GroupsTable({
   };
 
   return (
-    <div className="bg-[#121212] border border-white/12 rounded-md overflow-x-auto shadow-xl">
-      <table className="w-full border-collapse font-mono text-xs text-slate-200 text-left min-w-[950px]">
+    <div className="bg-[#1d1b1a] border border-white/5 rounded-sm overflow-x-auto shadow-xl">
+      <table className="w-full border-collapse font-mono text-[10px] text-[#b9cbc2] text-left min-w-[950px]">
         <thead>
-          <tr className="border-b border-white/12 bg-[#000000] text-[#3be1fe] select-none text-[11px] uppercase tracking-wider font-bold">
-            <th className="p-4 sm:p-5 text-center w-14">NO</th>
-            <th className="p-4 sm:p-5 text-center w-14">EXPAND</th>
-            <th className="p-4 sm:p-5">GROUP_NAME</th>
-            <th className="p-4 sm:p-5">EVENT_NAME</th>
-            <th className="p-4 sm:p-5 text-center w-32">MEMBERS</th>
-            <th className="p-4 sm:p-5">CREATED_AT</th>
-            <th className="p-4 sm:p-5 text-center w-52">ACTIONS</th>
+          <tr className="border-b border-white/5 bg-[#151312] text-[#83958d] select-none text-[8.5px] uppercase tracking-wider font-bold">
+            <th className="p-4 text-center w-14">NO</th>
+            <th className="p-4 text-center w-14">EXPAND</th>
+            <th className="p-4 min-w-[200px]">GROUP NAME</th>
+            <th className="p-4 min-w-[200px]">EVENT NAME</th>
+            <th className="p-4 text-center w-32">MEMBERS</th>
+            <th className="p-4 min-w-[120px]">CREATED AT</th>
+            <th className="p-4 text-center w-48">ACTIONS</th>
           </tr>
         </thead>
         <tbody>
@@ -79,26 +79,26 @@ export function GroupsTable({
                 (group.events as any)?.title ||
                 group.events?.short_description ||
                 group.events?.location ||
-                "UNASSIGNED_EVENT";
+                "UNASSIGNED EVENT";
 
               return (
                 <React.Fragment key={group.id}>
                   {/* Main Group Row */}
                   <tr
                     onClick={() => toggleExpandGroup(group.id)}
-                    className={`border-b border-white/10 cursor-pointer transition-colors group ${
-                      isExpanded ? "bg-white/[0.06]" : "hover:bg-white/[0.03]"
+                    className={`border-b border-white/5 last:border-0 cursor-pointer transition-colors group ${
+                      isExpanded ? "bg-white/[0.04]" : "hover:bg-white/[0.01]"
                     }`}
                   >
                     {/* Index */}
-                    <td className="p-4 sm:p-5 text-center font-bold text-slate-500">
+                    <td className="p-4 text-center font-bold text-[#83958d]">
                       {String(index + 1).padStart(3, "0")}
                     </td>
 
                     {/* Expand Details Icon */}
-                    <td className="p-4 sm:p-5 text-center">
+                    <td className="p-4 text-center">
                       <svg
-                        className={`w-4 h-4 text-[#3be1fe] mx-auto transition-transform duration-300 ${
+                        className={`w-3.5 h-3.5 text-[#00ffec] mx-auto transition-transform duration-300 ${
                           isExpanded ? "rotate-180" : ""
                         }`}
                         fill="none"
@@ -108,55 +108,59 @@ export function GroupsTable({
                         <path
                           strokeLinecap="round"
                           strokeLinejoin="round"
-                          strokeWidth={2.5}
+                          strokeWidth={2}
                           d="M19 9l-7 7-7-7"
                         />
                       </svg>
                     </td>
 
                     {/* Group Name (Clickable Navigation to /groups/[id]/grading) */}
-                    <td className="p-4 sm:p-5 text-white font-bold text-sm max-w-[220px] truncate">
+                    <td className="p-4 text-[#e8e1df] font-bold max-w-[220px] truncate">
                       <Link
                         href={`/groups/${group.id}/grading`}
                         onClick={(e) => e.stopPropagation()}
-                        className="hover:text-[#3be1fe] hover:underline transition-colors flex items-center gap-1.5"
+                        className="hover:text-[#00ffec] hover:underline transition-colors flex items-center gap-1.5"
                         title="Grade Group"
                       >
-                        <span className="truncate">{group.group_name || "UNTITLED_GROUP"}</span>
-                        <svg className="w-3.5 h-3.5 text-[#3be1fe] opacity-0 group-hover:opacity-100 transition-opacity shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <span className="truncate">{group.group_name || "UNTITLED GROUP"}</span>
+                        <svg className="w-3.5 h-3.5 text-[#00ffec] opacity-0 group-hover:opacity-100 transition-opacity shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
                         </svg>
                       </Link>
                     </td>
 
                     {/* Event Name */}
-                    <td className="p-4 sm:p-5 text-slate-300 font-semibold max-w-[200px] truncate">
+                    <td className="p-4 text-[#83958d] max-w-[200px] truncate">
                       {eventName}
                     </td>
 
                     {/* Member Count */}
-                    <td className="p-4 sm:p-5 text-center font-bold text-white">
-                      <span className="inline-block px-2.5 py-0.5 rounded-sm bg-[#000000] border border-white/15 text-xs text-[#3be1fe]">
+                    <td className="p-4 text-center font-bold">
+                      <span className="inline-block px-2.5 py-0.5 rounded-sm bg-[#151312] border border-[#00ffec]/20 text-[10px] text-[#00ffec]">
                         {memberCount}
                       </span>
                     </td>
 
                     {/* Created At */}
-                    <td className="p-4 sm:p-5 text-slate-400 whitespace-nowrap">
+                    <td className="p-4 text-[#83958d] whitespace-nowrap">
                       {group.created_at
-                        ? new Date(group.created_at).toLocaleDateString()
+                        ? new Date(group.created_at).toLocaleDateString("en-US", {
+                            month: "short",
+                            day: "2-digit",
+                            year: "numeric",
+                          }).toUpperCase()
                         : "N/A"}
                     </td>
 
                     {/* Actions: Grade Group, Edit Group, Delete Group */}
-                    <td className="p-4 sm:p-5 text-center w-52">
+                    <td className="p-4 text-center w-48">
                       <div className="flex items-center justify-center gap-2">
                         {/* Grade Group Link */}
                         <Link
                           href={`/groups/${group.id}/grading`}
                           onClick={(e) => e.stopPropagation()}
                           title="Grade Group"
-                          className="px-3 py-1.5 rounded-md bg-[#3be1fe] hover:bg-[#6ee7fc] text-black font-bold text-[10px] uppercase tracking-wider transition-colors cursor-pointer"
+                          className="px-2.5 py-1.5 rounded-sm bg-[#00ffec] hover:brightness-110 text-[#00382b] font-bold text-[9px] uppercase tracking-wider transition-all cursor-pointer"
                         >
                           GRADE
                         </Link>
@@ -169,7 +173,7 @@ export function GroupsTable({
                             onOpenEditModal(group);
                           }}
                           title="Edit Group Details"
-                          className="px-3 py-1.5 rounded-md bg-[#000000] hover:bg-[#18181b] text-white border border-white/20 text-[10px] font-bold uppercase tracking-wider transition-colors cursor-pointer"
+                          className="px-2.5 py-1.5 rounded-sm bg-[#151312] hover:bg-[#252220] text-[#e8e1df] border border-white/10 hover:border-[#00ffec]/40 text-[9px] font-bold uppercase tracking-wider transition-all cursor-pointer"
                         >
                           EDIT
                         </button>
@@ -182,7 +186,7 @@ export function GroupsTable({
                             onDeleteGroup(group.id);
                           }}
                           title="Delete Group"
-                          className="p-1.5 rounded-md bg-red-950/80 hover:bg-red-900 text-red-400 border border-red-500/40 transition-colors cursor-pointer"
+                          className="p-1.5 rounded-sm bg-red-950/40 hover:bg-red-900/60 text-red-400 border border-red-500/30 transition-colors cursor-pointer"
                         >
                           <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
@@ -200,14 +204,14 @@ export function GroupsTable({
                         animate={{ opacity: 1, height: "auto" }}
                         exit={{ opacity: 0, height: 0 }}
                         transition={{ duration: 0.25 }}
-                        className="bg-[#050505] border-b border-white/12 overflow-hidden"
+                        className="bg-[#100e0d] border-b border-white/5 overflow-hidden"
                       >
-                        <td colSpan={7} className="p-6">
+                        <td colSpan={7} className="p-5 sm:p-6">
                           <div className="flex flex-col gap-4 w-full">
                             {/* Group Roster Subsection Header */}
-                            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-white/12 pb-3">
-                              <span className="text-xs font-mono font-bold text-[#3be1fe] uppercase tracking-widest flex items-center gap-2">
-                                <span className="w-2 h-2 rounded-full bg-[#3be1fe] shadow-[0_0_8px_#3be1fe]" />
+                            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-white/5 pb-3">
+                              <span className="text-[11px] font-mono font-bold text-[#00ffec] uppercase tracking-widest flex items-center gap-2">
+                                <span className="w-1.5 h-1.5 rounded-full bg-[#00ffec]" />
                                 GROUP MEMBERS ({memberCount})
                               </span>
 
@@ -216,9 +220,9 @@ export function GroupsTable({
                                 <Link
                                   href={`/groups/${group.id}/grading`}
                                   onClick={(e) => e.stopPropagation()}
-                                  className="px-3.5 py-1.5 rounded-md bg-[#3be1fe] hover:bg-[#6ee7fc] text-black border border-[#3be1fe] text-xs font-bold uppercase tracking-wider transition-colors cursor-pointer flex items-center gap-1.5 shadow-sm"
+                                  className="px-2.5 py-1.5 rounded-sm bg-[#00ffec] hover:brightness-110 text-[#00382b] text-[9px] font-bold uppercase tracking-wider transition-all cursor-pointer flex items-center gap-1.5 shadow-sm"
                                 >
-                                  <svg className="w-4 h-4 text-black" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                  <svg className="w-3.5 h-3.5 text-[#00382b]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
                                   </svg>
                                   <span>GRADE GROUP</span>
@@ -231,7 +235,7 @@ export function GroupsTable({
                                     e.stopPropagation();
                                     onOpenAddMemberModal(group);
                                   }}
-                                  className="px-3.5 py-1.5 rounded-md bg-[#000000] hover:bg-[#18181b] text-white border border-white/20 text-xs font-bold uppercase tracking-wider transition-colors cursor-pointer"
+                                  className="px-2.5 py-1.5 rounded-sm bg-[#151312] hover:bg-[#252220] text-[#e8e1df] border border-white/10 hover:border-[#00ffec]/40 text-[9px] font-bold uppercase tracking-wider transition-all cursor-pointer"
                                 >
                                   + ADD MEMBER
                                 </button>
@@ -243,19 +247,19 @@ export function GroupsTable({
                               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                                 {members.map((member) => {
                                   const displayName =
-                                    member.member_name || member.member_email || "UNNAMED_MEMBER";
-                                  const emailStr = member.member_email || "NO_EMAIL";
+                                    member.member_name || member.member_email || "UNNAMED MEMBER";
+                                  const emailStr = member.member_email || "NO EMAIL";
 
                                   return (
                                     <div
                                       key={member.id}
-                                      className="bg-[#121212] border border-white/12 rounded-md p-3.5 flex items-center justify-between gap-3 shadow-md hover:border-[#3be1fe]/40 transition-colors"
+                                      className="bg-[#151312] border border-white/5 rounded-sm p-3 flex items-center justify-between gap-3 shadow-md hover:border-[#00ffec]/30 transition-colors"
                                     >
                                       <div className="flex flex-col min-w-0">
-                                        <span className="text-xs font-bold text-white truncate">
+                                        <span className="text-xs font-bold text-[#e8e1df] truncate">
                                           {displayName}
                                         </span>
-                                        <span className="text-[11px] text-slate-400 truncate font-mono">
+                                        <span className="text-[10px] text-[#83958d] truncate font-mono">
                                           {emailStr}
                                         </span>
                                       </div>
@@ -267,7 +271,7 @@ export function GroupsTable({
                                               e.stopPropagation();
                                               onOpenEditMemberModal(member);
                                             }}
-                                            className="px-3 py-1 bg-white/10 hover:bg-white/20 text-white border border-white/20 text-[10px] font-bold uppercase tracking-wider rounded-md transition-colors cursor-pointer font-mono"
+                                            className="px-2 py-1 bg-white/5 hover:bg-white/10 text-[#e8e1df] border border-white/10 text-[9px] font-bold uppercase tracking-wider rounded-sm transition-colors cursor-pointer font-mono"
                                           >
                                             EDIT
                                           </button>
@@ -278,7 +282,7 @@ export function GroupsTable({
                                             e.stopPropagation();
                                             handleRemoveMember(group.id, member.id);
                                           }}
-                                          className="px-3 py-1 bg-red-950/80 border border-red-500/40 hover:bg-red-900 text-red-300 text-[10px] uppercase font-bold tracking-wider rounded-md transition-colors cursor-pointer shrink-0 font-mono"
+                                          className="px-2 py-1 bg-red-950/40 border border-red-500/30 hover:bg-red-900/60 text-red-300 text-[9px] uppercase font-bold tracking-wider rounded-sm transition-colors cursor-pointer shrink-0 font-mono"
                                         >
                                           REMOVE
                                         </button>
@@ -288,7 +292,7 @@ export function GroupsTable({
                                 })}
                               </div>
                             ) : (
-                              <div className="p-8 text-center text-xs font-mono font-medium text-slate-400 italic select-none">
+                              <div className="p-8 text-center text-xs font-mono font-medium text-[#83958d] italic select-none">
                                 NO MEMBERS REGISTERED IN THIS GROUP
                               </div>
                             )}
@@ -304,7 +308,7 @@ export function GroupsTable({
             <tr>
               <td
                 colSpan={7}
-                className="p-16 text-center text-slate-400 select-none text-xs italic"
+                className="p-12 text-center text-[#83958d] select-none text-xs font-mono"
               >
                 NO GROUP REGISTRY ENTRIES MATCHING ACTIVE FILTER PARAMETERS
               </td>

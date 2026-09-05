@@ -61,20 +61,20 @@ export function EventStatusSelect({
         value={selectedStatus}
         onChange={handleChangeStatus}
         disabled={isUpdating}
-        className={`px-3 py-1.5 rounded-md text-[11px] font-bold uppercase tracking-wider outline-none cursor-pointer transition-colors border appearance-none pr-7 ${
+        className={`px-2.5 py-1.5 rounded-sm text-[9px] font-bold uppercase tracking-wider outline-none cursor-pointer transition-colors border appearance-none pr-6 ${
           isOngoing
-            ? "bg-emerald-950/90 text-emerald-300 border-emerald-500/50 hover:bg-emerald-900/90"
-            : "bg-[#050505] text-slate-300 border-white/20 hover:bg-white/10"
+            ? "bg-[#00ffec]/10 text-[#00ffec] border-[#00ffec]/30"
+            : "bg-white/5 text-[#83958d] border-white/10 hover:bg-white/10"
         } ${isUpdating ? "opacity-50 cursor-wait" : ""}`}
       >
         {Object.entries(EVENT_STATUS).map(([key, val]) => (
-          <option key={key} value={val} className="bg-[#050505] text-white">
+          <option key={key} value={val} className="bg-[#151312] text-[#e8e1df]">
             {key.toUpperCase()}
           </option>
         ))}
       </select>
       <svg
-        className="w-3.5 h-3.5 absolute right-2 pointer-events-none text-slate-300"
+        className="w-3.5 h-3.5 absolute right-1.5 pointer-events-none text-[#83958d]"
         fill="none"
         viewBox="0 0 24 24"
         stroke="currentColor"

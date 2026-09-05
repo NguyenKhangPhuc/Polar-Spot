@@ -103,22 +103,24 @@ export function CreateEventModal({
   return (
     <AnimatePresence>
       {isOpen && (
-        <div className="fixed inset-0 top-16 lg:top-0 lg:left-64 z-30 overflow-y-auto bg-black/85 backdrop-blur-md p-4 sm:p-6 lg:p-8 flex items-center justify-center min-h-[calc(100vh-4rem)] lg:min-h-screen">
+        <div className="fixed inset-0 z-50 overflow-y-auto bg-black/80 backdrop-blur-md p-4 sm:p-6 lg:p-8 flex items-center justify-center min-h-screen">
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.95 }}
-            className="relative my-auto w-full max-w-7xl bg-[#121212] border border-white/15 rounded-md p-6 sm:p-8 space-y-6 shadow-2xl max-h-[85vh] overflow-y-auto text-slate-100"
+            className="relative my-auto w-full max-w-7xl bg-[#1d1b1a] border border-white/10 rounded-sm p-6 sm:p-8 space-y-6 shadow-2xl max-h-[85vh] overflow-y-auto text-[#e8e1df]"
           >
             {/* Modal Header */}
-            <div className="flex items-center justify-between border-b border-white/12 pb-4">
-              <h2 className="text-xl sm:text-2xl font-black text-white uppercase tracking-tight font-sans">
-                CREATE NEW EVENT
-              </h2>
+            <div className="flex items-center justify-between border-b border-white/10 pb-4">
+              <div className="flex flex-col">
+                <h2 className="text-xl sm:text-2xl font-black text-[#e8e1df] uppercase tracking-tight font-sans">
+                  CREATE NEW EVENT
+                </h2>
+              </div>
               <button
                 type="button"
                 onClick={onClose}
-                className="text-slate-400 hover:text-white p-1 cursor-pointer"
+                className="text-[#83958d] hover:text-[#e8e1df] p-1 cursor-pointer transition-colors"
               >
                 <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -128,7 +130,7 @@ export function CreateEventModal({
 
             {/* Submission Error Banner */}
             {submitError && (
-              <div className="p-4 rounded-md bg-red-950/80 border border-red-500/40 text-red-300 text-xs font-mono font-semibold">
+              <div className="p-4 rounded-sm bg-red-950/40 border border-red-500/30 text-red-300 text-xs font-mono font-semibold">
                 [ERROR]: {submitError}
               </div>
             )}
@@ -142,8 +144,8 @@ export function CreateEventModal({
                   
                   {/* Field 1: Event Title */}
                   <div className="flex flex-col gap-1.5">
-                    <label className="text-xs font-bold text-slate-200 uppercase tracking-wider">
-                      EVENT TITLE <span className="text-[#3be1fe]">*</span>
+                    <label className="text-[11px] font-bold text-[#83958d] uppercase tracking-wider">
+                      EVENT TITLE <span className="text-[#00ffec]">*</span>
                     </label>
                     <input
                       {...register("title", {
@@ -151,10 +153,10 @@ export function CreateEventModal({
                       })}
                       type="text"
                       placeholder="e.g. Polar Bear Pitching Main Stage 2026"
-                      className={`bg-[#050505] text-white border text-xs p-3.5 rounded-md w-full outline-none transition-colors ${
+                      className={`bg-[#151312] text-[#e8e1df] placeholder-[#83958d]/50 border text-xs p-3.5 rounded-sm w-full outline-none transition-colors ${
                         errors.title
                           ? "border-red-500/70 focus:border-red-400"
-                          : "border-white/15 focus:border-[#3be1fe]/70"
+                          : "border-white/10 focus:border-[#00ffec]/60"
                       }`}
                     />
                     {errors.title && (
@@ -166,8 +168,8 @@ export function CreateEventModal({
 
                   {/* Field 2: Short Description Textarea */}
                   <div className="flex flex-col gap-1.5">
-                    <label className="text-xs font-bold text-slate-200 uppercase tracking-wider">
-                      SHORT DESCRIPTION SUMMARY <span className="text-[#3be1fe]">*</span>
+                    <label className="text-[11px] font-bold text-[#83958d] uppercase tracking-wider">
+                      SHORT DESCRIPTION SUMMARY <span className="text-[#00ffec]">*</span>
                     </label>
                     <textarea
                       {...register("short_description", {
@@ -175,10 +177,10 @@ export function CreateEventModal({
                       })}
                       rows={3}
                       placeholder="Brief overview summary displayed on cards..."
-                      className={`bg-[#050505] text-white border text-xs p-3.5 rounded-md w-full outline-none transition-colors resize-none ${
+                      className={`bg-[#151312] text-[#e8e1df] placeholder-[#83958d]/50 border text-xs p-3.5 rounded-sm w-full outline-none transition-colors resize-none ${
                         errors.short_description
                           ? "border-red-500/70 focus:border-red-400"
-                          : "border-white/15 focus:border-[#3be1fe]/70"
+                          : "border-white/10 focus:border-[#00ffec]/60"
                       }`}
                     />
                     {errors.short_description && (
@@ -192,15 +194,15 @@ export function CreateEventModal({
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     {/* Status Select */}
                     <div className="flex flex-col gap-1.5">
-                      <label className="text-xs font-bold text-slate-200 uppercase tracking-wider">
-                        INITIAL STATUS <span className="text-[#3be1fe]">*</span>
+                      <label className="text-[11px] font-bold text-[#83958d] uppercase tracking-wider">
+                        INITIAL STATUS <span className="text-[#00ffec]">*</span>
                       </label>
                       <select
                         {...register("status")}
-                        className="bg-[#050505] text-white border border-white/15 text-xs p-3.5 rounded-md w-full outline-none focus:border-[#3be1fe]/70 transition-colors uppercase cursor-pointer"
+                        className="bg-[#151312] text-[#e8e1df] border border-white/10 text-xs p-3.5 rounded-sm w-full outline-none focus:border-[#00ffec]/60 transition-colors uppercase cursor-pointer"
                       >
                         {Object.entries(EVENT_STATUS).map(([key, val]) => (
-                          <option key={key} value={val} className="bg-[#050505] text-white">
+                          <option key={key} value={val} className="bg-[#151312] text-[#e8e1df]">
                             {key.toUpperCase()}
                           </option>
                         ))}
@@ -209,8 +211,8 @@ export function CreateEventModal({
 
                     {/* Member Limit */}
                     <div className="flex flex-col gap-1.5">
-                      <label className="text-xs font-bold text-slate-200 uppercase tracking-wider">
-                        MEMBERS / GROUP <span className="text-[#3be1fe]">*</span>
+                      <label className="text-[11px] font-bold text-[#83958d] uppercase tracking-wider">
+                        MEMBERS / GROUP <span className="text-[#00ffec]">*</span>
                       </label>
                       <input
                         {...register("member_per_groups", {
@@ -219,10 +221,10 @@ export function CreateEventModal({
                         })}
                         type="number"
                         placeholder="5"
-                        className={`bg-[#050505] text-white border text-xs p-3.5 rounded-md w-full outline-none transition-colors ${
+                        className={`bg-[#151312] text-[#e8e1df] placeholder-[#83958d]/50 border text-xs p-3.5 rounded-sm w-full outline-none transition-colors ${
                           errors.member_per_groups
                             ? "border-red-500/70 focus:border-red-400"
-                            : "border-white/15 focus:border-[#3be1fe]/70"
+                            : "border-white/10 focus:border-[#00ffec]/60"
                         }`}
                       />
                       {errors.member_per_groups && (
@@ -235,8 +237,8 @@ export function CreateEventModal({
 
                   {/* Location Input */}
                   <div className="flex flex-col gap-1.5">
-                    <label className="text-xs font-bold text-slate-200 uppercase tracking-wider">
-                      LOCATION / STAGE NODE <span className="text-[#3be1fe]">*</span>
+                    <label className="text-[11px] font-bold text-[#83958d] uppercase tracking-wider">
+                      LOCATION / STAGE NODE <span className="text-[#00ffec]">*</span>
                     </label>
                     <input
                       {...register("location", {
@@ -244,10 +246,10 @@ export function CreateEventModal({
                       })}
                       type="text"
                       placeholder="e.g. Oulu Market Square Ice Hole, Finland"
-                      className={`bg-[#050505] text-white border text-xs p-3.5 rounded-md w-full outline-none transition-colors ${
+                      className={`bg-[#151312] text-[#e8e1df] placeholder-[#83958d]/50 border text-xs p-3.5 rounded-sm w-full outline-none transition-colors ${
                         errors.location
                           ? "border-red-500/70 focus:border-red-400"
-                          : "border-white/15 focus:border-[#3be1fe]/70"
+                          : "border-white/10 focus:border-[#00ffec]/60"
                       }`}
                     />
                     {errors.location && (
@@ -260,18 +262,18 @@ export function CreateEventModal({
                   {/* Dates Grid: Start & End Date */}
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div className="flex flex-col gap-1.5">
-                      <label className="text-xs font-bold text-slate-200 uppercase tracking-wider">
-                        START DATE <span className="text-[#3be1fe]">*</span>
+                      <label className="text-[11px] font-bold text-[#83958d] uppercase tracking-wider">
+                        START DATE <span className="text-[#00ffec]">*</span>
                       </label>
                       <input
                         {...register("start_date", {
                           required: "Start date is required",
                         })}
                         type="date"
-                        className={`bg-[#050505] text-white border text-xs p-3 rounded-md w-full outline-none transition-colors ${
+                        className={`bg-[#151312] text-[#e8e1df] border text-xs p-3 rounded-sm w-full outline-none transition-colors ${
                           errors.start_date
                             ? "border-red-500/70 focus:border-red-400"
-                            : "border-white/15 focus:border-[#3be1fe]/70"
+                            : "border-white/10 focus:border-[#00ffec]/60"
                         }`}
                       />
                       {errors.start_date && (
@@ -282,18 +284,18 @@ export function CreateEventModal({
                     </div>
 
                     <div className="flex flex-col gap-1.5">
-                      <label className="text-xs font-bold text-slate-200 uppercase tracking-wider">
-                        END DATE <span className="text-[#3be1fe]">*</span>
+                      <label className="text-[11px] font-bold text-[#83958d] uppercase tracking-wider">
+                        END DATE <span className="text-[#00ffec]">*</span>
                       </label>
                       <input
                         {...register("end_date", {
                           required: "End date is required",
                         })}
                         type="date"
-                        className={`bg-[#050505] text-white border text-xs p-3 rounded-md w-full outline-none transition-colors ${
+                        className={`bg-[#151312] text-[#e8e1df] border text-xs p-3 rounded-sm w-full outline-none transition-colors ${
                           errors.end_date
                             ? "border-red-500/70 focus:border-red-400"
-                            : "border-white/15 focus:border-[#3be1fe]/70"
+                            : "border-white/10 focus:border-[#00ffec]/60"
                         }`}
                       />
                       {errors.end_date && (
@@ -306,18 +308,18 @@ export function CreateEventModal({
 
                   {/* Organized Date */}
                   <div className="flex flex-col gap-1.5">
-                    <label className="text-xs font-bold text-slate-200 uppercase tracking-wider">
-                      ORGANIZED DATE &amp; TIME <span className="text-[#3be1fe]">*</span>
+                    <label className="text-[11px] font-bold text-[#83958d] uppercase tracking-wider">
+                      ORGANIZED DATE &amp; TIME <span className="text-[#00ffec]">*</span>
                     </label>
                     <input
                       {...register("organized_date", {
                         required: "Organized date & time is required",
                       })}
                       type="datetime-local"
-                      className={`bg-[#050505] text-white border text-xs p-3.5 rounded-md w-full outline-none transition-colors ${
+                      className={`bg-[#151312] text-[#e8e1df] border text-xs p-3.5 rounded-sm w-full outline-none transition-colors ${
                         errors.organized_date
                           ? "border-red-500/70 focus:border-red-400"
-                          : "border-white/15 focus:border-[#3be1fe]/70"
+                          : "border-white/10 focus:border-[#00ffec]/60"
                       }`}
                     />
                     {errors.organized_date && (
@@ -330,8 +332,8 @@ export function CreateEventModal({
 
                 {/* Right Column (lg:col-span-7): Plate Rich Text Editor for Content */}
                 <div className="lg:col-span-7 flex flex-col gap-1.5">
-                  <label className="text-xs font-bold text-slate-200 uppercase tracking-wider">
-                    EVENT CONTENT (RICH TEXT DETAILS) <span className="text-[#3be1fe]">*</span>
+                  <label className="text-[11px] font-bold text-[#83958d] uppercase tracking-wider">
+                    EVENT CONTENT (RICH TEXT DETAILS) <span className="text-[#00ffec]">*</span>
                   </label>
                   <Controller
                     name="content"
@@ -362,18 +364,18 @@ export function CreateEventModal({
               </div>
 
               {/* Form Action Buttons */}
-              <div className="pt-4 flex items-center justify-end gap-3 border-t border-white/12">
+              <div className="pt-4 flex items-center justify-end gap-3 border-t border-white/10">
                 <button
                   type="button"
                   onClick={onClose}
-                  className="px-5 py-2.5 rounded-md text-xs font-mono font-bold text-slate-300 hover:text-white border border-white/15 hover:bg-white/10 uppercase transition-colors cursor-pointer"
+                  className="px-5 py-2.5 rounded-sm text-xs font-mono font-bold text-[#83958d] hover:text-[#e8e1df] border border-white/10 hover:border-white/20 uppercase transition-colors cursor-pointer"
                 >
                   CANCEL
                 </button>
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="px-6 py-2.5 rounded-md text-xs font-mono font-bold text-black bg-[#3be1fe] hover:bg-[#6ee7fc] uppercase transition-colors disabled:opacity-50 cursor-pointer shadow-md"
+                  className="px-6 py-2.5 rounded-sm text-xs font-mono font-bold text-[#00382b] bg-[#00ffec] hover:bg-[#00e6d4] uppercase transition-colors disabled:opacity-50 cursor-pointer shadow-md"
                 >
                   {isSubmitting ? "CREATING..." : "CONFIRM & CREATE"}
                 </button>
