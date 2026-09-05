@@ -5,12 +5,12 @@ import OrganizersSection from "./components/home/OrganizersSection";
 
 export default function Home() {
   return (
-    <div className="relative min-h-screen overflow-hidden">
+    <div className="w-full bg-[#151312] text-[#e8e1df] font-montserrat overflow-x-hidden relative min-h-screen">
       {/* Background Falling Snowflakes Animation */}
       <SnowEffect />
 
       {/* Main Home Sections */}
-      <div className="relative z-10 space-y-12 pb-16">
+      <div className="relative z-10">
         <HeroSection />
         <GroupsListSection />
         <OrganizersSection />

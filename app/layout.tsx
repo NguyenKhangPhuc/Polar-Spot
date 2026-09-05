@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Roboto } from "next/font/google";
+import { Roboto, Montserrat } from "next/font/google";
 import "./globals.css";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
@@ -16,6 +16,12 @@ const roboto = Roboto({
   weight: ["300", "400", "500", "700", "900"],
 });
 
+const montserrat = Montserrat({
+  variable: "--font-montserrat",
+  subsets: ["latin"],
+  display: "swap",
+});
+
 export const metadata: Metadata = {
   title: "Polar-Spot | Polar Bear Pitching Events Management",
   description: "Official events management platform for Polar Bear Pitching in Oulu, Finland.",
@@ -29,9 +35,9 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${roboto.variable} h-full antialiased font-sans`}
+      className={`${roboto.variable} ${montserrat.variable} h-full antialiased font-sans`}
     >
-      <body className="min-h-full flex flex-col polar-snow-bg text-slate-100 selection:bg-[#3be1fe]/30 selection:text-[#3be1fe] text-base font-sans bg-black">
+      <body className="min-h-full flex flex-col polar-snow-bg text-[#e8e1df] selection:bg-[#00ffec]/30 selection:text-[#00ffec] text-base font-sans bg-[#151312]">
         <NotificationProvider>
           <LoaderProvider>
             <TooltipProvider>

@@ -16,16 +16,20 @@ export default function SnowEffect() {
   const [snowflakes, setSnowflakes] = useState<SnowflakeData[]>([]);
 
   useEffect(() => {
-    // Generate 35 realistic random falling snow particles
-    const flakes: SnowflakeData[] = Array.from({ length: 35 }).map((_, i) => ({
-      id: i,
-      left: Math.random() * 100,
-      size: Math.random() * 8 + 4, // 4px - 12px
-      duration: Math.random() * 10 + 8, // 8s - 18s
-      delay: Math.random() * 8, // 0s - 8s
-      opacity: Math.random() * 0.7 + 0.3,
-      animationType: i % 2 === 0 ? "slow" : "medium",
-    }));
+    // Generate 45 snow particles falling faster and appearing immediately
+    const flakes: SnowflakeData[] = Array.from({ length: 45 }).map((_, i) => {
+      const duration = Math.random() * 4 + 3.5; // 3.5s - 7.5s (faster fall speed)
+      return {
+        id: i,
+        left: Math.random() * 100,
+        size: Math.random() * 7 + 4, // 4px - 11px
+        duration,
+        // Negative delay ensures snow is already mid-air and falling immediately
+        delay: -(Math.random() * duration),
+        opacity: Math.random() * 0.35 + 0.65, // 0.65 - 1.0 (bolder, richer visibility)
+        animationType: i % 2 === 0 ? "slow" : "medium",
+      };
+    });
     setSnowflakes(flakes);
   }, []);
 
@@ -34,7 +38,7 @@ export default function SnowEffect() {
       {snowflakes.map((flake) => (
         <div
           key={flake.id}
-          className="snowflake absolute rounded-full bg-[#3be1fe]/80 shadow-[0_0_10px_rgba(59,225,254,0.85)]"
+          className="snowflake absolute rounded-full bg-[#00ffec]/90 shadow-[0_0_12px_rgba(0,255,236,0.95)]"
           style={{
             left: `${flake.left}%`,
             width: `${flake.size}px`,

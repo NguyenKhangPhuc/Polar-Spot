@@ -8,34 +8,34 @@
 @custom-variant dark (&:is(.dark *));
 
 @layer utilities {
-  /* Clean Charcoal Black background (#09090b) - slightly lighter than pitch black navbar (#000000) */
+  /* Warm Dark background (#151312) matching ITEE SPOT */
   .polar-snow-bg {
-    background-color: #09090b;
+    background-color: #151312;
     background-attachment: fixed;
     position: relative;
     overflow-x: hidden;
   }
 
-  /* Refined Cyber Slate Frost Card */
+  /* Refined Slate Frost Card with Emerald Accent */
   .frost-card {
-    background: rgba(10, 10, 10, 0.95);
+    background: rgba(29, 27, 26, 0.95);
     backdrop-filter: blur(14px);
     -webkit-backdrop-filter: blur(14px);
-    border: 1px solid rgba(255, 255, 255, 0.12);
+    border: 1px solid rgba(58, 74, 68, 0.5);
     box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.8);
-    border-radius: 0.375rem;
+    border-radius: 0.125rem;
   }
 
   .frost-card:hover {
-    background: rgba(18, 18, 18, 0.98);
-    border-color: rgba(59, 225, 254, 0.5);
-    box-shadow: 0 12px 36px 0 rgba(59, 225, 254, 0.15);
+    background: rgba(37, 34, 32, 0.98);
+    border-color: rgba(0, 255, 236, 0.5);
+    box-shadow: 0 12px 36px 0 rgba(0, 255, 236, 0.15);
   }
 
-  /* Navigation bar deep black styling */
+  /* Navigation bar warm dark styling */
   .frost-nav {
-    background: #000000;
-    border-color: rgba(255, 255, 255, 0.12);
+    background: #100e0d;
+    border-color: rgba(58, 74, 68, 0.5);
   }
 }
 
@@ -174,10 +174,10 @@
     opacity: 0;
   }
   10% {
-    opacity: 0.8;
+    opacity: 1;
   }
   90% {
-    opacity: 0.8;
+    opacity: 1;
   }
   100% {
     transform: translateY(105vh) translateX(50px) rotate(360deg);
@@ -191,10 +191,10 @@
     opacity: 0;
   }
   15% {
-    opacity: 0.9;
+    opacity: 1;
   }
   85% {
-    opacity: 0.9;
+    opacity: 1;
   }
   100% {
     transform: translateY(105vh) translateX(-40px) rotate(-360deg);
@@ -211,8 +211,9 @@
 }
 
 @theme inline {
-  --font-sans: var(--font-roboto), system-ui, sans-serif;
-  --font-heading: var(--font-roboto), system-ui, sans-serif;
+  --font-montserrat: var(--font-montserrat), system-ui, sans-serif;
+  --font-sans: var(--font-montserrat), var(--font-roboto), system-ui, sans-serif;
+  --font-heading: var(--font-montserrat), var(--font-roboto), system-ui, sans-serif;
   --color-brand: var(--brand);
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);

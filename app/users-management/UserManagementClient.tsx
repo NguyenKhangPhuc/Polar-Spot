@@ -15,7 +15,7 @@ interface UserManagementClientProps {
   totalCount: number;
 }
 
-type SortOrder = "name_asc" | "name_desc" | "email_asc" | "email_desc";
+type SortOrder = "name_asc" | "name_desc" | "email_asc" | "email_desc" | "newest" | "oldest";
 const ITEMS_PER_PAGE = 10;
 
 export function UserManagementClient({
@@ -68,6 +68,11 @@ export function UserManagementClient({
           ? emailA.localeCompare(emailB)
           : emailB.localeCompare(emailA);
       }
+      if (sortOrder === "newest" || sortOrder === "oldest") {
+        const dateA = new Date(a.created_at || 0).getTime();
+        const dateB = new Date(b.created_at || 0).getTime();
+        return sortOrder === "newest" ? dateB - dateA : dateA - dateB;
+      }
       return 0;
     });
 
@@ -86,7 +91,7 @@ export function UserManagementClient({
   const handleRoleChange = async (userId: string, newRole: string) => {
     setIsOpenLoader(true);
     try {
-      const { data, error } = await updateProfileRole(userId, newRole);
+      const { data, error } = await updateProfileRole(userId, newRole as PROFILE_ROLE);
       if (error || !data) {
         throw new Error(error || "Failed to update role");
       }
@@ -199,6 +204,8 @@ export function UserManagementClient({
             <option value="name_desc">SORT: NAME Z TO A</option>
             <option value="email_asc">SORT: EMAIL A TO Z</option>
             <option value="email_desc">SORT: EMAIL Z TO A</option>
+            <option value="newest">SORT: NEWEST CREATED</option>
+            <option value="oldest">SORT: OLDEST CREATED</option>
           </select>
           <svg
             className="w-4 h-4 absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none"
@@ -229,7 +236,8 @@ export function UserManagementClient({
             <tr className="border-b border-white/12 bg-[#000000] text-[#3be1fe] select-none text-[11px] uppercase tracking-wider font-bold">
               <th className="py-3.5 px-4 w-16 text-center">NO.</th>
               <th className="py-3.5 px-4 min-w-[200px]">FULL NAME</th>
-              <th className="py-3.5 px-4 min-w-[240px]">EMAIL ADDRESS</th>
+              <th className="py-3.5 px-4 min-w-[220px]">EMAIL ADDRESS</th>
+              <th className="py-3.5 px-4 min-w-[150px]">CREATED AT</th>
               <th className="py-3.5 px-4 w-44 text-center border-l border-white/10">USER ROLE</th>
             </tr>
           </thead>
@@ -240,6 +248,9 @@ export function UserManagementClient({
                   const globalIndex = (currentPage - 1) * ITEMS_PER_PAGE + index + 1;
                   const formattedIndex = String(globalIndex).padStart(2, "0");
                   const userRole = user.role ? String(user.role).toLowerCase() : PROFILE_ROLE.STUDENT;
+                  const createdAtStr = user.created_at
+                    ? new Date(user.created_at).toLocaleDateString()
+                    : "N/A";
 
                   return (
                     <motion.tr
@@ -256,13 +267,18 @@ export function UserManagementClient({
                       </td>
 
                       {/* Full Name */}
-                      <td className="py-3 px-4 font-bold text-white max-w-[240px] truncate font-sans text-xs">
+                      <td className="py-3 px-4 font-bold text-white max-w-[200px] truncate font-sans text-xs">
                         {user.full_name || "Unnamed User"}
                       </td>
 
                       {/* Email Address */}
                       <td className="py-3 px-4 text-slate-300 font-mono text-xs truncate">
                         {user.email || "N/A"}
+                      </td>
+
+                      {/* Created At Date */}
+                      <td className="py-3 px-4 text-slate-400 font-mono text-xs truncate">
+                        {createdAtStr}
                       </td>
 
                       {/* Role Select Dropdown */}
@@ -293,7 +309,7 @@ export function UserManagementClient({
               ) : (
                 <tr>
                   <td
-                    colSpan={4}
+                    colSpan={5}
                     className="p-12 text-center text-slate-400 italic select-none text-xs font-mono"
                   >
                     NO USER PROFILES MATCHING ACTIVE FILTER PARAMETERS

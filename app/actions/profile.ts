@@ -40,7 +40,7 @@ export async function getProfileById(userId: string) {
  */
 export async function updateProfile(profile: ProfileInsert) {
     const supabase = await createClient();
-    const { data, error } = await supabase.from('profiles').update(profile).eq('id', profile.id);
+    const { data, error } = await supabase.from('profiles').update(profile as any).eq('id', profile.id);
 
     if (error) {
         return { error: "Failed to update profile" };
