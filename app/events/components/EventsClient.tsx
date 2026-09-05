@@ -12,7 +12,7 @@ interface EventsClientProps {
   events: Event[];
 }
 
-type SortBy = "date_desc" | "date_asc" | "title_asc";
+type SortBy = "newest" | "oldest" | "title_asc" | "title_desc";
 
 /**
  * PURPOSE:
@@ -28,7 +28,7 @@ export function EventsClient({ events }: EventsClientProps) {
   const [selectedSchedule, setSelectedSchedule] = useState<string>("all");
 
   // Sorting State
-  const [sortBy, setSortBy] = useState<SortBy>("date_desc");
+  const [sortBy, setSortBy] = useState<SortBy>("newest");
 
   // Pagination State
   const [currentPage, setCurrentPage] = useState<number>(1);
@@ -68,7 +68,7 @@ export function EventsClient({ events }: EventsClientProps) {
     setSearchQuery("");
     setSelectedStatuses([]);
     setSelectedSchedule("all");
-    setSortBy("date_desc");
+    setSortBy("newest");
     setCurrentPage(1);
   };
 
@@ -76,7 +76,7 @@ export function EventsClient({ events }: EventsClientProps) {
     searchQuery.trim() !== "" ||
     selectedStatuses.length > 0 ||
     selectedSchedule !== "all" ||
-    sortBy !== "date_desc";
+    sortBy !== "newest";
 
   // Filtered and Sorted Events
   const processedEvents = useMemo(() => {
@@ -152,11 +152,11 @@ export function EventsClient({ events }: EventsClientProps) {
 
     // Apply Sorting
     result = [...result].sort((a, b) => {
-      if (sortBy === "date_desc") {
+      if (sortBy === "newest") {
         const dateA = new Date(a.start_date || a.organized_date || a.created_at || 0).getTime();
         const dateB = new Date(b.start_date || b.organized_date || b.created_at || 0).getTime();
         return dateB - dateA;
-      } else if (sortBy === "date_asc") {
+      } else if (sortBy === "oldest") {
         const dateA = new Date(a.start_date || a.organized_date || a.created_at || 0).getTime();
         const dateB = new Date(b.start_date || b.organized_date || b.created_at || 0).getTime();
         return dateA - dateB;
@@ -164,6 +164,10 @@ export function EventsClient({ events }: EventsClientProps) {
         const titleA = ((a as any).title || a.short_description || "").toLowerCase();
         const titleB = ((b as any).title || b.short_description || "").toLowerCase();
         return titleA.localeCompare(titleB);
+      } else if (sortBy === "title_desc") {
+        const titleA = ((a as any).title || a.short_description || "").toLowerCase();
+        const titleB = ((b as any).title || b.short_description || "").toLowerCase();
+        return titleB.localeCompare(titleA);
       }
       return 0;
     });
@@ -231,14 +235,17 @@ export function EventsClient({ events }: EventsClientProps) {
                 }}
                 className="bg-transparent border-0 text-[#00ffec] font-mono text-[10px] uppercase font-bold tracking-wider py-0 pl-1 pr-6 focus:ring-0 focus:border-0 cursor-pointer"
               >
-                <option value="date_desc" className="bg-[#1d1b1a] text-[#e8e1df]">
-                  Date_Desc
+                <option value="newest" className="bg-[#1d1b1a] text-[#e8e1df]">
+                  New to Old
                 </option>
-                <option value="date_asc" className="bg-[#1d1b1a] text-[#e8e1df]">
-                  Date_Asc
+                <option value="oldest" className="bg-[#1d1b1a] text-[#e8e1df]">
+                  Old to New
                 </option>
                 <option value="title_asc" className="bg-[#1d1b1a] text-[#e8e1df]">
-                  Title_Asc
+                  A - Z (Title)
+                </option>
+                <option value="title_desc" className="bg-[#1d1b1a] text-[#e8e1df]">
+                  Z - A (Title)
                 </option>
               </select>
             </div>

@@ -81,13 +81,13 @@ export function EventCard({ event, posterUrl, index = 0 }: EventCardProps) {
         className="bg-[#1d1b1a] border border-white/5 overflow-hidden rounded-sm flex flex-col hover:border-[#00ffec]/40 hover:shadow-[0_0_20px_rgba(0,255,236,0.12)] transition-all duration-300 min-h-[460px] group w-full"
       >
         {/* Top Poster Section */}
-        <div className="relative w-full h-48 overflow-hidden bg-[#141211] shrink-0 border-b border-white/5">
+        <div className="relative w-full h-52 overflow-hidden bg-[#100e0d] shrink-0 border-b border-white/5 flex items-center justify-center">
           {/* Status Badge Tag (Top Left) */}
           <div
-            className={`absolute top-4 left-4 z-20 font-mono text-[9px] px-2 py-0.5 tracking-wider uppercase font-bold rounded-sm border ${
+            className={`absolute top-3.5 left-3.5 z-20 font-mono text-[9px] px-2 py-0.5 tracking-wider uppercase font-bold rounded-sm border ${
               isOngoing
-                ? "bg-[#00ffec]/10 border-[#00ffec]/30 text-[#00ffec]"
-                : "bg-white/5 border-white/10 text-[#83958d]"
+                ? "bg-[#00ffec]/15 border-[#00ffec]/35 text-[#00ffec] backdrop-blur-md"
+                : "bg-[#151312]/80 border-white/10 text-[#83958d] backdrop-blur-md"
             }`}
           >
             {isOngoing ? "[ ONGOING ]" : "[ FINISHED ]"}
@@ -95,28 +95,50 @@ export function EventCard({ event, posterUrl, index = 0 }: EventCardProps) {
 
           {/* Location Badge (Top Right) */}
           {event.location && (
-            <div className="absolute top-4 right-4 z-20 font-mono text-[9px] px-2 py-0.5 tracking-wider uppercase font-semibold rounded-sm border bg-[#151312]/85 backdrop-blur-sm border-white/10 text-[#b9cbc2] max-w-[150px] truncate">
+            <div className="absolute top-3.5 right-3.5 z-20 font-mono text-[9px] px-2 py-0.5 tracking-wider uppercase font-semibold rounded-sm border bg-[#151312]/85 backdrop-blur-md border-white/10 text-[#b9cbc2] max-w-[150px] truncate">
               {event.location}
             </div>
           )}
 
           {/* Poster Image */}
           {posterUrl ? (
-            <Image
-              alt={eventTitle}
-              src={posterUrl}
-              fill
-              unoptimized
-              className="w-full h-full object-cover grayscale opacity-70 group-hover:grayscale-0 group-hover:opacity-100 group-hover:scale-105 transition-all duration-500"
-            />
+            <>
+              {/* Ambient blur backdrop for padding */}
+              <Image
+                alt=""
+                src={posterUrl}
+                fill
+                unoptimized
+                aria-hidden="true"
+                className="object-cover blur-md opacity-20 scale-110 pointer-events-none"
+              />
+              {/* Main Poster Image - fits completely inside container */}
+              <Image
+                alt={eventTitle}
+                src={posterUrl}
+                fill
+                unoptimized
+                className="object-contain p-3 relative z-10 group-hover:scale-105 transition-transform duration-500 drop-shadow-md"
+              />
+            </>
           ) : (
-            <div className="w-full h-full flex items-center justify-center text-xs font-mono text-[#83958d] uppercase">
-              NO IMAGE
+            <div className="w-full h-full flex flex-col items-center justify-center text-xs font-mono text-[#83958d] uppercase">
+              <svg
+                className="w-8 h-8 text-[#83958d]/50 mb-1.5"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={1.5}
+                  d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+                />
+              </svg>
+              <span>NO IMAGE</span>
             </div>
           )}
-
-          {/* Gradient Bottom Fade into Card Body */}
-          <div className="absolute inset-0 bg-gradient-to-t from-[#1d1b1a] via-[#1d1b1a]/20 to-transparent pointer-events-none"></div>
         </div>
 
         {/* Card Content Body */}
@@ -191,7 +213,7 @@ export function EventCard({ event, posterUrl, index = 0 }: EventCardProps) {
                 </div>
                 <div>
                   <span className="text-[8px] font-mono text-[#83958d] uppercase tracking-wider block mb-1">
-                    Org_Date
+                    Org Date
                   </span>
                   <span className="text-[10px] font-mono text-[#b9cbc2] block truncate">
                     {formatDate(event.organized_date || event.start_date)}

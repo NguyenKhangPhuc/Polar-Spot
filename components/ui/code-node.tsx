@@ -11,7 +11,7 @@ export function CodeLeaf(props: PlateLeafProps) {
     <PlateLeaf
       {...props}
       as="code"
-      className="whitespace-pre-wrap rounded-md bg-muted px-[0.3em] py-[0.2em] font-mono text-sm"
+      className="whitespace-pre-wrap rounded-sm bg-[#100e0d] border border-white/10 text-[#00ffec] px-[0.4em] py-[0.15em] font-mono text-xs"
     >
       {props.children}
     </PlateLeaf>
