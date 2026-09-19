@@ -145,116 +145,121 @@ export default function CriteriaSection({
   }
 
   return (
-    <div className="w-full flex flex-col gap-8 select-text">
+    <div className="w-full flex flex-col gap-8 select-text font-mono">
       {/* Criteria Input Form */}
-      <div className="w-full pb-6 border-b border-white/12">
-        <form className="bg-[#13243b]/90 border border-white/18 rounded-2xl p-6 sm:p-8 flex flex-col gap-5 w-full shadow-xl">
-          <div className="flex items-center justify-between border-b border-white/12 pb-3">
-            <span className="text-xs font-bold text-sky-300 uppercase tracking-widest flex items-center gap-2">
-              <span className="w-2 h-2 rounded-full bg-cyan-400 shadow-[0_0_8px_#38bdf8]" />
-              GRADING CRITERIA DEFINITION
-            </span>
-          </div>
+      <form className="bg-[#1d1b1a] border border-white/5 rounded-sm p-6 sm:p-8 flex flex-col gap-5 w-full shadow-xl relative overflow-hidden">
+        <div className="absolute top-0 left-0 right-0 h-[2px] bg-[#00ffec]/50" />
 
-          <div className="grid grid-cols-1 gap-5">
-            {/* Criteria Name */}
-            <div className="flex flex-col gap-1.5">
-              <label className="text-xs font-semibold text-slate-200 uppercase tracking-wider">
-                CRITERIA NAME <span className="text-red-400">*</span>
-              </label>
-              <input
-                type="text"
-                placeholder="e.g. PITCH INNOVATION & VIABILITY"
-                className={`bg-[#0a1526] text-white border text-sm p-3.5 rounded-xl w-full outline-none transition-colors ${errors.name
+        <div className="flex items-center justify-between border-b border-white/5 pb-3 select-none">
+          <span className="text-xs font-bold text-[#e8e1df] uppercase tracking-wider flex items-center gap-2 font-mono">
+            <span className="w-[3px] h-3 bg-[#00ffec]" />
+            GRADING CRITERIA DEFINITION
+          </span>
+        </div>
+
+        <div className="grid grid-cols-1 gap-5">
+          {/* Criteria Name */}
+          <div className="flex flex-col gap-1.5">
+            <label className="text-[9px] font-mono text-[#83958d] uppercase tracking-widest font-bold">
+              CRITERIA NAME <span className="text-[#00ffec]">*</span>
+            </label>
+            <input
+              type="text"
+              placeholder="e.g. PITCH INNOVATION & VIABILITY"
+              className={`bg-[#151312] text-[#e8e1df] border font-mono text-xs p-3 rounded-sm w-full outline-none transition-colors placeholder:text-[#83958d]/40 ${
+                errors.name
                   ? "border-red-500/70 focus:border-red-400"
-                  : "border-white/15 focus:border-white/50"
-                  }`}
-                {...register("name", { required: "Criteria Name is required" })}
-              />
-              {errors.name && (
-                <span className="text-xs text-red-400 font-medium">
-                  {errors.name.message}
-                </span>
-              )}
-            </div>
+                  : "border-white/5 focus:border-[#00ffec]/50"
+              }`}
+              {...register("name", { required: "Criteria Name is required" })}
+            />
+            {errors.name && (
+              <span className="text-[10px] text-red-400 font-mono">
+                {errors.name.message}
+              </span>
+            )}
+          </div>
 
-            {/* Description */}
-            <div className="flex flex-col gap-1.5">
-              <label className="text-xs font-semibold text-slate-200 uppercase tracking-wider">
-                SHORT DESCRIPTION <span className="text-red-400">*</span>
-              </label>
-              <textarea
-                placeholder="Describe evaluation metrics, scoring rules, and expectations..."
-                rows={3}
-                className={`bg-[#0a1526] text-white border text-sm p-3.5 rounded-xl w-full outline-none transition-colors resize-none ${errors.short_description
+          {/* Description */}
+          <div className="flex flex-col gap-1.5">
+            <label className="text-[9px] font-mono text-[#83958d] uppercase tracking-widest font-bold">
+              SHORT DESCRIPTION <span className="text-[#00ffec]">*</span>
+            </label>
+            <textarea
+              placeholder="Describe evaluation metrics, scoring rules, and expectations..."
+              rows={3}
+              className={`bg-[#151312] text-[#e8e1df] border font-mono text-xs p-3 rounded-sm w-full outline-none transition-colors resize-none placeholder:text-[#83958d]/40 ${
+                errors.short_description
                   ? "border-red-500/70 focus:border-red-400"
-                  : "border-white/15 focus:border-white/50"
-                  }`}
-                {...register("short_description", { required: "Description is required" })}
-              />
-              {errors.short_description && (
-                <span className="text-xs text-red-400 font-medium">
-                  {errors.short_description.message}
-                </span>
-              )}
-            </div>
+                  : "border-white/5 focus:border-[#00ffec]/50"
+              }`}
+              {...register("short_description", { required: "Description is required" })}
+            />
+            {errors.short_description && (
+              <span className="text-[10px] text-red-400 font-mono">
+                {errors.short_description.message}
+              </span>
+            )}
           </div>
+        </div>
 
-          {/* Form Action Buttons */}
-          <div className="flex gap-3 select-none justify-end mt-2 pt-4 border-t border-white/12">
-            <button
-              type="button"
-              onClick={handleSubmit(handleSaveCriteria)}
-              className="px-5 py-2.5 bg-slate-800 hover:bg-slate-700 border border-cyan-500/40 text-cyan-300 text-xs font-bold uppercase tracking-wider rounded-xl transition-colors cursor-pointer flex items-center gap-1.5"
-            >
-              SAVE_CHANGES
-            </button>
-            <button
-              type="button"
-              onClick={handleSubmit(handleAddingCriteria)}
-              className="px-5 py-2.5 bg-white hover:bg-sky-100 text-slate-950 text-xs font-bold uppercase tracking-wider rounded-xl transition-colors cursor-pointer flex items-center gap-1.5 shadow-md"
-            >
-              + CREATE_CRITERIA
-            </button>
+        {/* Form Action Buttons */}
+        <div className="flex gap-3 select-none justify-end mt-2 pt-4 border-t border-white/5">
+          <button
+            type="button"
+            onClick={handleSubmit(handleSaveCriteria)}
+            className="px-5 py-2.5 bg-[#151312] hover:bg-[#252220] border border-[#00ffec]/40 text-[#00ffec] text-xs font-bold uppercase tracking-wider rounded-sm transition-colors cursor-pointer flex items-center gap-1.5 font-mono"
+          >
+            SAVE CHANGES
+          </button>
+          <button
+            type="button"
+            onClick={handleSubmit(handleAddingCriteria)}
+            className="px-5 py-2.5 bg-[#00ffec] hover:brightness-110 text-[#00382b] text-xs font-bold uppercase tracking-wider rounded-sm transition-all cursor-pointer flex items-center gap-1.5 shadow-md shadow-[#00ffec]/20 font-mono"
+          >
+            + CREATE CRITERIA
+          </button>
+        </div>
+      </form>
+
+      {/* Criteria List Header & Grid */}
+      <div className="flex flex-col gap-4">
+        <div className="flex items-center gap-2 text-xs font-mono font-bold text-[#e8e1df] uppercase tracking-wider select-none">
+          <div className="w-[3px] h-3 bg-[#00ffec]" />
+          <span>DEFINED CRITERIA ({criteriaList.length})</span>
+        </div>
+
+        {criteriaList.length > 0 ? (
+          <div className="w-full grid grid-cols-1 sm:grid-cols-2 gap-4">
+            {criteriaList.map((item, index) => (
+              <div
+                key={item.id || index}
+                onClick={() => handleChooseEventCriteria(item)}
+                className="bg-[#1d1b1a] border border-white/5 rounded-sm p-5 hover:border-[#00ffec]/40 hover:bg-[#252220] transition-all cursor-pointer flex flex-col gap-3 min-h-[130px] relative group shadow-lg font-mono"
+              >
+                {/* Header */}
+                <div className="flex justify-between items-start border-b border-white/5 pb-2 select-none">
+                  <span className="font-bold text-xs text-[#e8e1df] uppercase tracking-wider truncate">
+                    {item.name || "UNTITLED CRITERIA"}
+                  </span>
+                  <span className="text-[8px] font-bold text-[#00ffec] uppercase tracking-widest bg-[#151312] px-2 py-0.5 rounded-sm border border-white/5 shrink-0 ml-2">
+                    CLICK TO EDIT
+                  </span>
+                </div>
+
+                {/* Description Content */}
+                <p className="text-[10px] text-[#83958d] leading-relaxed line-clamp-4 select-text font-mono">
+                  {item.short_description || "No description registry parameters provided."}
+                </p>
+              </div>
+            ))}
           </div>
-        </form>
+        ) : (
+          <div className="p-12 text-center text-xs font-bold text-[#83958d] uppercase tracking-wider bg-[#1d1b1a] border border-white/5 rounded-sm font-mono shadow-xl">
+            NO GRADING CRITERIA DEFINED FOR THIS EVENT YET
+          </div>
+        )}
       </div>
-
-      {/* Criteria List Grid */}
-      {criteriaList.length > 0 ? (
-        <div className="w-full grid grid-cols-1 sm:grid-cols-2 gap-5">
-          {criteriaList.map((item, index) => (
-            <div
-              key={item.id || index}
-              onClick={() => handleChooseEventCriteria(item)}
-              className="bg-[#13243b]/90 border border-white/18 rounded-2xl p-5 hover:border-cyan-400/50 transition-all cursor-pointer flex flex-col gap-3 min-h-[140px] relative group shadow-lg"
-            >
-              {/* Header */}
-              <div className="flex justify-between items-start border-b border-white/12 pb-2 select-none">
-                <span className="font-bold text-sm text-white truncate">
-                  {item.name?.toUpperCase() || "UNTITLED_CRITERIA"}
-                </span>
-              </div>
-
-              {/* Description Content */}
-              <p className="text-xs text-slate-300 leading-relaxed line-clamp-4 select-text">
-                {item.short_description || "No description registry parameters provided."}
-              </p>
-
-              {/* Hover Indicator */}
-              <div className="absolute bottom-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
-                <span className="text-[10px] font-bold text-cyan-400 uppercase tracking-widest bg-cyan-950/80 px-2 py-0.5 rounded border border-cyan-500/30">
-                  [EDIT_MODULE]
-                </span>
-              </div>
-            </div>
-          ))}
-        </div>
-      ) : (
-        <div className="p-12 text-center text-sm font-medium text-slate-400 italic bg-[#13243b]/50 border border-white/10 rounded-2xl">
-          NO GRADING CRITERIA DEFINED FOR THIS EVENT YET
-        </div>
-      )}
     </div>
   );
 }

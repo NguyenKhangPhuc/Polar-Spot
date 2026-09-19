@@ -32,34 +32,40 @@ export default async function EditEventPage({ params }: EditEventPageProps) {
   // Render error state if event not found or fetch fails
   if (eventRes.error || !eventRes.data) {
     return (
-      <div className="w-full min-h-screen py-16 px-4 flex items-center justify-center select-none text-slate-100">
-        <div className="max-w-md w-full bg-[#13243b] border border-red-500/40 rounded-2xl p-8 text-center space-y-5 shadow-2xl">
-          <div className="w-12 h-12 rounded-full bg-red-950/80 border border-red-500/40 text-red-400 flex items-center justify-center mx-auto">
-            <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-            </svg>
+      <div className="w-full min-h-screen bg-[#151312] text-[#e8e1df] font-mono py-24 px-6 md:px-16 flex flex-col items-center justify-center select-none">
+        <div className="bg-[#1d1b1a] border border-red-500/30 rounded-sm p-8 sm:p-12 max-w-lg w-full text-center space-y-6 shadow-2xl">
+          <div className="w-14 h-14 rounded-sm bg-red-950/40 border border-red-500/40 text-red-400 flex items-center justify-center mx-auto text-xl font-mono font-black shadow-lg">
+            !
           </div>
-          <h2 className="text-xl font-black text-white uppercase tracking-tight">
-            EVENT RECORD NOT FOUND
-          </h2>
-          <p className="text-sm text-slate-300">
-            {eventRes.error || "Unable to locate event details matching the requested identifier."}
-          </p>
-          <Link
-            href="/events-management"
-            className="inline-block px-5 py-2.5 rounded-xl bg-white hover:bg-sky-100 text-slate-950 font-bold text-xs uppercase tracking-wider transition-colors cursor-pointer"
-          >
-            RETURN TO EVENTS MANAGEMENT
-          </Link>
+          <div className="space-y-2">
+            <h2 className="text-2xl font-extrabold text-[#e8e1df] tracking-tight uppercase">
+              Event Record Not Found
+            </h2>
+            <p className="text-xs text-[#b9cbc2] leading-relaxed font-mono">
+              {eventRes.error || "Unable to locate event details matching the requested identifier."}
+            </p>
+          </div>
+          <div className="pt-2 flex justify-center">
+            <Link
+              href="/events-management"
+              className="inline-block px-5 py-2.5 rounded-sm bg-[#151312] hover:bg-[#252220] border border-white/10 text-xs font-bold font-mono text-[#e8e1df] uppercase tracking-wider transition-colors cursor-pointer"
+            >
+              RETURN TO EVENTS MANAGEMENT
+            </Link>
+          </div>
         </div>
       </div>
     );
   }
 
   return (
-    <EditEventClient
-      event={eventRes.data}
-      criteria={criteriaRes.data || []}
-    />
+    <div className="w-full min-h-screen bg-[#151312] text-[#e8e1df] font-mono px-6 md:px-16 py-24 select-none">
+      <div className="max-w-7xl mx-auto flex flex-col">
+        <EditEventClient
+          event={eventRes.data}
+          criteria={criteriaRes.data || []}
+        />
+      </div>
+    </div>
   );
 }
