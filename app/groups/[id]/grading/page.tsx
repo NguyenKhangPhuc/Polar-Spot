@@ -1,6 +1,7 @@
 import { notFound, redirect } from "next/navigation";
 import { getUser } from "@/app/actions/authentication";
 import { getGroupByGroupId } from "@/app/actions/groups";
+import { getSingleEventById } from "@/app/actions/events";
 import { getEventCriteriaByEventId } from "@/app/actions/event_grading_criteria";
 import { getUserGroupGradingByGroupAndUserId } from "@/app/actions/user_group_grading";
 import GroupGradingClient from "./GroupGradingClient";
@@ -26,29 +27,29 @@ export default async function Page({ params }: PageProps) {
     notFound();
   }
 
-  // 3. Fetch event grading criteria for group's event
-  let criteriaList: any[] = [];
-  if (group.event_id) {
-    const { data: criteriaData } = await getEventCriteriaByEventId(group.event_id);
-    if (criteriaData) {
-      criteriaList = criteriaData;
-    }
-  }
-
-  // 4. Fetch existing grading records for this user and group
-  const { data: existingGradings } = await getUserGroupGradingByGroupAndUserId(
-    group.id,
-    userId
-  );
+  // 3. Concurrently fetch event, event grading criteria, and existing user gradings via Promise.all
+  const [{ data: event }, { data: criteriaData }, { data: existingGradings }] =
+    await Promise.all([
+      group.event_id
+        ? getSingleEventById(group.event_id)
+        : Promise.resolve({ data: null, error: null }),
+      group.event_id
+        ? getEventCriteriaByEventId(group.event_id)
+        : Promise.resolve({ data: [], error: null }),
+      getUserGroupGradingByGroupAndUserId(group.id, userId),
+    ]);
 
   return (
-    <div className="w-full min-h-screen polar-snow-bg text-slate-100 flex flex-col py-12 px-6 sm:px-10 lg:px-16 select-none font-sans relative max-w-7xl mx-auto">
-      <GroupGradingClient
-        group={group}
-        criteriaList={criteriaList}
-        existingGradings={existingGradings || []}
-        userId={userId}
-      />
+    <div className="w-full min-h-screen bg-[#151312] text-[#e8e1df] font-mono px-6 md:px-16 py-24">
+      <div className="max-w-7xl mx-auto flex flex-col">
+        <GroupGradingClient
+          group={group}
+          event={event || null}
+          criteriaList={criteriaData || []}
+          existingGradings={existingGradings || []}
+          userId={userId}
+        />
+      </div>
     </div>
   );
 }
