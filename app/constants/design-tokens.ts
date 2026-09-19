@@ -32,9 +32,12 @@ export const tw = {
     imageHolder: "bg-[#141211] border border-[#3a4a44]/60",
     buttonPrimary: "bg-[#00ffec] text-[#00382b] font-bold hover:brightness-110 transition-all shadow-md shadow-[#00ffec]/20 uppercase tracking-widest",
     buttonSecondary: "border border-[#3a4a44] bg-[#373433]/50 text-[#e8e1df] font-bold hover:bg-white/10 transition-all uppercase tracking-widest",
+    authCard: "bg-[#1d1b1a] border border-white/5 rounded-sm p-6 sm:p-8 shadow-2xl flex flex-col gap-5 w-full",
+    authInput: "bg-[#151312] border border-white/5 rounded-sm focus-within:border-[#00ffec]/50 text-[#e8e1df]",
   },
   border: {
     ice: "border border-[#3a4a44]/50 hover:border-[#00ffec]/50 transition-colors",
+    whiteSubtle: "border-white/5",
   },
   text: {
     heading: "text-[#e8e1df] font-bold tracking-tight font-montserrat",
@@ -42,6 +45,7 @@ export const tw = {
     primary: "text-[#e8e1df]",
     muted: "text-[#b9cbc2]",
     accent: "text-[#00ffec]",
+    authLabel: "text-[9px] font-mono text-[#83958d] uppercase tracking-widest font-bold mb-1.5 flex items-center justify-between",
   },
   radius: {
     card: "rounded-sm",

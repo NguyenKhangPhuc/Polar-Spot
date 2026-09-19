@@ -14,16 +14,16 @@ const LoginSubInfoSection = ({ register, errors }: LoginSubInfoSectionProps) => 
     <>
       {/* Remember me & Forgot password link */}
       <div className="flex items-center justify-between mt-4 text-xs font-mono">
-        <label className="flex items-center gap-2 text-slate-300 cursor-pointer select-none">
+        <label className="flex items-center gap-2 text-[#83958d] cursor-pointer select-none">
           <input
             type="checkbox"
-            className="h-4 w-4 cursor-pointer accent-[#3be1fe] bg-[#050505] border border-white/15 rounded-md"
+            className="h-3.5 w-3.5 cursor-pointer accent-[#00ffec] bg-[#151312] border border-white/10 rounded-sm"
           />
           <span>Remember me</span>
         </label>
         <Link
           href="/forget-password"
-          className="text-[#3be1fe] hover:text-white font-bold transition-colors cursor-pointer"
+          className="text-[#00ffec] hover:underline font-bold transition-colors cursor-pointer"
         >
           Forgot password?
         </Link>
@@ -35,20 +35,20 @@ const LoginSubInfoSection = ({ register, errors }: LoginSubInfoSectionProps) => 
           <input
             type="checkbox"
             id="isTermAccepted"
-            className="mt-0.5 h-4 w-4 cursor-pointer accent-[#3be1fe] bg-[#050505] border border-white/15 rounded-md shrink-0"
+            className="mt-0.5 h-3.5 w-3.5 cursor-pointer accent-[#00ffec] bg-[#151312] border border-white/10 rounded-sm shrink-0"
             {...register("isTermAccepted", {
               required: "You must accept the Terms and Privacy Policy to continue",
             })}
           />
           <label
             htmlFor="isTermAccepted"
-            className="text-xs text-slate-300 cursor-pointer leading-relaxed select-none font-sans"
+            className="text-xs text-[#83958d] cursor-pointer leading-relaxed select-none font-mono"
           >
             I have read and agree to the{" "}
             <Link
               href="/terms-and-conditions"
               target="_blank"
-              className="text-[#3be1fe] underline font-semibold hover:text-white transition-colors"
+              className="text-[#00ffec] underline font-semibold hover:text-[#00ffec]/80 transition-colors"
             >
               Terms &amp; Conditions
             </Link>{" "}
@@ -56,7 +56,7 @@ const LoginSubInfoSection = ({ register, errors }: LoginSubInfoSectionProps) => 
             <Link
               href="/privacy-policy"
               target="_blank"
-              className="text-[#3be1fe] underline font-semibold hover:text-white transition-colors"
+              className="text-[#00ffec] underline font-semibold hover:text-[#00ffec]/80 transition-colors"
             >
               Privacy Policy
             </Link>
@@ -65,7 +65,7 @@ const LoginSubInfoSection = ({ register, errors }: LoginSubInfoSectionProps) => 
         </div>
 
         {errors.isTermAccepted && (
-          <p className="text-red-400 text-xs font-mono font-medium mt-1">
+          <p className="text-red-400 text-[9px] font-mono font-medium mt-1 uppercase tracking-wider">
             {errors.isTermAccepted.message}
           </p>
         )}
