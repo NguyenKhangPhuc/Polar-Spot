@@ -25,6 +25,7 @@ interface BasicInfoFormValues {
   title: string;
   short_description: string;
   member_per_groups: number;
+  max_score?: number | null;
   location: string;
   start_date: string;
   end_date: string;
@@ -51,6 +52,7 @@ export default function BasicInfoSection({ event, page }: BasicInfoSectionProps)
       title: (event as any).title || "",
       short_description: event.short_description || "",
       member_per_groups: event.member_per_groups || 5,
+      max_score: event.max_score ?? 100,
       location: event.location || "",
       start_date: event.start_date ? event.start_date.split("T")[0] : "",
       end_date: event.end_date ? event.end_date.split("T")[0] : "",
@@ -84,6 +86,7 @@ export default function BasicInfoSection({ event, page }: BasicInfoSectionProps)
         title: formData.title,
         short_description: formData.short_description,
         member_per_groups: Number(formData.member_per_groups) || 5,
+        max_score: formData.max_score ? Number(formData.max_score) : null,
         location: formData.location,
         start_date: formData.start_date,
         end_date: formData.end_date,
@@ -196,8 +199,35 @@ export default function BasicInfoSection({ event, page }: BasicInfoSectionProps)
               )}
             </div>
 
-            {/* Location */}
+            {/* Max Score */}
             <div className="flex flex-col gap-1.5">
+              <label className="text-xs font-semibold text-slate-200 uppercase tracking-wider">
+                MAX SCORE <span className="text-red-400">*</span>
+              </label>
+              <input
+                type="number"
+                min="1"
+                placeholder="100"
+                className={`bg-[#0a1526] text-white border text-sm p-3.5 rounded-xl w-full outline-none transition-colors ${
+                  errors.max_score
+                    ? "border-red-500/70 focus:border-red-400"
+                    : "border-white/15 focus:border-white/50"
+                }`}
+                {...register("max_score", {
+                  required: "Max score is required",
+                  valueAsNumber: true,
+                  min: { value: 1, message: "Min score is 1" },
+                })}
+              />
+              {errors.max_score && (
+                <span className="text-xs text-red-400 font-medium">
+                  {errors.max_score.message}
+                </span>
+              )}
+            </div>
+
+            {/* Location */}
+            <div className="flex flex-col gap-1.5 sm:col-span-2">
               <label className="text-xs font-semibold text-slate-200 uppercase tracking-wider">
                 LOCATION / NODE <span className="text-red-400">*</span>
               </label>

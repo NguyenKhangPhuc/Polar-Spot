@@ -50,7 +50,7 @@ export default function RootLayout({
 
               {/* Main Content Area */}
               <div className="flex-1 flex flex-col lg:pl-64 pt-16 lg:pt-0 min-h-screen">
-                <main className="flex-1 w-full relative z-10">{children}</main>
+                <main className="flex-1 w-full relative">{children}</main>
                 
                 {/* Global Footer */}
                 <Footer />

@@ -1,6 +1,7 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { createPortal } from "react-dom";
 import { useForm, Controller } from "react-hook-form";
 import { AnimatePresence, motion } from "framer-motion";
 import { Event, EventInsert } from "../../types/event";
@@ -15,6 +16,7 @@ interface CreateEventFormValues {
   short_description: string;
   status: EVENT_STATUS;
   member_per_groups: number;
+  max_score?: number | null;
   location: string;
   start_date: string;
   end_date: string;
@@ -33,6 +35,12 @@ export function CreateEventModal({
   onClose,
   onEventCreated,
 }: CreateEventModalProps) {
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
   const { setIsOpenLoader } = useLoader();
   const { showNotification } = useNotification();
 
@@ -51,6 +59,7 @@ export function CreateEventModal({
       short_description: "",
       status: EVENT_STATUS.ONGOING,
       member_per_groups: 5,
+      max_score: 100,
       location: "",
       start_date: "",
       end_date: "",
@@ -69,6 +78,7 @@ export function CreateEventModal({
       short_description: formData.short_description,
       status: formData.status || EVENT_STATUS.ONGOING,
       member_per_groups: Number(formData.member_per_groups) || 5,
+      max_score: formData.max_score ? Number(formData.max_score) : null,
       location: formData.location,
       start_date: formData.start_date,
       end_date: formData.end_date,
@@ -100,10 +110,14 @@ export function CreateEventModal({
     }
   };
 
-  return (
+  if (!mounted) {
+    return null;
+  }
+
+  return createPortal(
     <AnimatePresence>
       {isOpen && (
-        <div className="fixed inset-0 z-50 overflow-y-auto bg-black/80 backdrop-blur-md p-4 sm:p-6 lg:p-8 flex items-center justify-center min-h-screen">
+        <div className="fixed inset-0 z-[60] overflow-y-auto bg-black/80 backdrop-blur-md p-4 sm:p-6 lg:p-8 flex items-center justify-center min-h-screen">
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
@@ -235,28 +249,57 @@ export function CreateEventModal({
                     </div>
                   </div>
 
-                  {/* Location Input */}
-                  <div className="flex flex-col gap-1.5">
-                    <label className="text-[11px] font-bold text-[#83958d] uppercase tracking-wider">
-                      LOCATION / STAGE NODE <span className="text-[#00ffec]">*</span>
-                    </label>
-                    <input
-                      {...register("location", {
-                        required: "Location is required",
-                      })}
-                      type="text"
-                      placeholder="e.g. Oulu Market Square Ice Hole, Finland"
-                      className={`bg-[#151312] text-[#e8e1df] placeholder-[#83958d]/50 border text-xs p-3.5 rounded-sm w-full outline-none transition-colors ${
-                        errors.location
-                          ? "border-red-500/70 focus:border-red-400"
-                          : "border-white/10 focus:border-[#00ffec]/60"
-                      }`}
-                    />
-                    {errors.location && (
-                      <span className="text-xs text-red-400 font-medium mt-0.5">
-                        {errors.location.message}
-                      </span>
-                    )}
+                  {/* Logistics Row 2: Location & Max Score */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    {/* Location Input */}
+                    <div className="flex flex-col gap-1.5">
+                      <label className="text-[11px] font-bold text-[#83958d] uppercase tracking-wider">
+                        LOCATION / STAGE NODE <span className="text-[#00ffec]">*</span>
+                      </label>
+                      <input
+                        {...register("location", {
+                          required: "Location is required",
+                        })}
+                        type="text"
+                        placeholder="e.g. Oulu Market Square Ice Hole, Finland"
+                        className={`bg-[#151312] text-[#e8e1df] placeholder-[#83958d]/50 border text-xs p-3.5 rounded-sm w-full outline-none transition-colors ${
+                          errors.location
+                            ? "border-red-500/70 focus:border-red-400"
+                            : "border-white/10 focus:border-[#00ffec]/60"
+                        }`}
+                      />
+                      {errors.location && (
+                        <span className="text-xs text-red-400 font-medium mt-0.5">
+                          {errors.location.message}
+                        </span>
+                      )}
+                    </div>
+
+                    {/* Max Score Input */}
+                    <div className="flex flex-col gap-1.5">
+                      <label className="text-[11px] font-bold text-[#83958d] uppercase tracking-wider">
+                        MAX SCORE <span className="text-[#00ffec]">*</span>
+                      </label>
+                      <input
+                        {...register("max_score", {
+                          required: "Max score is required",
+                          valueAsNumber: true,
+                          min: { value: 1, message: "Minimum 1" },
+                        })}
+                        type="number"
+                        placeholder="100"
+                        className={`bg-[#151312] text-[#e8e1df] placeholder-[#83958d]/50 border text-xs p-3.5 rounded-sm w-full outline-none transition-colors ${
+                          errors.max_score
+                            ? "border-red-500/70 focus:border-red-400"
+                            : "border-white/10 focus:border-[#00ffec]/60"
+                        }`}
+                      />
+                      {errors.max_score && (
+                        <span className="text-xs text-red-400 font-medium mt-0.5">
+                          {errors.max_score.message}
+                        </span>
+                      )}
+                    </div>
                   </div>
 
                   {/* Dates Grid: Start & End Date */}
@@ -384,7 +427,8 @@ export function CreateEventModal({
           </motion.div>
         </div>
       )}
-    </AnimatePresence>
+    </AnimatePresence>,
+    document.body
   );
 }
 
