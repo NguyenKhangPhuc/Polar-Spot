@@ -24,6 +24,7 @@ export function EventResultClient({
   const [searchQuery, setSearchQuery] = useState("");
   const [sortOption, setSortOption] = useState<SortOption>("score_desc");
 
+  const maxScore = event?.max_score ?? 100;
   const totalGroupsCount = groupFinalScores.length;
   const topScore = useMemo(() => {
     if (groupFinalScores.length === 0) return 0;
@@ -71,85 +72,125 @@ export function EventResultClient({
     "EVENT EVALUATION";
 
   return (
-    <div className="w-full min-h-screen py-12 px-6 sm:px-10 lg:px-16 space-y-8 select-none text-slate-100 font-sans relative max-w-7xl mx-auto">
+    <div className="w-full flex flex-col gap-8 select-text font-mono">
       {/* Top Header & Navigation */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-white/12 pb-6">
-        <div className="space-y-3">
-          <BackButton
-            href={event ? `/events/${event.id}` : "/events"}
-            label="BACK TO EVENT DETAILS"
-          />
-          <div>
-            <span className="text-[10px] font-bold text-[#3be1fe] uppercase tracking-widest block font-mono">
-              FINAL SCORE EVALUATION
-            </span>
-            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-black text-white tracking-tight">
-              {eventTitle}
-            </h1>
+      <div className="flex flex-col gap-2">
+        <BackButton
+          href={event ? `/events/${event.id}` : "/events"}
+          label="BACK TO EVENT DETAILS"
+          className="mb-0"
+        />
+
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 border-b border-white/5 pb-8 mb-2 select-none">
+          <div className="flex gap-4 items-stretch">
+            <div className="w-[3px] bg-[#00ffec]" />
+            <div className="flex flex-col gap-1.5">
+              <h1 className="text-2xl sm:text-3xl font-extrabold text-[#e8e1df] tracking-tight uppercase leading-tight font-mono">
+                Final Score Evaluation
+              </h1>
+              <div className="text-[9px] font-mono text-[#83958d] uppercase tracking-widest flex flex-wrap gap-x-4 gap-y-1 select-text">
+                <span>EVENT: {eventTitle.toUpperCase()}</span>
+                <span>|</span>
+                <span>TEAMS: {totalGroupsCount}</span>
+                <span>|</span>
+                <span>MAX SCORE: {maxScore}</span>
+              </div>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-3">
+            <Link
+              href={event ? `/events/${event.id}` : "/events"}
+              className="self-start md:self-auto px-4 py-2 rounded-sm bg-[#1d1b1a] hover:bg-[#252220] border border-white/10 text-xs font-bold font-mono text-[#e8e1df] uppercase tracking-wider transition-colors shadow-sm"
+            >
+              VIEW EVENT OVERVIEW
+            </Link>
           </div>
         </div>
-
-        <Link
-          href={event ? `/events/${event.id}` : "/events"}
-          className="self-start sm:self-auto px-4 py-2.5 rounded-md bg-[#000000] hover:bg-[#18181b] border border-white/20 text-xs font-bold font-mono text-white uppercase tracking-wider transition-colors"
-        >
-          VIEW EVENT OVERVIEW
-        </Link>
       </div>
 
       {/* Summary Stat Badges */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 font-mono text-xs">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 font-mono text-xs select-none">
         {/* Metric 1: Total Groups */}
-        <div className="bg-[#121212] border border-white/12 p-5 rounded-md flex flex-col justify-between shadow-md">
-          <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">
+        <div className="bg-[#1d1b1a] border border-white/5 p-5 rounded-sm flex flex-col justify-between shadow-xl">
+          <span className="text-[10px] font-bold text-[#83958d] uppercase tracking-wider">
             TOTAL EVALUATED TEAMS
           </span>
           <div className="mt-2 flex items-baseline gap-2">
-            <span className="text-3xl font-black text-white font-sans">{totalGroupsCount}</span>
-            <span className="text-xs text-slate-400">GROUPS REGISTERED</span>
+            <span className="text-3xl font-black text-[#e8e1df] font-mono">{totalGroupsCount}</span>
+            <span className="text-xs text-[#83958d]">GROUPS REGISTERED</span>
           </div>
         </div>
 
         {/* Metric 2: Highest Average Score */}
-        <div className="bg-[#121212] border border-white/12 p-5 rounded-md flex flex-col justify-between shadow-md">
-          <span className="text-[11px] font-bold text-[#3be1fe] uppercase tracking-wider">
+        <div className="bg-[#1d1b1a] border border-white/5 p-5 rounded-sm flex flex-col justify-between shadow-xl">
+          <span className="text-[10px] font-bold text-[#00ffec] uppercase tracking-wider">
             TOP EVALUATION SCORE
           </span>
           <div className="mt-2 flex items-baseline gap-2">
-            <span className="text-3xl font-black text-[#3be1fe] font-sans">{topScore.toFixed(1)}</span>
-            <span className="text-xs text-sky-200">/ 5.0 MAX AVERAGE</span>
+            <span className="text-3xl font-black text-[#00ffec] font-mono">{topScore.toFixed(1)}</span>
+            <span className="text-xs text-[#b9cbc2]">/ {maxScore} MAX SCORE</span>
           </div>
         </div>
       </div>
 
       {/* Controls: Search and Sort */}
-      <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4 bg-[#121212] p-4 rounded-md border border-white/12 shadow-md font-mono text-xs">
+      <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4 bg-[#1d1b1a] p-4 rounded-sm border border-white/5 shadow-md font-mono text-xs">
         {/* Search Bar */}
-        <div className="relative flex-1">
+        {/* Search Bar */}
+        <div className="relative flex items-center flex-1">
           <input
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Search group by name..."
-            className="w-full bg-[#050505] text-white border border-white/15 rounded-md px-4 py-2.5 text-xs outline-none focus:border-[#3be1fe]/70 transition-colors font-mono placeholder:text-slate-500"
+            className="w-full bg-[#151312] text-[#e8e1df] border border-white/5 rounded-sm pl-10 pr-4 py-2.5 text-xs outline-none focus:border-[#00ffec]/50 transition-colors font-mono placeholder:text-[#83958d]/50"
           />
+          <svg
+            className="w-4 h-4 absolute left-3 text-[#00ffec] pointer-events-none"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+            />
+          </svg>
         </div>
 
         {/* Sort Selector */}
         <div className="flex items-center gap-2 shrink-0">
-          <label className="text-xs font-mono text-slate-300 uppercase font-bold">
+          <label className="text-[7.5px] font-mono text-[#83958d] uppercase font-bold tracking-widest">
             SORT BY:
           </label>
-          <select
-            value={sortOption}
-            onChange={(e) => setSortOption(e.target.value as SortOption)}
-            className="bg-[#050505] text-white border border-white/15 rounded-md px-3 py-2.5 text-xs font-bold font-mono outline-none uppercase cursor-pointer focus:border-[#3be1fe]/70"
-          >
-            <option value="score_desc">FINAL SCORE (HIGH TO LOW)</option>
-            <option value="score_asc">FINAL SCORE (LOW TO HIGH)</option>
-            <option value="name_asc">GROUP NAME (A - Z)</option>
-            <option value="name_desc">GROUP NAME (Z - A)</option>
-          </select>
+          <div className="relative flex items-center">
+            <select
+              value={sortOption}
+              onChange={(e) => setSortOption(e.target.value as SortOption)}
+              className="bg-[#151312] text-[#e8e1df] border border-white/5 rounded-sm p-2.5 pr-8 text-xs font-bold font-mono outline-none uppercase cursor-pointer focus:border-[#00ffec]/50 appearance-none"
+            >
+              <option value="score_desc">FINAL SCORE (HIGH TO LOW)</option>
+              <option value="score_asc">FINAL SCORE (LOW TO HIGH)</option>
+              <option value="name_asc">GROUP NAME (A - Z)</option>
+              <option value="name_desc">GROUP NAME (Z - A)</option>
+            </select>
+            <svg
+              className="w-3.5 h-3.5 absolute right-2.5 text-[#83958d] pointer-events-none"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M19 9l-7 7-7-7"
+              />
+            </svg>
+          </div>
         </div>
       </div>
 

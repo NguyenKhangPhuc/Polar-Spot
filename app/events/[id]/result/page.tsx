@@ -7,8 +7,7 @@ import EventResultClient from "./EventResultClient";
 /**
  * PURPOSE:
  * Server Component for event evaluation results page at 'app/events/[id]/result/page.tsx'.
- * Concurrently fetches target event details, authenticated user session, and group final scores
- * from the 'group_final_scores' database view.
+ * Concurrently fetches target event details, authenticated user session, and group final scores.
  *
  * CONTEXT/PARENT FILE:
  * Mounted at 'app/events/[id]/result/page.tsx'.
@@ -35,10 +34,14 @@ export default async function EventResultPage({ params }: EventResultPageProps) 
   const groupFinalScores = scoresRes.data || [];
 
   return (
-    <EventResultClient
-      event={event}
-      user={user}
-      groupFinalScores={groupFinalScores}
-    />
+    <div className="w-full min-h-screen bg-[#151312] text-[#e8e1df] font-mono px-6 md:px-16 py-24 select-none">
+      <div className="max-w-7xl mx-auto flex flex-col">
+        <EventResultClient
+          event={event}
+          user={user}
+          groupFinalScores={groupFinalScores}
+        />
+      </div>
+    </div>
   );
 }

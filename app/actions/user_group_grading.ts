@@ -15,6 +15,7 @@
  */
 
 import { UserGroupGrading, UserGroupGradingInsert } from "../types/user_group_grading";
+import { UserGroupFinalScores } from "../types/all_users_group";
 import { createClient } from "../utils/supabase/server";
 
 /**
@@ -92,3 +93,29 @@ export async function upsertUserGroupGrading(gradings: UserGroupGradingInsert[])
     }
     return { data: data as UserGroupGrading[], error: null };
 }
+
+/**
+ * PURPOSE:
+ * Fetches all user group grading results and details from 'user_group_final_scores' view for an event.
+ *
+ * CONTEXT/PARENT FILE:
+ * Called concurrently by app/events/[id]/result/page.tsx Server Component.
+ *
+ * INPUTS / PARAMETERS:
+ * - eventId (string, Required): Target event UUID.
+ */
+export async function getAllUsersGroupGradings(eventId: string) {
+    const supabase = await createClient();
+    const { data, error } = await supabase
+        .from('user_group_final_scores')
+        .select('*')
+        .eq('event_id', eventId);
+
+    if (error) {
+        console.error("Error fetching user_group_final_scores:", error);
+        return { data: null, error: "Fail to fetch all users group gradings" };
+    }
+
+    return { data: (data as UserGroupFinalScores) || [], error: null };
+}
+

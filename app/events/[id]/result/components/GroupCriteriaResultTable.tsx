@@ -32,40 +32,43 @@ export function GroupCriteriaResultTable({
   return (
     <div className="flex flex-col gap-4 font-mono text-xs">
       {/* Section Header */}
-      <div className="flex items-center gap-2.5 text-xs font-mono font-bold text-slate-200 uppercase tracking-widest select-none">
-        <span className="text-[#3be1fe]">FINAL RESULT</span>
-        <span className="text-[10px] text-slate-400 font-normal">
+      <div className="flex items-center gap-2.5 text-xs font-mono font-bold text-[#e8e1df] uppercase tracking-widest select-none">
+        <span className="text-[#00ffec]">FINAL RESULT</span>
+        <span className="text-[10px] text-[#83958d] font-normal">
           ({filteredScores.length} {filteredScores.length === 1 ? "ENTRY" : "ENTRIES"})
         </span>
       </div>
 
       {/* Scrollable Table Container */}
-      <div className="bg-[#121212] border border-white/12 rounded-md overflow-x-auto shadow-xl">
-        <table className="w-full border-collapse font-mono text-xs text-slate-200 text-left min-w-[750px]">
+      <div className="bg-[#1d1b1a] border border-white/5 rounded-sm overflow-x-auto shadow-xl">
+        <table className="w-full border-collapse font-mono text-[10px] text-[#b9cbc2] text-left min-w-[750px]">
           <thead>
-            <tr className="border-b border-white/12 bg-[#000000] text-[#3be1fe] select-none text-[11px] uppercase tracking-wider font-bold">
-              <th className="py-3 px-4 min-w-[180px]">GROUP_NAME</th>
+            <tr className="border-b border-white/5 bg-[#151312] text-[#83958d] select-none text-[8.5px] uppercase tracking-wider font-bold">
+              <th className="p-4 font-bold text-center w-14">NO</th>
+              <th className="p-4 font-bold min-w-[180px]">GROUP NAME</th>
               {uniqueCriteriaList.map((crit) => (
                 <th
                   key={crit.id}
-                  className="py-3 px-4 text-center whitespace-nowrap border-l border-white/10"
+                  className="p-4 text-center whitespace-nowrap min-w-[130px] align-top"
                 >
-                  <span className="block">{crit.name.toUpperCase()}</span>
-                  <span className="block text-[9px] font-medium text-slate-400 mt-0.5">
-                    AVG SCORE
-                  </span>
+                  <div className="flex flex-col items-center justify-start text-center w-full">
+                    <span className="block font-bold text-[#83958d] text-[8.5px] uppercase tracking-wider text-center" title={crit.name}>
+                      {crit.name.toUpperCase()}
+                    </span>
+                    <span className="block text-[7.5px] font-medium text-[#83958d]/70 mt-0.5 text-center uppercase tracking-widest">
+                      AVG SCORE
+                    </span>
+                  </div>
                 </th>
               ))}
-              <th className="py-3 px-4 text-center text-[#3be1fe] w-32 whitespace-nowrap border-l border-white/12">
-                FINAL_SCORE
-              </th>
+              <th className="p-4 font-bold text-center w-36">FINAL SCORE</th>
             </tr>
           </thead>
           <tbody>
             <AnimatePresence mode="popLayout">
               {filteredScores.length > 0 ? (
                 filteredScores.map((score, index) => {
-                  const groupName = score.group_name || "UNNAMED_GROUP";
+                  const groupName = score.group_name || "UNREGISTERED GROUP";
 
                   return (
                     <motion.tr
@@ -74,24 +77,24 @@ export function GroupCriteriaResultTable({
                       animate={{ opacity: 1, y: 0 }}
                       exit={{ opacity: 0, scale: 0.95 }}
                       transition={{ duration: 0.2, delay: index * 0.02 }}
-                      className="border-b border-white/10 last:border-0 hover:bg-white/[0.04] transition-colors"
+                      className="border-b border-white/5 last:border-0 hover:bg-white/[0.01] transition-colors"
                     >
+                      {/* Index / NO */}
+                      <td className="p-4 text-center font-bold text-[#83958d]">
+                        {String(index + 1).padStart(3, "0")}
+                      </td>
+
                       {/* Group Name Column */}
-                      <td className="py-2.5 px-4 font-bold text-white max-w-[220px] truncate hover:text-[#3be1fe] transition-colors">
+                      <td className="p-4 text-[#e8e1df] font-bold whitespace-nowrap">
                         <Link
                           href={`/groups/${score.group_id}/grading`}
-                          className="flex items-center gap-2 group"
+                          className="hover:text-[#00ffec] transition-colors"
                         >
-                          <span className="text-slate-500 text-[10px] font-normal w-5 text-right font-mono">
-                            {String(index + 1).padStart(2, "0")}.
-                          </span>
-                          <span className="truncate group-hover:underline font-sans text-xs">
-                            {groupName}
-                          </span>
+                          {groupName}
                         </Link>
                       </td>
 
-                      {/* Criteria Score Columns (Dynamic Width matching Criteria Title text) */}
+                      {/* Criteria Score Columns */}
                       {uniqueCriteriaList.map((crit) => {
                         const cell = score.criteria?.find(
                           (c) => c.criteria_id === crit.id
@@ -104,25 +107,25 @@ export function GroupCriteriaResultTable({
                         return (
                           <td
                             key={crit.id}
-                            className="py-2.5 px-4 text-center whitespace-nowrap border-l border-white/10"
+                            className="p-4 text-center whitespace-nowrap"
                           >
-                            <div className="flex flex-col items-center justify-center gap-0.5">
+                            <div className="flex flex-col items-center justify-center gap-1">
                               {/* Average Score */}
-                              <span className="font-bold text-xs text-white">
+                              <span className="font-bold text-[10px] text-[#e8e1df]">
                                 {cell?.avg_score !== null && cell?.avg_score !== undefined
                                   ? cell.avg_score.toFixed(1)
                                   : "0.0"}
                               </span>
 
                               {/* Logged-in User Evaluation Grade Badge */}
-                              <span className="text-[9px] font-mono tracking-wider uppercase">
+                              <span className="text-[8px] font-mono tracking-wider uppercase">
                                 {userGrade !== undefined && userGrade !== null ? (
-                                  <span className="inline-block px-1.5 py-0.5 rounded-sm bg-[#3be1fe]/10 text-[#3be1fe] border border-[#3be1fe]/30 font-bold">
+                                  <span className="inline-block px-1.5 py-0.5 rounded-sm bg-[#151312] text-[#00ffec] border border-white/5 font-bold">
                                     YOURS: {userGrade}
                                   </span>
                                 ) : (
-                                  <span className="text-slate-600 font-medium text-[9px]">
-                                    NOT_GRADED
+                                  <span className="text-[#83958d]/50 font-medium text-[8px]">
+                                    NOT GRADED
                                   </span>
                                 )}
                               </span>
@@ -131,9 +134,9 @@ export function GroupCriteriaResultTable({
                         );
                       })}
 
-                      {/* Final Evaluation Score (Compact & Centered) */}
-                      <td className="py-2.5 px-4 text-center w-32 whitespace-nowrap border-l border-white/12 font-bold">
-                        <span className="inline-block px-3 py-1 rounded-md bg-[#000000] border border-[#3be1fe]/50 text-[#3be1fe] font-black text-xs shadow-inner">
+                      {/* Final Evaluation Score */}
+                      <td className="p-4 text-center w-36 whitespace-nowrap font-bold">
+                        <span className="inline-block px-3 py-1 rounded-sm bg-[#151312] border border-white/5 text-[#00ffec] font-bold text-[9px] shadow-sm">
                           {score.final_avg_score !== null && score.final_avg_score !== undefined
                             ? score.final_avg_score.toFixed(1)
                             : "0.0"}
@@ -145,8 +148,8 @@ export function GroupCriteriaResultTable({
               ) : (
                 <tr>
                   <td
-                    colSpan={2 + uniqueCriteriaList.length}
-                    className="p-12 text-center text-slate-400 italic select-none text-xs"
+                    colSpan={3 + uniqueCriteriaList.length}
+                    className="p-12 text-center text-[#83958d] select-none text-xs font-mono"
                   >
                     NO GROUP SCORE ENTRIES MATCHING ACTIVE FILTER PARAMETERS
                   </td>

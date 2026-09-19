@@ -1,0 +1,1 @@
+grant select on public.user_group_final_scores to authenticated;
