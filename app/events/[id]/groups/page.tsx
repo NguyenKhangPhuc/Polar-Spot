@@ -22,7 +22,7 @@ export default async function EventGroupsPage({ params }: EventGroupsPageProps) 
 
   if (profileError || !profile) {
     return (
-      <div className="w-full min-h-screen py-10 px-4 sm:px-8 lg:px-12 text-[#e8e1df] font-sans relative flex flex-col items-center justify-center max-w-7xl mx-auto">
+      <div className="w-full min-h-screen bg-[#151312] text-[#e8e1df] font-montserrat overflow-x-hidden py-24 px-6 md:px-16 flex flex-col items-center justify-center select-none">
         <div className="bg-[#1d1b1a] border border-red-500/30 rounded-sm p-8 sm:p-12 max-w-lg w-full text-center space-y-6 shadow-2xl">
           <div className="w-14 h-14 rounded-sm bg-red-950/80 border border-red-500/40 text-red-400 flex items-center justify-center mx-auto text-xl font-black font-mono shadow-lg">
             !
@@ -57,7 +57,7 @@ export default async function EventGroupsPage({ params }: EventGroupsPageProps) 
 
   if (serverError || !event) {
     return (
-      <div className="w-full min-h-screen py-10 px-4 sm:px-8 lg:px-12 text-[#e8e1df] font-sans relative flex flex-col items-center justify-center max-w-7xl mx-auto">
+      <div className="w-full min-h-screen bg-[#151312] text-[#e8e1df] font-montserrat overflow-x-hidden py-24 px-6 md:px-16 flex flex-col items-center justify-center select-none">
         <div className="bg-[#1d1b1a] border border-red-500/30 rounded-sm p-8 sm:p-12 max-w-lg w-full text-center space-y-6 shadow-2xl">
           <div className="w-14 h-14 rounded-sm bg-red-950/80 border border-red-500/40 text-red-400 flex items-center justify-center mx-auto text-xl font-black font-mono shadow-lg">
             !
@@ -79,13 +79,15 @@ export default async function EventGroupsPage({ params }: EventGroupsPageProps) 
   }
 
   return (
-    <div className="w-full min-h-screen py-10 px-4 sm:px-8 lg:px-12 text-[#e8e1df] font-sans relative max-w-7xl mx-auto">
-      <EventGroupsClient
-        event={event}
-        groups={groups || []}
-        canGrade={canGrade}
-        profile={profile}
-      />
+    <div className="w-full min-h-screen bg-[#151312] text-[#e8e1df] font-montserrat overflow-x-hidden py-24 px-6 md:px-16 select-none">
+      <div className="max-w-7xl mx-auto flex flex-col">
+        <EventGroupsClient
+          event={event}
+          groups={groups || []}
+          canGrade={canGrade}
+          profile={profile}
+        />
+      </div>
     </div>
   );
 }

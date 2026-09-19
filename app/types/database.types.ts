@@ -155,11 +155,25 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "group_feedbacks_group_id_fkey"
+            columns: ["group_id"]
+            isOneToOne: false
+            referencedRelation: "user_group_final_scores"
+            referencedColumns: ["group_id"]
+          },
+          {
             foreignKeyName: "group_feedbacks_user_id_fkey"
             columns: ["user_id"]
             isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "group_feedbacks_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "user_group_final_scores"
+            referencedColumns: ["user_id"]
           },
         ]
       }
@@ -199,6 +213,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "groups"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "group_members_group_id_fkey"
+            columns: ["group_id"]
+            isOneToOne: false
+            referencedRelation: "user_group_final_scores"
+            referencedColumns: ["group_id"]
           },
         ]
       }
@@ -359,11 +380,25 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "user_group_grading_group_id_fkey"
+            columns: ["group_id"]
+            isOneToOne: false
+            referencedRelation: "user_group_final_scores"
+            referencedColumns: ["group_id"]
+          },
+          {
             foreignKeyName: "user_group_grading_user_id_fkey"
             columns: ["user_id"]
             isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "user_group_grading_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "user_group_final_scores"
+            referencedColumns: ["user_id"]
           },
         ]
       }
@@ -392,6 +427,13 @@ export type Database = {
             referencedRelation: "groups"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "user_group_grading_group_id_fkey"
+            columns: ["group_id"]
+            isOneToOne: false
+            referencedRelation: "user_group_final_scores"
+            referencedColumns: ["group_id"]
+          },
         ]
       }
       group_criteria_user_grades: {
@@ -419,11 +461,25 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "user_group_grading_group_id_fkey"
+            columns: ["group_id"]
+            isOneToOne: false
+            referencedRelation: "user_group_final_scores"
+            referencedColumns: ["group_id"]
+          },
+          {
             foreignKeyName: "user_group_grading_user_id_fkey"
             columns: ["user_id"]
             isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "user_group_grading_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "user_group_final_scores"
+            referencedColumns: ["user_id"]
           },
         ]
       }
@@ -446,6 +502,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "groups"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "user_group_grading_group_id_fkey"
+            columns: ["group_id"]
+            isOneToOne: false
+            referencedRelation: "user_group_final_scores"
+            referencedColumns: ["group_id"]
           },
         ]
       }
@@ -490,10 +553,45 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "user_group_grading_group_id_fkey"
+            columns: ["group_id"]
+            isOneToOne: false
+            referencedRelation: "user_group_final_scores"
+            referencedColumns: ["group_id"]
+          },
+          {
             foreignKeyName: "user_group_grading_user_id_fkey"
             columns: ["user_id"]
             isOneToOne: false
             referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "user_group_grading_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "user_group_final_scores"
+            referencedColumns: ["user_id"]
+          },
+        ]
+      }
+      user_group_final_scores: {
+        Row: {
+          event_id: string | null
+          event_title: string | null
+          full_name: string | null
+          grading_details: Json | null
+          group_id: string | null
+          group_name: string | null
+          user_group_final_score: number | null
+          user_id: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "groups_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "events"
             referencedColumns: ["id"]
           },
         ]

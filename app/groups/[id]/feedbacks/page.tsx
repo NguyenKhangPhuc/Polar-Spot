@@ -22,16 +22,16 @@ export default async function GroupFeedbacksPage({ params }: GroupFeedbacksPageP
 
   if (serverError || !group) {
     return (
-      <div className="w-full min-h-screen py-12 px-6 sm:px-10 lg:px-16 space-y-8 select-none text-slate-100 font-sans relative flex flex-col items-center justify-center max-w-7xl mx-auto">
-        <div className="bg-[#121212] border border-red-500/30 rounded-md p-8 sm:p-12 max-w-lg w-full text-center space-y-6 shadow-2xl backdrop-blur-md">
-          <div className="w-14 h-14 rounded-md bg-red-950/80 border border-red-500/40 text-red-400 flex items-center justify-center mx-auto text-xl font-black font-mono shadow-lg">
+      <div className="w-full min-h-screen bg-[#151312] text-[#e8e1df] font-mono px-6 md:px-16 py-24 select-none relative flex flex-col items-center justify-center">
+        <div className="bg-[#1d1b1a] border border-red-500/30 rounded-sm p-8 sm:p-12 max-w-lg w-full text-center space-y-6 shadow-2xl">
+          <div className="w-14 h-14 rounded-sm bg-red-950/80 border border-red-500/40 text-red-400 flex items-center justify-center mx-auto text-xl font-bold font-mono shadow-lg">
             !
           </div>
           <div className="space-y-2">
-            <h2 className="text-2xl font-black text-white tracking-tight font-sans">
+            <h2 className="text-2xl font-bold text-[#e8e1df] tracking-tight font-mono uppercase">
               Group Feedbacks Not Found
             </h2>
-            <p className="text-sm text-slate-300 leading-relaxed font-mono">
+            <p className="text-xs text-[#83958d] leading-relaxed font-mono">
               {serverError || "The group record or feedback entries could not be loaded."}
             </p>
           </div>
@@ -43,5 +43,11 @@ export default async function GroupFeedbacksPage({ params }: GroupFeedbacksPageP
     );
   }
 
-  return <FeedbacksClient feedbacks={feedbacks || []} group={group} />;
+  return (
+    <div className="w-full min-h-screen bg-[#151312] text-[#e8e1df] font-mono px-6 md:px-16 py-24">
+      <div className="max-w-7xl mx-auto flex flex-col">
+        <FeedbacksClient feedbacks={feedbacks || []} group={group} />
+      </div>
+    </div>
+  );
 }

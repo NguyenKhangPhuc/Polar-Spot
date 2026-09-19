@@ -28,58 +28,63 @@ export function FeedbacksClient({ feedbacks, group }: FeedbacksClientProps) {
   }, [feedbacks, searchQuery]);
 
   return (
-    <div className="w-full min-h-screen py-12 px-6 sm:px-10 lg:px-16 space-y-8 select-none text-slate-100 font-sans relative max-w-7xl mx-auto">
-      {/* Top Header & Navigation Section */}
-      <div className="space-y-6 border-b border-white/12 pb-8">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-          <BackButton
-            href={eventId ? `/events/${eventId}/groups` : "/events"}
-            label="BACK TO EVENT GROUPS"
-          />
+    <div className="w-full flex flex-col gap-8 select-text">
+      {/* Header Section */}
+      <div className="flex flex-col gap-2">
+        <BackButton
+          href={eventId ? `/events/${eventId}/groups` : "/events"}
+          label="BACK TO EVENT GROUPS"
+          className="mb-0"
+        />
 
-          <span className="px-3.5 py-1.5 rounded-md bg-[#000000] border border-[#3be1fe]/50 text-[#3be1fe] font-mono font-bold text-xs uppercase tracking-wider shadow-sm self-start sm:self-auto">
-            {filteredFeedbacks.length}{" "}
-            {filteredFeedbacks.length === 1 ? "FEEDBACK" : "FEEDBACKS"} RECEIVED
-          </span>
-        </div>
+        {/* Page Header */}
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 border-b border-white/5 pb-8 mb-2 select-none">
+          <div className="flex gap-4 items-center">
+            <div className="w-[3px] self-stretch bg-[#00ffec]" />
+            <div className="relative w-12 h-12 rounded-sm overflow-hidden bg-[#151312] border border-white/10 shrink-0 flex items-center justify-center shadow-md">
+              {group?.avatar_url ? (
+                <Image
+                  src={group.avatar_url}
+                  alt={groupName}
+                  fill
+                  className="object-cover"
+                />
+              ) : (
+                <div className="w-full h-full bg-[#151312] text-[#00ffec] font-bold text-lg flex items-center justify-center font-mono border border-[#00ffec]/30">
+                  {groupName.charAt(0).toUpperCase()}
+                </div>
+              )}
+            </div>
 
-        {/* Main Title & Group Info */}
-        <div className="flex items-center gap-4">
-          <div className="relative w-14 h-14 rounded-md overflow-hidden bg-[#050505] border border-white/15 shrink-0 flex items-center justify-center shadow-md">
-            {group?.avatar_url ? (
-              <Image
-                src={group.avatar_url}
-                alt={groupName}
-                fill
-                className="object-cover"
-              />
-            ) : (
-              <div className="w-full h-full bg-[#000000] text-[#3be1fe] font-black text-xl flex items-center justify-center font-mono border border-[#3be1fe]/30">
-                {groupName.charAt(0).toUpperCase()}
+            <div className="flex flex-col gap-1.5">
+              <h1 className="text-2xl sm:text-3xl font-extrabold text-[#e8e1df] tracking-tight uppercase leading-tight font-mono">
+                Group Feedbacks
+              </h1>
+              <div className="text-[9px] font-mono text-[#83958d] uppercase tracking-widest flex flex-wrap gap-x-4 gap-y-1 select-text">
+                <span>GROUP: {groupName.toUpperCase()}</span>
+                <span>|</span>
+                <span>TOTAL: {feedbacks.length}</span>
               </div>
-            )}
+            </div>
           </div>
 
-          <div>
-            <span className="text-[10px] font-mono font-bold text-[#3be1fe] uppercase tracking-widest block">
-              PUBLIC EVALUATION &amp; FEEDBACKS
+          <div className="flex items-center gap-3">
+            <span className="px-3 py-1 rounded-sm bg-[#1d1b1a] border border-[#00ffec]/30 text-[#00ffec] font-mono font-bold text-xs uppercase tracking-wider shadow-sm">
+              {filteredFeedbacks.length} {filteredFeedbacks.length === 1 ? "FEEDBACK" : "FEEDBACKS"} RECEIVED
             </span>
-            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black text-white tracking-tight">
-              Group Feedbacks: <span className="text-[#3be1fe]">{groupName}</span>
-            </h1>
           </div>
         </div>
       </div>
 
       {/* Controls: Search Bar */}
-      <div className="flex flex-col sm:flex-row items-center justify-between gap-4 bg-[#121212] p-4 rounded-md border border-white/12 shadow-md font-mono text-xs">
+      <div className="flex flex-col sm:flex-row items-center justify-between gap-4 bg-[#1d1b1a] p-4 rounded-sm border border-white/5 shadow-md font-mono text-xs">
         <div className="relative flex-1 w-full">
           <input
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Search feedback by sender name or description..."
-            className="w-full bg-[#050505] text-white border border-white/15 rounded-md px-4 py-2.5 text-xs outline-none focus:border-[#3be1fe]/70 transition-colors font-mono placeholder:text-slate-500"
+            className="w-full bg-[#151312] text-[#e8e1df] border border-white/10 rounded-sm px-4 py-2.5 text-xs outline-none focus:border-[#00ffec]/50 transition-colors font-mono placeholder:text-[#83958d]/50"
           />
         </div>
 
@@ -87,7 +92,7 @@ export function FeedbacksClient({ feedbacks, group }: FeedbacksClientProps) {
           <button
             type="button"
             onClick={() => setSearchQuery("")}
-            className="text-[10px] font-bold text-[#3be1fe] hover:underline uppercase tracking-wider transition-colors cursor-pointer shrink-0"
+            className="text-[10px] font-bold text-[#00ffec] hover:underline uppercase tracking-wider transition-colors cursor-pointer shrink-0 font-mono"
           >
             CLEAR SEARCH
           </button>
@@ -97,11 +102,11 @@ export function FeedbacksClient({ feedbacks, group }: FeedbacksClientProps) {
       {/* Feedbacks List Container */}
       <div className="space-y-4">
         {filteredFeedbacks.length === 0 ? (
-          <div className="bg-[#121212] border border-white/12 rounded-md p-12 text-center space-y-3 shadow-xl font-mono text-xs">
-            <p className="text-sm text-slate-300 font-bold font-sans">
+          <div className="bg-[#1d1b1a] border border-white/5 rounded-sm p-12 text-center space-y-3 shadow-xl font-mono text-xs">
+            <p className="text-sm text-[#e8e1df] font-bold font-mono uppercase tracking-wider">
               No feedback entries found matching your criteria.
             </p>
-            <p className="text-xs text-slate-500">
+            <p className="text-xs text-[#83958d]">
               Feedback submitted via the group card modal will be listed here.
             </p>
           </div>
@@ -123,32 +128,32 @@ export function FeedbacksClient({ feedbacks, group }: FeedbacksClientProps) {
                     duration: 0.3,
                     delay: Math.min(index * 0.04, 0.25),
                   }}
-                  className="bg-[#121212] border border-white/12 border-l-4 border-l-[#3be1fe] rounded-md p-5 sm:p-6 shadow-xl space-y-4 font-sans hover:border-white/20 transition-colors"
+                  className="bg-[#1d1b1a] border border-white/5 border-l-4 border-l-[#00ffec] rounded-sm p-5 sm:p-6 shadow-xl space-y-4 font-mono hover:border-white/10 transition-colors"
                 >
                   {/* Feedback Header */}
-                  <div className="flex items-center justify-between gap-3 border-b border-white/10 pb-3">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-white/5 pb-3">
                     <div className="flex items-center gap-2.5 min-w-0">
-                      <div className="w-8 h-8 rounded-sm bg-[#000000] border border-[#3be1fe]/40 text-[#3be1fe] font-bold font-mono text-xs flex items-center justify-center shrink-0">
+                      <div className="w-8 h-8 rounded-sm bg-[#151312] border border-[#00ffec]/30 text-[#00ffec] font-bold font-mono text-xs flex items-center justify-center shrink-0">
                         {displayName.charAt(0).toUpperCase()}
                       </div>
                       <div className="min-w-0">
-                        <h4 className="text-sm font-bold text-white tracking-tight truncate font-sans">
+                        <h4 className="text-sm font-bold text-[#e8e1df] tracking-tight truncate font-mono">
                           {displayName}
                         </h4>
-                        <span className="text-[10px] font-mono text-slate-400 block">
+                        <span className="text-[9px] font-mono text-[#83958d] uppercase tracking-wider block">
                           FEEDBACK SENDER
                         </span>
                       </div>
                     </div>
 
-                    <span className="text-[11px] font-mono text-slate-400 shrink-0">
-                      SUBMITTED: <strong className="text-slate-200">{createdDate}</strong>
+                    <span className="text-[10px] font-mono text-[#83958d] uppercase tracking-wider shrink-0">
+                      SUBMITTED: <strong className="text-[#b9cbc2] font-semibold">{createdDate}</strong>
                     </span>
                   </div>
 
                   {/* Feedback Description with Left Border & Padding */}
-                  <div className="pl-4 sm:pl-5 border-l-2 border-[#3be1fe]/40 py-1">
-                    <p className="text-xs sm:text-sm text-slate-200 leading-relaxed whitespace-pre-wrap font-normal">
+                  <div className="pl-4 sm:pl-5 border-l-2 border-[#00ffec]/30 py-1">
+                    <p className="text-xs sm:text-sm text-[#e8e1df] leading-relaxed whitespace-pre-wrap font-mono font-normal">
                       {fb.description || "No feedback description provided."}
                     </p>
                   </div>
