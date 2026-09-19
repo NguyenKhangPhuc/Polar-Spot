@@ -150,7 +150,7 @@ export default function EventSidebar({ event, isAdmin }: EventSidebarProps) {
         {/* Primary Action Button */}
         <Link
           href={`/events/${event.id}/groups`}
-          className="w-full py-3 bg-[#00ffec] hover:brightness-110 text-[#00382b] font-bold text-xs uppercase tracking-widest text-center transition-all duration-300 rounded-sm shadow-[0_0_15px_rgba(0,255,236,0.15)] flex items-center justify-center gap-2"
+          className="w-full py-3 bg-[#00ffec] hover:brightness-110 text-[#00382b] font-bold text-xs uppercase tracking-widest text-center transition-all duration-300 rounded-none shadow-[0_0_15px_rgba(0,255,236,0.15)] flex items-center justify-center gap-2"
         >
           <span>VIEW PITCHING GROUPS</span>
           <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -161,7 +161,7 @@ export default function EventSidebar({ event, isAdmin }: EventSidebarProps) {
         {/* Results Action Button */}
         <Link
           href={`/events/${event.id}/result`}
-          className="w-full py-3 bg-[#1d1b1a] hover:bg-[#252220] border border-[#00ffec]/40 hover:border-[#00ffec] text-[#00ffec] font-bold text-xs uppercase tracking-widest text-center transition-all duration-300 rounded-sm flex items-center justify-center gap-2"
+          className="w-full py-3 bg-[#1d1b1a] hover:bg-[#252220] border border-[#00ffec]/40 hover:border-[#00ffec] text-[#00ffec] font-bold text-xs uppercase tracking-widest text-center transition-all duration-300 rounded-none flex items-center justify-center gap-2"
         >
           <span>EVALUATION RESULTS</span>
           <svg className="w-3.5 h-3.5 text-[#00ffec]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -173,7 +173,7 @@ export default function EventSidebar({ event, isAdmin }: EventSidebarProps) {
         {isAdmin && (
           <Link
             href={`/events/${event.id}/edit`}
-            className="w-full py-3 bg-[#1d1b1a] hover:bg-[#252220] border border-white/10 hover:border-[#00ffec]/30 text-[#b9cbc2] hover:text-[#00ffec] font-bold text-xs uppercase tracking-widest text-center transition-all duration-300 rounded-sm flex items-center justify-center gap-2"
+            className="w-full py-3 bg-[#1d1b1a] hover:bg-[#252220] border border-white/10 hover:border-[#00ffec]/30 text-[#b9cbc2] hover:text-[#00ffec] font-bold text-xs uppercase tracking-widest text-center transition-all duration-300 rounded-none flex items-center justify-center gap-2"
           >
             <svg
               className="w-3.5 h-3.5 text-[#00ffec]"

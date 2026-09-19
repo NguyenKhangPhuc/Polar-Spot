@@ -73,6 +73,7 @@ export type Database = {
           end_date: string | null
           id: string
           location: string | null
+          max_score: number | null
           member_per_groups: number | null
           organized_date: string | null
           poster_path: string | null
@@ -87,6 +88,7 @@ export type Database = {
           end_date?: string | null
           id?: string
           location?: string | null
+          max_score?: number | null
           member_per_groups?: number | null
           organized_date?: string | null
           poster_path?: string | null
@@ -101,6 +103,7 @@ export type Database = {
           end_date?: string | null
           id?: string
           location?: string | null
+          max_score?: number | null
           member_per_groups?: number | null
           organized_date?: string | null
           poster_path?: string | null
@@ -207,6 +210,7 @@ export type Database = {
           group_name: string | null
           id: string
           short_description: string | null
+          youtube_link: string | null
         }
         Insert: {
           avatar_url?: string | null
@@ -215,6 +219,7 @@ export type Database = {
           group_name?: string | null
           id?: string
           short_description?: string | null
+          youtube_link?: string | null
         }
         Update: {
           avatar_url?: string | null
@@ -223,6 +228,7 @@ export type Database = {
           group_name?: string | null
           id?: string
           short_description?: string | null
+          youtube_link?: string | null
         }
         Relationships: [
           {
@@ -239,6 +245,7 @@ export type Database = {
           avatar_url: string | null
           company_name: string | null
           company_unit: string | null
+          created_at: string | null
           degree: string | null
           description: string | null
           email: string | null
@@ -256,6 +263,7 @@ export type Database = {
           avatar_url?: string | null
           company_name?: string | null
           company_unit?: string | null
+          created_at?: string | null
           degree?: string | null
           description?: string | null
           email?: string | null
@@ -273,6 +281,7 @@ export type Database = {
           avatar_url?: string | null
           company_name?: string | null
           company_unit?: string | null
+          created_at?: string | null
           degree?: string | null
           description?: string | null
           email?: string | null

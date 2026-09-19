@@ -3,21 +3,32 @@
 import React, { useState, useMemo } from "react";
 import { Event } from "@/app/types/event";
 import { GroupWithMembersAndEvent } from "@/app/types/groups";
+import { ProfileInsert } from "@/app/types/profile";
 import HeaderSection from "./HeaderSection";
 import GroupFilterControls, { GroupSortOrder } from "./GroupFilterControls";
 import GroupGrid from "./GroupGrid";
-import { ProfileInsert } from "@/app/types/profile";
+import GroupDetailModal from "./GroupDetailModal";
+import GiveFeedbackModal from "./GiveFeedbackModal";
 
 interface EventGroupsClientProps {
   event: Event;
   groups: GroupWithMembersAndEvent[];
   canGrade?: boolean;
-  profile: ProfileInsert
+  profile: ProfileInsert;
 }
 
-export function EventGroupsClient({ event, groups, canGrade = false, profile }: EventGroupsClientProps) {
+export function EventGroupsClient({
+  event,
+  groups,
+  canGrade = false,
+  profile,
+}: EventGroupsClientProps) {
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [sortOrder, setSortOrder] = useState<GroupSortOrder>("newest");
+  const [selectedGroupForModal, setSelectedGroupForModal] =
+    useState<GroupWithMembersAndEvent | null>(null);
+  const [feedbackTargetGroup, setFeedbackTargetGroup] =
+    useState<GroupWithMembersAndEvent | null>(null);
 
   const processedGroups = useMemo(() => {
     let result = [...groups];
@@ -56,31 +67,60 @@ export function EventGroupsClient({ event, groups, canGrade = false, profile }: 
   };
 
   return (
-    <div className="w-full min-h-screen py-12 px-6 sm:px-10 lg:px-16 space-y-8 select-none text-slate-100 font-sans relative max-w-7xl mx-auto">
-      {/* Header Section */}
+    <div className="w-full flex flex-col gap-8 select-text">
+      {/* 1. Header Title & Actions Section */}
       <HeaderSection event={event} totalFound={processedGroups.length} />
 
-      {/* Main 2-Column Grid Layout */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-start">
-        {/* Left Column: Filter Control Panel */}
-        <GroupFilterControls
-          searchQuery={searchQuery}
-          setSearchQuery={setSearchQuery}
-          sortOrder={sortOrder}
-          setSortOrder={setSortOrder}
-          onResetFilters={handleResetFilters}
-        />
+      {/* 2. Top-Level Filter & Search Controls */}
+      <GroupFilterControls
+        searchQuery={searchQuery}
+        setSearchQuery={setSearchQuery}
+        sortOrder={sortOrder}
+        setSortOrder={setSortOrder}
+        onResetFilters={handleResetFilters}
+      />
 
-        {/* Right Column: Groups Grid */}
-        <main className="lg:col-span-9">
-          <GroupGrid
-            groups={processedGroups}
-            onResetFilters={handleResetFilters}
-            canGrade={canGrade}
-            profile={profile}
-          />
-        </main>
+      {/* 3. Groups List Section */}
+      <div className="flex flex-col gap-4">
+        {/* Metric Bar */}
+        <div className="flex items-center justify-between select-none">
+          <div className="flex items-center gap-2 text-xs font-mono font-bold text-[#e8e1df] uppercase tracking-wider">
+            <div className="w-[3px] h-3 bg-[#00ffec]" />
+            <span>01 REGISTERED PITCHING GROUPS</span>
+          </div>
+          <span className="font-mono text-[9px] text-[#83958d]">
+            TOTAL GROUPS: {processedGroups.length}
+          </span>
+        </div>
+
+        {/* 2-Column Groups Grid */}
+        <GroupGrid
+          groups={processedGroups}
+          onResetFilters={handleResetFilters}
+          canGrade={canGrade}
+          onSelectGroup={(group) => setSelectedGroupForModal(group)}
+          onOpenGiveFeedback={(group) => setFeedbackTargetGroup(group)}
+        />
       </div>
+
+      {/* 4. Large Centered Group Detail Modal with YouTube Video */}
+      <GroupDetailModal
+        group={selectedGroupForModal}
+        isOpen={Boolean(selectedGroupForModal)}
+        onClose={() => setSelectedGroupForModal(null)}
+        canGrade={canGrade}
+        onOpenGiveFeedback={(group) => setFeedbackTargetGroup(group)}
+      />
+
+      {/* 5. Feedback Submission Modal */}
+      {feedbackTargetGroup && (
+        <GiveFeedbackModal
+          group={feedbackTargetGroup}
+          isOpen={Boolean(feedbackTargetGroup)}
+          onClose={() => setFeedbackTargetGroup(null)}
+          profile={profile}
+        />
+      )}
     </div>
   );
 }

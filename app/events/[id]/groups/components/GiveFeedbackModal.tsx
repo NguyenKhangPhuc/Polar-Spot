@@ -1,20 +1,19 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { motion, AnimatePresence } from "framer-motion";
 import { GroupWithMembersAndEvent } from "@/app/types/groups";
 import { upsertGroupFeedback } from "@/app/actions/group_feedbacks";
 import { useNotification } from "@/app/context/NotificationContext";
 import { useLoader } from "@/app/context/LoaderContext";
-import { createClient } from "@/app/utils/supabase/client";
 import { ProfileInsert } from "@/app/types/profile";
 
 interface GiveFeedbackModalProps {
   group: GroupWithMembersAndEvent;
   isOpen: boolean;
   onClose: () => void;
-  profile: ProfileInsert
+  profile: ProfileInsert;
 }
 
 interface FeedbackFormData {
@@ -26,25 +25,23 @@ export function GiveFeedbackModal({
   group,
   isOpen,
   onClose,
-  profile
+  profile,
 }: GiveFeedbackModalProps) {
   const { showNotification } = useNotification();
   const { setIsOpenLoader } = useLoader();
-  const [userName, setUserName] = useState<string | null>(profile.full_name!);
+  const [userName] = useState<string | null>(profile?.full_name ?? null);
 
   const {
     register,
     handleSubmit,
     reset,
-    setValue,
     formState: { errors },
   } = useForm<FeedbackFormData>({
     defaultValues: {
-      display_name: "Anonymous",
+      display_name: userName || "Anonymous",
       description: "",
     },
   });
-
 
   const onSubmit = async (data: FeedbackFormData): Promise<void> => {
     setIsOpenLoader(true);
@@ -53,7 +50,7 @@ export function GiveFeedbackModal({
         group_id: group.id,
         display_name: data.display_name.trim(),
         description: data.description.trim(),
-        user_id: profile.id
+        user_id: profile?.id,
       });
 
       if (res.error) {
@@ -76,7 +73,7 @@ export function GiveFeedbackModal({
   return (
     <AnimatePresence>
       {isOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md select-none font-sans">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-md select-none font-sans">
           {/* Motion backdrop click listener */}
           <motion.div
             initial={{ opacity: 0 }}
@@ -92,23 +89,23 @@ export function GiveFeedbackModal({
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 10 }}
             transition={{ duration: 0.25, ease: "easeOut" }}
-            className="relative bg-[#121212] border border-white/12 rounded-md p-6 sm:p-8 max-w-md w-full shadow-2xl space-y-6 z-10"
+            className="relative bg-[#1d1b1a] border border-white/10 rounded-sm p-6 sm:p-8 max-w-md w-full shadow-2xl space-y-6 z-10 font-mono text-xs text-[#e8e1df]"
           >
             {/* Modal Header */}
-            <div className="flex items-start justify-between gap-4 border-b border-white/12 pb-4">
+            <div className="flex items-start justify-between gap-4 border-b border-white/10 pb-4">
               <div>
-                <span className="text-[10px] font-mono font-bold text-[#3be1fe] uppercase tracking-widest block">
+                <span className="text-[9px] font-mono font-bold text-[#00ffec] uppercase tracking-widest block">
                   SUBMIT GROUP FEEDBACK
                 </span>
-                <h3 className="text-xl font-black text-white tracking-tight uppercase mt-0.5">
-                  FEEDBACK: {groupName}
+                <h3 className="text-xl font-black text-[#e8e1df] tracking-tight uppercase mt-0.5 font-sans">
+                  {groupName}
                 </h3>
               </div>
 
               <button
                 type="button"
                 onClick={onClose}
-                className="p-1.5 rounded-md bg-[#050505] text-slate-400 hover:text-white border border-white/15 transition-colors cursor-pointer shrink-0"
+                className="p-1.5 rounded-sm bg-[#151312] text-[#83958d] hover:text-[#e8e1df] border border-white/10 transition-colors cursor-pointer shrink-0"
                 aria-label="Close modal"
               >
                 <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -120,19 +117,14 @@ export function GiveFeedbackModal({
             {/* Feedback Form */}
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
               {/* Display Name Select Input */}
-              <div className="flex flex-col">
-                <label className="text-xs font-mono font-bold text-slate-200 uppercase tracking-wider mb-1.5 flex items-center justify-between select-none">
+              <div className="flex flex-col gap-1.5">
+                <label className="text-[10px] font-mono font-bold text-[#83958d] uppercase tracking-wider flex items-center justify-between">
                   <span>DISPLAY NAME</span>
-                  <span className="text-[#3be1fe]">*</span>
+                  <span className="text-[#00ffec]">*</span>
                 </label>
-                <div className="relative flex items-center w-full bg-[#050505] border border-white/15 rounded-md focus-within:border-[#3be1fe]/70 transition-colors text-white">
-                  <span className="pl-3.5 text-slate-400 flex items-center shrink-0">
-                    <svg className="w-4 h-4 text-[#3be1fe]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                    </svg>
-                  </span>
+                <div className="relative flex items-center w-full">
                   <select
-                    className="w-full bg-[#050505] text-white text-xs p-3.5 pr-10 outline-none border-none font-mono cursor-pointer appearance-none"
+                    className="w-full bg-[#151312] text-[#e8e1df] border border-white/10 rounded-sm text-xs p-3 pr-8 outline-none focus:border-[#00ffec]/50 font-mono cursor-pointer appearance-none transition-colors"
                     {...register("display_name", {
                       required: "Display name is required",
                     })}
@@ -141,7 +133,7 @@ export function GiveFeedbackModal({
                     <option value="Anonymous">Anonymous</option>
                   </select>
                   <svg
-                    className="w-4 h-4 absolute right-3 text-slate-400 pointer-events-none"
+                    className="w-4 h-4 absolute right-2.5 text-[#83958d] pointer-events-none"
                     fill="none"
                     viewBox="0 0 24 24"
                     stroke="currentColor"
@@ -150,48 +142,46 @@ export function GiveFeedbackModal({
                   </svg>
                 </div>
                 {errors.display_name && (
-                  <p className="text-red-400 text-xs font-mono font-medium mt-1">
+                  <p className="text-red-400 text-xs font-mono font-medium">
                     {errors.display_name.message}
                   </p>
                 )}
               </div>
 
               {/* Feedback Description Textarea */}
-              <div className="flex flex-col">
-                <label className="text-xs font-mono font-bold text-slate-200 uppercase tracking-wider mb-1.5 flex items-center justify-between select-none">
+              <div className="flex flex-col gap-1.5">
+                <label className="text-[10px] font-mono font-bold text-[#83958d] uppercase tracking-wider flex items-center justify-between">
                   <span>FEEDBACK DESCRIPTION</span>
-                  <span className="text-[#3be1fe]">*</span>
+                  <span className="text-[#00ffec]">*</span>
                 </label>
-                <div className="relative flex w-full bg-[#050505] border border-white/15 rounded-md focus-within:border-[#3be1fe]/70 transition-colors text-white">
-                  <textarea
-                    rows={4}
-                    placeholder="Enter detailed feedback or suggestions for this startup group..."
-                    className="w-full bg-transparent text-white placeholder-slate-500 text-xs p-3.5 outline-none border-none font-mono resize-none"
-                    {...register("description", {
-                      required: "Feedback description is required",
-                    })}
-                  />
-                </div>
+                <textarea
+                  rows={4}
+                  placeholder="Enter detailed feedback or suggestions for this startup group..."
+                  className="w-full bg-[#151312] text-[#e8e1df] placeholder-[#83958d]/50 border border-white/10 rounded-sm text-xs p-3.5 outline-none focus:border-[#00ffec]/50 font-sans resize-none transition-colors"
+                  {...register("description", {
+                    required: "Feedback description is required",
+                  })}
+                />
                 {errors.description && (
-                  <p className="text-red-400 text-xs font-mono font-medium mt-1">
+                  <p className="text-red-400 text-xs font-mono font-medium">
                     {errors.description.message}
                   </p>
                 )}
               </div>
 
               {/* Action Buttons Row */}
-              <div className="flex items-center gap-3 pt-3">
+              <div className="flex items-center gap-3 pt-3 border-t border-white/10">
                 <button
                   type="button"
                   onClick={onClose}
-                  className="w-full py-3 bg-[#050505] hover:bg-white/10 text-slate-300 font-mono font-bold text-xs uppercase tracking-wider rounded-md border border-white/15 transition-colors cursor-pointer"
+                  className="w-full py-2.5 bg-[#151312] hover:bg-[#252220] text-[#83958d] hover:text-[#e8e1df] font-mono font-bold text-xs uppercase tracking-wider rounded-sm border border-white/10 transition-colors cursor-pointer"
                 >
                   CANCEL
                 </button>
 
                 <button
                   type="submit"
-                  className="w-full py-3 bg-[#3be1fe] hover:bg-[#6ee7fc] text-black font-mono font-bold text-xs uppercase tracking-wider rounded-md transition-colors cursor-pointer shadow-lg"
+                  className="w-full py-2.5 bg-[#00ffec] hover:bg-[#00e6d4] text-[#00382b] font-mono font-bold text-xs uppercase tracking-wider rounded-sm transition-colors cursor-pointer shadow-md"
                 >
                   SUBMIT FEEDBACK
                 </button>

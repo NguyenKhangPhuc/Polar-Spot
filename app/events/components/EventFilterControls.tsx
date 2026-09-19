@@ -142,7 +142,7 @@ export function EventFilterControls({
           <button
             type="button"
             onClick={onResetFilters}
-            className="w-full py-2.5 rounded-sm bg-[#00ffec]/10 hover:bg-[#00ffec]/20 text-[#00ffec] border border-[#00ffec]/30 text-[10px] font-mono font-bold uppercase tracking-widest transition-all cursor-pointer text-center"
+            className="w-full py-2.5 rounded-none bg-[#00ffec]/10 hover:bg-[#00ffec]/20 text-[#00ffec] border border-[#00ffec]/30 text-[10px] font-mono font-bold uppercase tracking-widest transition-all cursor-pointer text-center"
           >
             RESET ALL FILTERS
           </button>

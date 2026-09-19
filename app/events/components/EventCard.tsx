@@ -225,11 +225,11 @@ export function EventCard({ event, posterUrl, index = 0 }: EventCardProps) {
             {/* Bottom Terminal Action CTA */}
             <div className="mt-auto">
               {isOngoing ? (
-                <span className="block border border-[#00ffec]/40 text-[#00ffec] bg-transparent group-hover:bg-[#00ffec]/10 font-mono text-[9px] uppercase font-bold py-2.5 w-full text-center transition-all duration-300 tracking-widest rounded-sm shadow-[0_0_10px_rgba(0,255,236,0.05)]">
+                <span className="block border border-[#00ffec]/40 text-[#00ffec] bg-transparent group-hover:bg-[#00ffec]/10 font-mono text-[9px] uppercase font-bold py-2.5 w-full text-center transition-all duration-300 tracking-widest rounded-none shadow-[0_0_10px_rgba(0,255,236,0.05)]">
                   EXPLORE EVENT &rarr;
                 </span>
               ) : (
-                <span className="block border border-white/5 text-[#83958d] bg-[#151312]/30 group-hover:border-white/10 group-hover:text-[#e8e1df] font-mono text-[9px] uppercase font-bold py-2.5 w-full text-center tracking-widest rounded-sm transition-all">
+                <span className="block border border-white/5 text-[#83958d] bg-[#151312]/30 group-hover:border-white/10 group-hover:text-[#e8e1df] font-mono text-[9px] uppercase font-bold py-2.5 w-full text-center tracking-widest rounded-none transition-all">
                   ARCHIVED EVENT &rarr;
                 </span>
               )}

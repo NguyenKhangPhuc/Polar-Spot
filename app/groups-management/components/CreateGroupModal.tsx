@@ -13,6 +13,7 @@ interface CreateGroupFormValues {
   group_name: string;
   short_description: string;
   event_id: string;
+  youtube_link?: string;
 }
 
 interface CreateGroupModalProps {
@@ -44,6 +45,7 @@ export function CreateGroupModal({
       group_name: "",
       short_description: "",
       event_id: "",
+      youtube_link: "",
     },
   });
 
@@ -56,6 +58,7 @@ export function CreateGroupModal({
       group_name: formData.group_name,
       short_description: formData.short_description,
       event_id: formData.event_id,
+      youtube_link: formData.youtube_link?.trim() || null,
     };
 
     try {
@@ -185,7 +188,29 @@ export function CreateGroupModal({
                 )}
               </div>
 
-              {/* Field 3: Short Description */}
+              {/* Field 3: YouTube Link */}
+              <div className="flex flex-col gap-1.5">
+                <label className="text-[11px] font-bold text-[#83958d] uppercase tracking-wider">
+                  YOUTUBE LINK
+                </label>
+                <input
+                  {...register("youtube_link")}
+                  type="text"
+                  placeholder="e.g. https://www.youtube.com/watch?v=..."
+                  className={`bg-[#151312] text-[#e8e1df] placeholder-[#83958d]/50 border text-xs p-3.5 rounded-sm w-full outline-none transition-colors ${
+                    errors.youtube_link
+                      ? "border-red-500/70 focus:border-red-400"
+                      : "border-white/10 focus:border-[#00ffec]/60"
+                  }`}
+                />
+                {errors.youtube_link && (
+                  <span className="text-xs text-red-400 font-medium mt-0.5">
+                    {errors.youtube_link.message}
+                  </span>
+                )}
+              </div>
+
+              {/* Field 4: Short Description */}
               <div className="flex flex-col gap-1.5">
                 <label className="text-[11px] font-bold text-[#83958d] uppercase tracking-wider">
                   SHORT DESCRIPTION <span className="text-[#00ffec]">*</span>

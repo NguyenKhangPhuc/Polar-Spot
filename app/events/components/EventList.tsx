@@ -51,7 +51,7 @@ export function EventList({
         <button
           type="button"
           onClick={onResetFilters}
-          className="mt-2 px-4 py-2 rounded-sm bg-[#00ffec]/10 hover:bg-[#00ffec]/20 text-[#00ffec] border border-[#00ffec]/30 text-xs font-mono font-bold uppercase tracking-wider transition-all cursor-pointer"
+          className="mt-2 px-4 py-2 rounded-none bg-[#00ffec]/10 hover:bg-[#00ffec]/20 text-[#00ffec] border border-[#00ffec]/30 text-xs font-mono font-bold uppercase tracking-wider transition-all cursor-pointer"
         >
           RESET FILTERS
         </button>

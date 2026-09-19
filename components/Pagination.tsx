@@ -80,7 +80,7 @@ export default function Pagination({
         type="button"
         onClick={() => onPageChange(Math.max(1, currentPage - 1))}
         disabled={currentPage === 1}
-        className="w-8 h-8 flex items-center justify-center border border-white/5 bg-[#151312] text-[#b9cbc2] disabled:opacity-30 disabled:pointer-events-none hover:text-[#00ffec] hover:border-[#00ffec]/30 rounded-sm font-mono text-xs font-bold transition-all duration-300 cursor-pointer"
+        className="w-8 h-8 flex items-center justify-center border border-white/5 bg-[#151312] text-[#b9cbc2] disabled:opacity-30 disabled:pointer-events-none hover:text-[#00ffec] hover:border-[#00ffec]/30 rounded-none font-mono text-xs font-bold transition-all duration-300 cursor-pointer"
         aria-label="Previous Page"
       >
         &lt;
@@ -105,7 +105,7 @@ export default function Pagination({
             type="button"
             key={`page-${page}`}
             onClick={() => onPageChange(page as number)}
-            className={`w-8 h-8 flex items-center justify-center font-mono text-xs rounded-sm transition-all duration-300 cursor-pointer ${
+            className={`w-8 h-8 flex items-center justify-center font-mono text-xs rounded-none transition-all duration-300 cursor-pointer ${
               isCurrent
                 ? "border border-[#00ffec] text-[#00ffec] bg-[#00ffec]/10 font-bold shadow-[0_0_10px_rgba(0,255,236,0.2)]"
                 : "border border-white/5 bg-[#151312] text-[#b9cbc2] hover:text-[#00ffec] hover:border-[#00ffec]/30"
@@ -121,7 +121,7 @@ export default function Pagination({
         type="button"
         onClick={() => onPageChange(Math.min(totalPages, currentPage + 1))}
         disabled={currentPage === totalPages}
-        className="w-8 h-8 flex items-center justify-center border border-white/5 bg-[#151312] text-[#b9cbc2] disabled:opacity-30 disabled:pointer-events-none hover:text-[#00ffec] hover:border-[#00ffec]/30 rounded-sm font-mono text-xs font-bold transition-all duration-300 cursor-pointer"
+        className="w-8 h-8 flex items-center justify-center border border-white/5 bg-[#151312] text-[#b9cbc2] disabled:opacity-30 disabled:pointer-events-none hover:text-[#00ffec] hover:border-[#00ffec]/30 rounded-none font-mono text-xs font-bold transition-all duration-300 cursor-pointer"
         aria-label="Next Page"
       >
         &gt;

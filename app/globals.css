@@ -340,3 +340,29 @@
     @apply font-sans;
   }
 }
+
+/* Cyber-Frost Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #100e0d;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #2b2826;
+  border-radius: 0px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #00ffec;
+}
+
+/* Firefox scrollbar support */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #2b2826 #100e0d;
+}

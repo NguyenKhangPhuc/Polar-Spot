@@ -79,7 +79,7 @@ export default function EventOverview({ content, eventId, isAdmin }: EventOvervi
         {eventId && (
           <Link
             href={`/events/${eventId}/edit`}
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-sm bg-[#151312] hover:bg-[#00ffec]/10 border border-white/10 hover:border-[#00ffec]/40 text-[11px] font-mono font-bold text-[#b9cbc2] hover:text-[#00ffec] uppercase tracking-wider transition-all cursor-pointer shadow-sm"
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-none bg-[#151312] hover:bg-[#00ffec]/10 border border-white/10 hover:border-[#00ffec]/40 text-[11px] font-mono font-bold text-[#b9cbc2] hover:text-[#00ffec] uppercase tracking-wider transition-all cursor-pointer shadow-sm"
           >
             <svg
               className="w-3.5 h-3.5 text-[#00ffec]"
@@ -128,7 +128,7 @@ export default function EventOverview({ content, eventId, isAdmin }: EventOvervi
             {eventId && (
               <Link
                 href={`/events/${eventId}/edit`}
-                className="inline-flex items-center gap-2 px-4 py-2 rounded-sm bg-[#00ffec]/10 hover:bg-[#00ffec]/20 border border-[#00ffec]/30 text-[#00ffec] font-mono text-xs font-bold uppercase tracking-wider transition-all shadow-sm"
+                className="inline-flex items-center gap-2 px-4 py-2 rounded-none bg-[#00ffec]/10 hover:bg-[#00ffec]/20 border border-[#00ffec]/30 text-[#00ffec] font-mono text-xs font-bold uppercase tracking-wider transition-all shadow-sm"
               >
                 <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
