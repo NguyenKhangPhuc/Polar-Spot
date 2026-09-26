@@ -3,7 +3,7 @@ import EventsManagementClient from "./EventsManagementClient";
 import Link from "next/link";
 
 export const metadata = {
-  title: "Events Management | Polar-Spot",
+  title: "Events Management | POLAR SPOT",
   description: "Admin portal for managing Polar Bear Pitching events, dates, locations, and status.",
 };
 

@@ -123,7 +123,7 @@ export default function NavigationBarClient({ user, isAdmin = false }: Navigatio
           </div>
           <div className="flex flex-col">
             <span className="text-lg font-bold tracking-tight text-[#e8e1df] font-montserrat leading-tight group-hover:text-[#00ffec] transition-colors">
-              Polar-Spot
+              POLAR SPOT
             </span>
             <span className="text-[9px] font-mono text-[#00ffec] uppercase tracking-wider">
               Polar Bear Pitching

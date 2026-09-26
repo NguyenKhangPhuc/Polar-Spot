@@ -4,7 +4,7 @@ import GroupManagementClient from "./GroupManagementClient";
 import Link from "next/link";
 
 export const metadata = {
-  title: "Groups Management | Polar-Spot",
+  title: "Groups Management | POLAR SPOT",
   description: "Admin portal for managing Polar Bear Pitching teams, pitching groups, events, and member rosters.",
 };
 

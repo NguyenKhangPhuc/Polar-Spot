@@ -125,7 +125,7 @@ export default function NavigationBarMobile({ user, isAdmin = false }: Navigatio
             />
           </div>
           <span className="text-base font-bold text-[#e8e1df] font-montserrat tracking-tight">
-            Polar-Spot
+            POLAR SPOT
           </span>
         </Link>
 
@@ -200,7 +200,7 @@ export default function NavigationBarMobile({ user, isAdmin = false }: Navigatio
                 onClick={() => setIsOpen(false)}
                 className="text-xl font-bold tracking-tight text-[#00ffec] font-montserrat"
               >
-                Polar-Spot
+                POLAR SPOT
               </Link>
             </div>
 

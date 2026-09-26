@@ -23,7 +23,7 @@ const montserrat = Montserrat({
 });
 
 export const metadata: Metadata = {
-  title: "Polar-Spot | Polar Bear Pitching Events Management",
+  title: "POLAR SPOT | Polar Bear Pitching Events Management",
   description: "Official events management platform for Polar Bear Pitching in Oulu, Finland.",
 };
 

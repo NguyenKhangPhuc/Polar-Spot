@@ -22,7 +22,7 @@ export default function HeroSection() {
 
           <div className="space-y-4">
             <h1 className="text-4xl sm:text-6xl lg:text-7xl font-bold tracking-tight text-[#e8e1df] leading-none font-montserrat">
-              Polar-Spot
+              POLAR SPOT
             </h1>
             <div className="h-[2px] w-32 bg-[linear-gradient(90deg,#00ffec_0%,transparent_100%)] my-4"></div>
             <p className="text-xl sm:text-2xl lg:text-3xl font-semibold text-[#00ffec] leading-snug">
