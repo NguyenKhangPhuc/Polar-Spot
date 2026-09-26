@@ -52,13 +52,18 @@ export async function updateSession(request: NextRequest): Promise<UpdateSession
     const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
     const claims = data?.claims
     const pathname = request.nextUrl.pathname;
-    const isBaseProjectsPage = pathname === '/projects';
+    const isBaseEventsPage = pathname === '/events';
     const pathParts = pathname.split('/')
-    const isProjectDetailPage =
+    const isEventDetailPage =
         pathParts.length === 3 &&
-        pathParts[1] === 'projects' &&
+        pathParts[1] === 'events' &&
         UUID_REGEX.test(pathParts[2]);
-    const isAccessingProjectSystem = isBaseProjectsPage || isProjectDetailPage;
+    const isEventGroupsPage =
+        pathParts.length === 4 &&
+        pathParts[1] === 'events' &&
+        UUID_REGEX.test(pathParts[2]) &&
+        pathParts[3] == 'groups';
+    const isAccessingProjectSystem = isBaseEventsPage || isEventDetailPage;
 
     if (
         !claims &&
