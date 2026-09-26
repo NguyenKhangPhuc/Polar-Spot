@@ -3,7 +3,7 @@ import { type SupabaseClient, type User } from '@supabase/supabase-js'
 import { Database } from '../types/database.types'
 import { PROFILE_ROLE } from '../types/enum'
 
-export async function groupGradingRoute({
+export async function editEventRoute({
     request,
     user,
     supabase,
@@ -13,11 +13,11 @@ export async function groupGradingRoute({
     supabase: SupabaseClient<Database>
 }) {
     const pathname = request.nextUrl.pathname
-    const pathnameSplitted = pathname.split('/')
+    const pathNameSplitted = pathname.split('/')
 
     if (
-        pathnameSplitted.length === 4 &&
-        pathnameSplitted[3] == 'grading'
+        pathNameSplitted.length == 4 &&
+        pathNameSplitted[3] == 'edit'
     ) {
         if (user == null) {
             const url = request.nextUrl.clone()
@@ -31,13 +31,7 @@ export async function groupGradingRoute({
             .eq('id', user.id)
             .maybeSingle()
 
-        if (userRoleError) {
-            const url = request.nextUrl.clone()
-            url.pathname = '/events'
-            return NextResponse.redirect(url)
-        }
-
-        if (userRole?.role == PROFILE_ROLE.STUDENT) {
+        if (userRoleError || userRole?.role != PROFILE_ROLE.ADMIN) {
             const url = request.nextUrl.clone()
             url.pathname = '/events'
             return NextResponse.redirect(url)

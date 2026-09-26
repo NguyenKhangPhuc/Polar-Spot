@@ -27,38 +27,28 @@ export async function eventResultRoute({
     const isResultRoute = /^\/events\/[^/]+\/result(\/.*)?$/.test(pathname);
 
     if (isResultRoute) {
-        if (!user) {
-            const url = request.nextUrl.clone();
-            url.pathname = "/login";
-            return NextResponse.redirect(url);
+        if (user == null) {
+            const url = request.nextUrl.clone()
+            url.pathname = '/login'
+            return NextResponse.redirect(url)
         }
 
-        let userRole: string | null =
-            user.user_metadata?.role || user.app_metadata?.role || null;
+        const { data: userRole, error: userRoleError } = await supabase
+            .from('profiles')
+            .select('role')
+            .eq('id', user.id)
+            .maybeSingle()
 
-        if (!userRole) {
-            const { data: profile } = await supabase
-                .from("profiles")
-                .select("role" as any)
-                .eq("id", user.id)
-                .maybeSingle();
-
-            if (profile && (profile as any).role) {
-                userRole = (profile as any).role;
-            }
+        if (userRoleError) {
+            const url = request.nextUrl.clone()
+            url.pathname = '/events'
+            return NextResponse.redirect(url)
         }
 
-        const roleStr = userRole ? String(userRole).toLowerCase() : "";
-        const isAdmin = roleStr === PROFILE_ROLE.ADMIN || roleStr === "admin";
-        const isJudge =
-            roleStr === PROFILE_ROLE.JUDGES ||
-            roleStr === "judge" ||
-            roleStr === "judges";
-
-        if (!isAdmin && !isJudge) {
-            const url = request.nextUrl.clone();
-            url.pathname = "/events";
-            return NextResponse.redirect(url);
+        if (userRole?.role == PROFILE_ROLE.STUDENT) {
+            const url = request.nextUrl.clone()
+            url.pathname = '/events'
+            return NextResponse.redirect(url)
         }
     }
 

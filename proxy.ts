@@ -3,6 +3,8 @@ import { updateSession } from "./app/utils/supabase/proxy";
 import { adminRouteProxy } from "./app/middleware/admin_route_proxy";
 import { eventResultRoute } from "./app/middleware/event_result_proxy";
 import { groupGradingRoute } from "./app/middleware/group_grading_proxy";
+import { editEventRoute } from "./app/middleware/edit_event_proxy";
+import { viewAllGroups } from "./app/middleware/view_events_group_proxy";
 
 /**
  * PURPOSE:
@@ -32,18 +34,23 @@ export async function proxy(request: NextRequest): Promise<NextResponse> {
     // 3. Path-based dispatch.
     //    Each branch only invokes handlers whose route patterns could possibly match.
     const pathname = request.nextUrl.pathname;
-
+    const isAdminScoresRoute = /^\/events\/[^/]+\/admin\/scores(\/.*)?$/.test(pathname);
     if (
         pathname.startsWith("/events-management") ||
         pathname.startsWith("/groups-management") ||
-        pathname.startsWith("/users-management")
+        pathname.startsWith("/users-management") ||
+        isAdminScoresRoute
     ) {
         const result = await adminRouteProxy({ request, user, supabase });
         if (result.status !== 200) return result;
 
     } else if (pathname.startsWith("/events/")) {
+        const editResult = await editEventRoute({ request, user, supabase })
+        if (editResult.status !== 200) return editResult
         const result = await eventResultRoute({ request, user, supabase });
         if (result.status !== 200) return result;
+        const groupsResult = await viewAllGroups({ request, user, supabase })
+        if (groupsResult.status !== 200) return groupsResult
 
     } else if (pathname.startsWith("/groups/")) {
         const result = await groupGradingRoute({ request, user, supabase });
