@@ -27,6 +27,12 @@ const nextConfig: NextConfig = {
         protocol: 'https',
         hostname: '**.supabase.co',
       },
+      {
+        protocol: 'https',
+        hostname: 'supabase.meefins.online',
+        port: '',
+        pathname: '/storage/v1/object/public/**',
+      },
     ],
   },
 };
