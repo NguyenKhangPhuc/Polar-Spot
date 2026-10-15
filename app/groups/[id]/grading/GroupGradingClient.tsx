@@ -1,23 +1,30 @@
 "use client";
 
 import React, { useState, useMemo } from "react";
+import Link from "next/link";
 import { useForm } from "react-hook-form";
 import { motion } from "framer-motion";
 import BackButton from "@/app/components/BackButton";
 import { Event } from "@/app/types/event";
 import { Criteria } from "@/app/types/event_criteria";
 import { UserGroupGrading, UserGroupGradingInsert } from "@/app/types/user_group_grading";
+import { GroupFeedback } from "@/app/types/group_feedbacks";
+import { Profile } from "@/app/types/profile";
+import { Group } from "@/app/types/groups";
 import { upsertUserGroupGrading } from "@/app/actions/user_group_grading";
 import { useLoader } from "@/app/context/LoaderContext";
 import { useNotification } from "@/app/context/NotificationContext";
 import GradingSummaryPanel from "./components/GradingSummaryPanel";
+import GroupFeedbackSection from "./components/GroupFeedbackSection";
 
 interface GroupGradingClientProps {
-  group: any;
+  group: Group;
   event: Event | null;
   criteriaList: Criteria[];
   existingGradings: UserGroupGrading[] | null;
   userId: string;
+  initialFeedback: GroupFeedback | null;
+  profile: (Profile & { role?: string | null }) | null;
 }
 
 export default function GroupGradingClient({
@@ -26,6 +33,8 @@ export default function GroupGradingClient({
   criteriaList,
   existingGradings,
   userId,
+  initialFeedback,
+  profile,
 }: GroupGradingClientProps) {
   const { showNotification } = useNotification();
   const { setIsOpenLoader } = useLoader();
@@ -121,17 +130,30 @@ export default function GroupGradingClient({
               </div>
             </div>
           </div>
+
+          {group.event_id && (
+            <Link
+              href={`/events/${group.event_id}/result`}
+              className="self-start md:self-center flex items-center gap-2 px-4 py-2.5 rounded-none bg-[#151312] hover:bg-[#252220] text-[#00ffec] border border-[#00ffec]/40 hover:border-[#00ffec] font-mono font-bold text-xs uppercase tracking-wider transition-all shadow-sm cursor-pointer shrink-0"
+            >
+              <svg className="w-4 h-4 text-[#00ffec] shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+              </svg>
+              <span>VIEW EVENT RESULTS</span>
+            </Link>
+          )}
         </div>
       </div>
 
-      {/* Main Grid Forms */}
-      <form
-        onSubmit={handleSubmit(onSubmit)}
-        className="grid grid-cols-1 lg:grid-cols-12 gap-8 select-text items-start"
-      >
-        {/* Left Column: Criteria Evaluation Sliders (8 cols) */}
-        <div className="lg:col-span-8 flex flex-col gap-6">
-          <div className="bg-[#1d1b1a] border border-white/5 rounded-sm p-6 flex flex-col gap-6 relative overflow-hidden select-none shadow-2xl">
+      {/* Main Grid */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 select-text items-start">
+        {/* Left Column: Criteria Evaluation Form & Feedback Section (8 cols) */}
+        <div className="lg:col-span-8 flex flex-col gap-8">
+          <form
+            id="grading-form"
+            onSubmit={handleSubmit(onSubmit)}
+            className="bg-[#1d1b1a] border border-white/5 rounded-sm p-6 flex flex-col gap-6 relative overflow-hidden select-none shadow-2xl"
+          >
             {/* Top Cyan Line */}
             <div className="absolute top-0 left-0 right-0 h-[2px] bg-[#00ffec]" />
 
@@ -215,7 +237,16 @@ export default function GroupGradingClient({
                 })}
               </div>
             )}
-          </div>
+          </form>
+
+          {/* Qualitative Group Feedback Section */}
+          <GroupFeedbackSection
+            groupId={group.id}
+            groupName={groupName}
+            userId={userId}
+            profile={profile}
+            initialFeedback={initialFeedback}
+          />
         </div>
 
         {/* Right Column: Telemetry Scoreboard Panel (4 cols) */}
@@ -226,9 +257,11 @@ export default function GroupGradingClient({
             groupName={groupName}
             maxScore={maxScore}
             isSubmitting={isSubmitting}
+            formId="grading-form"
           />
         </div>
-      </form>
+      </div>
     </div>
   );
 }
+

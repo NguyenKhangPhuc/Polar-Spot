@@ -4,6 +4,9 @@ import React, { useState, useMemo } from "react";
 import { Event } from "@/app/types/event";
 import { GroupWithMembersAndEvent } from "@/app/types/groups";
 import { ProfileInsert } from "@/app/types/profile";
+import { GroupFeedback } from "@/app/types/group_feedbacks";
+import { getGroupFeedbacksByGroupId } from "@/app/actions/group_feedbacks";
+import { useLoader } from "@/app/context/LoaderContext";
 import HeaderSection from "./HeaderSection";
 import GroupFilterControls, { GroupSortOrder } from "./GroupFilterControls";
 import GroupGrid from "./GroupGrid";
@@ -23,12 +26,28 @@ export function EventGroupsClient({
   canGrade = false,
   profile,
 }: EventGroupsClientProps) {
+  const { setIsOpenLoader } = useLoader();
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [sortOrder, setSortOrder] = useState<GroupSortOrder>("newest");
   const [selectedGroupForModal, setSelectedGroupForModal] =
     useState<GroupWithMembersAndEvent | null>(null);
   const [feedbackTargetGroup, setFeedbackTargetGroup] =
     useState<GroupWithMembersAndEvent | null>(null);
+  const [initialFeedback, setInitialFeedback] = useState<GroupFeedback | null>(null);
+
+  const handleOpenGiveFeedback = async (group: GroupWithMembersAndEvent) => {
+    setIsOpenLoader(true);
+    try {
+      const { data } = await getGroupFeedbacksByGroupId(group.id);
+      setInitialFeedback(data || null);
+    } catch (err) {
+      console.error("Failed to load group feedback:", err);
+      setInitialFeedback(null);
+    } finally {
+      setIsOpenLoader(false);
+      setFeedbackTargetGroup(group);
+    }
+  };
 
   const processedGroups = useMemo(() => {
     let result = [...groups];
@@ -99,7 +118,7 @@ export function EventGroupsClient({
           onResetFilters={handleResetFilters}
           canGrade={canGrade}
           onSelectGroup={(group) => setSelectedGroupForModal(group)}
-          onOpenGiveFeedback={(group) => setFeedbackTargetGroup(group)}
+          onOpenGiveFeedback={handleOpenGiveFeedback}
         />
       </div>
 
@@ -109,7 +128,7 @@ export function EventGroupsClient({
         isOpen={Boolean(selectedGroupForModal)}
         onClose={() => setSelectedGroupForModal(null)}
         canGrade={canGrade}
-        onOpenGiveFeedback={(group) => setFeedbackTargetGroup(group)}
+        onOpenGiveFeedback={handleOpenGiveFeedback}
       />
 
       {/* 5. Feedback Submission Modal */}
@@ -117,8 +136,12 @@ export function EventGroupsClient({
         <GiveFeedbackModal
           group={feedbackTargetGroup}
           isOpen={Boolean(feedbackTargetGroup)}
-          onClose={() => setFeedbackTargetGroup(null)}
+          onClose={() => {
+            setFeedbackTargetGroup(null);
+            setInitialFeedback(null);
+          }}
           profile={profile}
+          initialFeedback={initialFeedback}
         />
       )}
     </div>

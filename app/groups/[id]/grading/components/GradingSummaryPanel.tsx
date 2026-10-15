@@ -11,6 +11,7 @@ interface GradingSummaryPanelProps {
   groupName?: string;
   maxScore: number;
   isSubmitting?: boolean;
+  formId?: string;
 }
 
 export function GradingSummaryPanel({
@@ -19,6 +20,7 @@ export function GradingSummaryPanel({
   groupName,
   maxScore,
   isSubmitting = false,
+  formId,
 }: GradingSummaryPanelProps) {
   const formValues = useWatch({ control });
 
@@ -138,6 +140,7 @@ export function GradingSummaryPanel({
       {/* Submit Action Button */}
       <button
         type="submit"
+        form={formId}
         disabled={isSubmitting || criteriaList.length === 0}
         className="w-full py-3 bg-[#00ffec] text-[#00382b] font-mono text-xs uppercase font-bold tracking-widest hover:brightness-110 transition-all rounded-none cursor-pointer text-center select-none disabled:opacity-50 shadow-md shadow-[#00ffec]/20"
       >

@@ -4,6 +4,8 @@ import { getGroupByGroupId } from "@/app/actions/groups";
 import { getSingleEventById } from "@/app/actions/events";
 import { getEventCriteriaByEventId } from "@/app/actions/event_grading_criteria";
 import { getUserGroupGradingByGroupAndUserId } from "@/app/actions/user_group_grading";
+import { getGroupFeedbacksByGroupId } from "@/app/actions/group_feedbacks";
+import { getProfileById } from "@/app/actions/profile";
 import GroupGradingClient from "./GroupGradingClient";
 
 interface PageProps {
@@ -27,17 +29,24 @@ export default async function Page({ params }: PageProps) {
     notFound();
   }
 
-  // 3. Concurrently fetch event, event grading criteria, and existing user gradings via Promise.all
-  const [{ data: event }, { data: criteriaData }, { data: existingGradings }] =
-    await Promise.all([
-      group.event_id
-        ? getSingleEventById(group.event_id)
-        : Promise.resolve({ data: null, error: null }),
-      group.event_id
-        ? getEventCriteriaByEventId(group.event_id)
-        : Promise.resolve({ data: [], error: null }),
-      getUserGroupGradingByGroupAndUserId(group.id, userId),
-    ]);
+  // 3. Concurrently fetch event, criteria, existing gradings, existing feedback, and user profile
+  const [
+    { data: event },
+    { data: criteriaData },
+    { data: existingGradings },
+    { data: initialFeedback },
+    { data: profile },
+  ] = await Promise.all([
+    group.event_id
+      ? getSingleEventById(group.event_id)
+      : Promise.resolve({ data: null, error: null }),
+    group.event_id
+      ? getEventCriteriaByEventId(group.event_id)
+      : Promise.resolve({ data: [], error: null }),
+    getUserGroupGradingByGroupAndUserId(group.id, userId),
+    getGroupFeedbacksByGroupId(groupId),
+    getProfileById(userId),
+  ]);
 
   return (
     <div className="w-full min-h-screen bg-[#151312] text-[#e8e1df] font-mono px-6 md:px-16 py-24">
@@ -48,8 +57,11 @@ export default async function Page({ params }: PageProps) {
           criteriaList={criteriaData || []}
           existingGradings={existingGradings || []}
           userId={userId}
+          initialFeedback={initialFeedback || null}
+          profile={profile || null}
         />
       </div>
     </div>
   );
 }
+

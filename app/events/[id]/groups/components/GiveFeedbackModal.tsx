@@ -1,9 +1,10 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { motion, AnimatePresence } from "framer-motion";
 import { GroupWithMembersAndEvent } from "@/app/types/groups";
+import { GroupFeedback } from "@/app/types/group_feedbacks";
 import { upsertGroupFeedback } from "@/app/actions/group_feedbacks";
 import { useNotification } from "@/app/context/NotificationContext";
 import { useLoader } from "@/app/context/LoaderContext";
@@ -14,6 +15,7 @@ interface GiveFeedbackModalProps {
   isOpen: boolean;
   onClose: () => void;
   profile: ProfileInsert;
+  initialFeedback?: GroupFeedback | null;
 }
 
 interface FeedbackFormData {
@@ -26,6 +28,7 @@ export function GiveFeedbackModal({
   isOpen,
   onClose,
   profile,
+  initialFeedback,
 }: GiveFeedbackModalProps) {
   const { showNotification } = useNotification();
   const { setIsOpenLoader } = useLoader();
@@ -38,15 +41,25 @@ export function GiveFeedbackModal({
     formState: { errors },
   } = useForm<FeedbackFormData>({
     defaultValues: {
-      display_name: userName || "Anonymous",
-      description: "",
+      display_name: initialFeedback?.display_name || userName || "Anonymous",
+      description: initialFeedback?.description || "",
     },
   });
+
+  useEffect(() => {
+    if (isOpen) {
+      reset({
+        display_name: initialFeedback?.display_name || userName || "Anonymous",
+        description: initialFeedback?.description || "",
+      });
+    }
+  }, [isOpen, initialFeedback, userName, reset]);
 
   const onSubmit = async (data: FeedbackFormData): Promise<void> => {
     setIsOpenLoader(true);
     try {
       const res = await upsertGroupFeedback({
+        id: initialFeedback?.id,
         group_id: group.id,
         display_name: data.display_name.trim(),
         description: data.description.trim(),
@@ -57,7 +70,9 @@ export function GiveFeedbackModal({
         throw new Error(res.error);
       }
 
-      showNotification("Feedback submitted successfully");
+      showNotification(
+        initialFeedback ? "Feedback updated successfully" : "Feedback submitted successfully"
+      );
       reset();
       onClose();
     } catch (err) {
@@ -95,7 +110,7 @@ export function GiveFeedbackModal({
             <div className="flex items-start justify-between gap-4 border-b border-white/10 pb-4">
               <div>
                 <span className="text-[9px] font-mono font-bold text-[#00ffec] uppercase tracking-widest block">
-                  SUBMIT GROUP FEEDBACK
+                  {initialFeedback ? "UPDATE GROUP FEEDBACK" : "SUBMIT GROUP FEEDBACK"}
                 </span>
                 <h3 className="text-xl font-black text-[#e8e1df] tracking-tight uppercase mt-0.5 font-sans">
                   {groupName}
@@ -183,7 +198,7 @@ export function GiveFeedbackModal({
                   type="submit"
                   className="w-full py-2.5 bg-[#00ffec] hover:bg-[#00e6d4] text-[#00382b] font-mono font-bold text-xs uppercase tracking-wider rounded-sm transition-colors cursor-pointer shadow-md"
                 >
-                  SUBMIT FEEDBACK
+                  {initialFeedback ? "UPDATE FEEDBACK" : "SUBMIT FEEDBACK"}
                 </button>
               </div>
             </form>
