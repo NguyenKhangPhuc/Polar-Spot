@@ -31,6 +31,7 @@ const Home = () => {
     });
   };
 
+  /*
   const handleLoginWithGithub = async (): Promise<void> => {
     await supabase.auth.signInWithOAuth({
       provider: "github",
@@ -39,6 +40,7 @@ const Home = () => {
       },
     });
   };
+  */
 
   const onSubmit = async (userInfo: LoginForm): Promise<void> => {
     setIsOpenLoader(true);
@@ -167,6 +169,7 @@ const Home = () => {
               </span>
             </button>
 
+            {/*
             <button
               type="button"
               onClick={handleLoginWithGithub}
@@ -177,6 +180,7 @@ const Home = () => {
               </svg>
               <span>SIGN IN WITH GITHUB</span>
             </button>
+            */}
           </div>
         </form>
       </div>

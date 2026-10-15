@@ -66,6 +66,7 @@ const Home = () => {
     }
   };
 
+  /*
   const handleLoginWithGithub = async (): Promise<void> => {
     const isAcceptedTerm = getValues("isTermAccepted");
     if (isAcceptedTerm) {
@@ -79,6 +80,7 @@ const Home = () => {
       showNotification("Please accept the terms conditions and privacy policy");
     }
   };
+  */
 
   return (
     <div className="w-full min-h-screen bg-[#151312] text-[#e8e1df] font-mono flex items-center justify-center p-4 sm:p-6 lg:p-8 select-none">
@@ -325,6 +327,7 @@ const Home = () => {
               </span>
             </button>
 
+            {/*
             <button
               type="button"
               onClick={handleLoginWithGithub}
@@ -335,6 +338,7 @@ const Home = () => {
               </svg>
               <span>SIGN UP WITH GITHUB</span>
             </button>
+            */}
           </div>
         </form>
       </div>
