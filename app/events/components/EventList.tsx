@@ -4,6 +4,8 @@ import React from "react";
 import { motion } from "framer-motion";
 import { Event } from "@/app/types/event";
 import EventCard from "./EventCard";
+import { handleGetUrl } from "@/app/helpers/file_url";
+import { createClient } from "@/app/utils/supabase/client";
 
 interface EventListProps {
   events: Event[];
@@ -21,6 +23,7 @@ export function EventList({
   getPosterUrl,
   onResetFilters,
 }: EventListProps) {
+  const supabase = createClient()
   if (events.length === 0) {
     return (
       <motion.div
@@ -78,7 +81,7 @@ export function EventList({
         <EventCard
           key={event.id}
           event={event}
-          posterUrl={getPosterUrl(event.poster_path)}
+          posterUrl={getPosterUrl(handleGetUrl(supabase, event.poster_path ?? ""))}
           index={index}
         />
       ))}
