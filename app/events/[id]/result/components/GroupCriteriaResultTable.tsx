@@ -61,7 +61,36 @@ export function GroupCriteriaResultTable({
                   </div>
                 </th>
               ))}
-              <th className="p-4 font-bold text-center w-36">FINAL SCORE</th>
+              <th className="p-4 font-bold text-center w-28 whitespace-nowrap align-top">
+                <div className="flex flex-col items-center justify-start text-center w-full">
+                  <span className="block font-bold text-[#83958d] text-[8.5px] uppercase tracking-wider text-center">
+                    GRADERS
+                  </span>
+                  <span className="block text-[7.5px] font-medium text-[#83958d]/70 mt-0.5 text-center uppercase tracking-widest">
+                    COUNT
+                  </span>
+                </div>
+              </th>
+              <th className="p-4 font-bold text-center w-32 whitespace-nowrap align-top">
+                <div className="flex flex-col items-center justify-start text-center w-full">
+                  <span className="block font-bold text-[#00ffec] text-[8.5px] uppercase tracking-wider text-center">
+                    YOUR SCORE
+                  </span>
+                  <span className="block text-[7.5px] font-medium text-[#83958d]/70 mt-0.5 text-center uppercase tracking-widest">
+                    YOUR AVERAGE
+                  </span>
+                </div>
+              </th>
+              <th className="p-4 font-bold text-center w-36 whitespace-nowrap align-top">
+                <div className="flex flex-col items-center justify-start text-center w-full">
+                  <span className="block font-bold text-[#83958d] text-[8.5px] uppercase tracking-wider text-center">
+                    FINAL SCORE
+                  </span>
+                  <span className="block text-[7.5px] font-medium text-[#00ffec] mt-0.5 text-center uppercase tracking-widest">
+                    (AVERAGE)
+                  </span>
+                </div>
+              </th>
             </tr>
           </thead>
           <tbody>
@@ -69,6 +98,34 @@ export function GroupCriteriaResultTable({
               {filteredScores.length > 0 ? (
                 filteredScores.map((score, index) => {
                   const groupName = score.group_name || "UNREGISTERED GROUP";
+
+                  // Extract or fallback-calculate graders count
+                  let gradersCount = typeof score.total_graders === "number" ? score.total_graders : 0;
+                  if (typeof score.total_graders !== "number") {
+                    const uniqueGraders = new Set<string>();
+                    (score.criteria || []).forEach((crit) => {
+                      (crit.graders || []).forEach((g) => {
+                        if (g?.user_id) uniqueGraders.add(g.user_id);
+                      });
+                    });
+                    gradersCount = uniqueGraders.size;
+                  }
+
+                  // Extract or fallback-calculate user final score
+                  let userFinalScore: number | null =
+                    typeof score.user_final_score === "number" ? score.user_final_score : null;
+                  if (userFinalScore === null && userId) {
+                    const userGrades: number[] = [];
+                    (score.criteria || []).forEach((crit) => {
+                      const userGradeObj = crit.graders?.find((g) => g.user_id === userId);
+                      if (userGradeObj && typeof userGradeObj.grade === "number") {
+                        userGrades.push(userGradeObj.grade);
+                      }
+                    });
+                    if (userGrades.length > 0) {
+                      userFinalScore = userGrades.reduce((sum, g) => sum + g, 0) / userGrades.length;
+                    }
+                  }
 
                   return (
                     <motion.tr
@@ -134,7 +191,32 @@ export function GroupCriteriaResultTable({
                         );
                       })}
 
-                      {/* Final Evaluation Score */}
+                      {/* Graders Count Column */}
+                      <td className="p-4 text-center whitespace-nowrap">
+                        <div className="flex items-center justify-center gap-1.5 font-mono">
+                          <span className="font-bold text-[10px] text-[#e8e1df]">
+                            {gradersCount}
+                          </span>
+                          <span className="text-[7.5px] font-medium text-[#83958d] uppercase tracking-wider">
+                            {gradersCount === 1 ? "PERSON" : "PEOPLE"}
+                          </span>
+                        </div>
+                      </td>
+
+                      {/* Logged-in User Final Score */}
+                      <td className="p-4 text-center whitespace-nowrap font-bold">
+                        {userFinalScore !== null ? (
+                          <span className="inline-block px-2.5 py-1 rounded-sm bg-[#151312] border border-[#00ffec]/30 text-[#00ffec] font-bold text-[9px] shadow-sm">
+                            {userFinalScore.toFixed(1)}
+                          </span>
+                        ) : (
+                          <span className="text-[#83958d]/50 font-medium text-[8px] uppercase tracking-wider">
+                            NOT GRADED
+                          </span>
+                        )}
+                      </td>
+
+                      {/* Overall Average Final Score */}
                       <td className="p-4 text-center w-36 whitespace-nowrap font-bold">
                         <span className="inline-block px-3 py-1 rounded-sm bg-[#151312] border border-white/5 text-[#00ffec] font-bold text-[9px] shadow-sm">
                           {score.final_avg_score !== null && score.final_avg_score !== undefined
@@ -148,7 +230,7 @@ export function GroupCriteriaResultTable({
               ) : (
                 <tr>
                   <td
-                    colSpan={3 + uniqueCriteriaList.length}
+                    colSpan={5 + uniqueCriteriaList.length}
                     className="p-12 text-center text-[#83958d] select-none text-xs font-mono"
                   >
                     NO GROUP SCORE ENTRIES MATCHING ACTIVE FILTER PARAMETERS

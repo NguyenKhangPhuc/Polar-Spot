@@ -16,6 +16,8 @@ export interface GroupFinalScore {
     group_name: string | null;
     event_id: string | null;
     final_avg_score: number | null;
+    total_graders?: number | null;
+    user_final_score?: number | null;
     criteria: CriteriaCell[];
 }
 

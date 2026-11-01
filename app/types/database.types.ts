@@ -487,6 +487,7 @@ export type Database = {
         Row: {
           final_avg_score: number | null
           group_id: string | null
+          total_graders: number | null
         }
         Relationships: [
           {
@@ -519,6 +520,8 @@ export type Database = {
           final_avg_score: number | null
           group_id: string | null
           group_name: string | null
+          total_graders: number | null
+          user_final_score: number | null
         }
         Relationships: [
           {

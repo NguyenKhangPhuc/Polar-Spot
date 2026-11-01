@@ -14,7 +14,15 @@ interface EventResultClientProps {
   groupFinalScores: GroupFinalScore[];
 }
 
-type SortOption = "score_desc" | "score_asc" | "name_asc" | "name_desc";
+type SortOption =
+  | "score_desc"
+  | "score_asc"
+  | "your_score_desc"
+  | "your_score_asc"
+  | "graders_desc"
+  | "graders_asc"
+  | "name_asc"
+  | "name_desc";
 
 export function EventResultClient({
   event,
@@ -26,14 +34,62 @@ export function EventResultClient({
 
   const maxScore = event?.max_score ?? 100;
   const totalGroupsCount = groupFinalScores.length;
+
+  // Single-pass enrichment to precalculate graders count and user final score
+  const enrichedScores = useMemo(() => {
+    const currentUserId = user?.id;
+
+    return groupFinalScores.map((score) => {
+      // 1. Graders Count
+      let totalGraders: number =
+        typeof score.total_graders === "number" ? score.total_graders : 0;
+      if (typeof score.total_graders !== "number") {
+        const uniqueGraders = new Set<string>();
+        (score.criteria || []).forEach((crit) => {
+          (crit.graders || []).forEach((g) => {
+            if (g?.user_id) uniqueGraders.add(g.user_id);
+          });
+        });
+        totalGraders = uniqueGraders.size;
+      }
+
+      // 2. User Final Score
+      let userScore: number | null =
+        typeof score.user_final_score === "number" ? score.user_final_score : null;
+      if (userScore === null && currentUserId) {
+        const userGrades: number[] = [];
+        (score.criteria || []).forEach((crit) => {
+          const userGradeObj = crit.graders?.find((g) => g.user_id === currentUserId);
+          if (userGradeObj && typeof userGradeObj.grade === "number") {
+            userGrades.push(userGradeObj.grade);
+          }
+        });
+        if (userGrades.length > 0) {
+          userScore = userGrades.reduce((sum, g) => sum + g, 0) / userGrades.length;
+        }
+      }
+
+      return {
+        ...score,
+        total_graders: totalGraders,
+        user_final_score: userScore,
+      };
+    });
+  }, [groupFinalScores, user?.id]);
+
   const topScore = useMemo(() => {
-    if (groupFinalScores.length === 0) return 0;
-    const max = Math.max(...groupFinalScores.map((s) => s.final_avg_score || 0));
+    if (enrichedScores.length === 0) return 0;
+    const max = Math.max(...enrichedScores.map((s) => s.final_avg_score || 0));
     return max;
-  }, [groupFinalScores]);
+  }, [enrichedScores]);
+
+  const userGradedCount = useMemo(() => {
+    if (!user?.id) return 0;
+    return enrichedScores.filter((s) => s.user_final_score !== null).length;
+  }, [enrichedScores, user?.id]);
 
   const filteredAndSortedScores = useMemo(() => {
-    let list = [...groupFinalScores];
+    let list = [...enrichedScores];
 
     if (searchQuery.trim()) {
       const q = searchQuery.toLowerCase().trim();
@@ -47,12 +103,24 @@ export function EventResultClient({
       const scoreB = b.final_avg_score || 0;
       const nameA = (a.group_name || "").toLowerCase();
       const nameB = (b.group_name || "").toLowerCase();
+      const yourScoreA = a.user_final_score;
+      const yourScoreB = b.user_final_score;
+      const gradersA = a.total_graders || 0;
+      const gradersB = b.total_graders || 0;
 
       switch (sortOption) {
         case "score_desc":
           return scoreB - scoreA;
         case "score_asc":
           return scoreA - scoreB;
+        case "your_score_desc":
+          return (yourScoreB ?? -1) - (yourScoreA ?? -1);
+        case "your_score_asc":
+          return (yourScoreA ?? 9999) - (yourScoreB ?? 9999);
+        case "graders_desc":
+          return gradersB - gradersA;
+        case "graders_asc":
+          return gradersA - gradersB;
         case "name_asc":
           return nameA.localeCompare(nameB);
         case "name_desc":
@@ -63,10 +131,10 @@ export function EventResultClient({
     });
 
     return list;
-  }, [groupFinalScores, searchQuery, sortOption]);
+  }, [enrichedScores, searchQuery, sortOption]);
 
   const eventTitle =
-    (event as any)?.title ||
+    event?.title ||
     event?.short_description ||
     event?.location ||
     "EVENT EVALUATION";
@@ -110,7 +178,7 @@ export function EventResultClient({
       </div>
 
       {/* Summary Stat Badges */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 font-mono text-xs select-none">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 font-mono text-xs select-none">
         {/* Metric 1: Total Groups */}
         <div className="bg-[#1d1b1a] border border-white/5 p-5 rounded-sm flex flex-col justify-between shadow-xl">
           <span className="text-[10px] font-bold text-[#83958d] uppercase tracking-wider">
@@ -124,19 +192,39 @@ export function EventResultClient({
 
         {/* Metric 2: Highest Average Score */}
         <div className="bg-[#1d1b1a] border border-white/5 p-5 rounded-sm flex flex-col justify-between shadow-xl">
-          <span className="text-[10px] font-bold text-[#00ffec] uppercase tracking-wider">
-            TOP EVALUATION SCORE
-          </span>
+          <div className="flex items-center justify-between">
+            <span className="text-[10px] font-bold text-[#00ffec] uppercase tracking-wider">
+              TOP SCORE (AVERAGE)
+            </span>
+            <span className="text-[7.5px] font-medium text-[#83958d] uppercase tracking-widest">
+              OVERALL
+            </span>
+          </div>
           <div className="mt-2 flex items-baseline gap-2">
             <span className="text-3xl font-black text-[#00ffec] font-mono">{topScore.toFixed(1)}</span>
             <span className="text-xs text-[#b9cbc2]">/ {maxScore} MAX SCORE</span>
+          </div>
+        </div>
+
+        {/* Metric 3: User Evaluated Teams */}
+        <div className="bg-[#1d1b1a] border border-white/5 p-5 rounded-sm flex flex-col justify-between shadow-xl sm:col-span-2 lg:col-span-1">
+          <div className="flex items-center justify-between">
+            <span className="text-[10px] font-bold text-[#83958d] uppercase tracking-wider">
+              YOUR EVALUATIONS
+            </span>
+            <span className="text-[7.5px] font-medium text-[#00ffec] uppercase tracking-widest">
+              {totalGroupsCount > 0 && userGradedCount === totalGroupsCount ? "ALL COMPLETED" : "IN PROGRESS"}
+            </span>
+          </div>
+          <div className="mt-2 flex items-baseline gap-2">
+            <span className="text-3xl font-black text-[#e8e1df] font-mono">{userGradedCount}</span>
+            <span className="text-xs text-[#83958d]">/ {totalGroupsCount} TEAMS GRADED</span>
           </div>
         </div>
       </div>
 
       {/* Controls: Search and Sort */}
       <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4 bg-[#1d1b1a] p-4 rounded-sm border border-white/5 shadow-md font-mono text-xs">
-        {/* Search Bar */}
         {/* Search Bar */}
         <div className="relative flex items-center flex-1">
           <input
@@ -172,8 +260,12 @@ export function EventResultClient({
               onChange={(e) => setSortOption(e.target.value as SortOption)}
               className="bg-[#151312] text-[#e8e1df] border border-white/5 rounded-sm p-2.5 pr-8 text-xs font-bold font-mono outline-none uppercase cursor-pointer focus:border-[#00ffec]/50 appearance-none"
             >
-              <option value="score_desc">FINAL SCORE (HIGH TO LOW)</option>
-              <option value="score_asc">FINAL SCORE (LOW TO HIGH)</option>
+              <option value="score_desc">FINAL SCORE (AVG: HIGH TO LOW)</option>
+              <option value="score_asc">FINAL SCORE (AVG: LOW TO HIGH)</option>
+              <option value="your_score_desc">YOUR SCORE (HIGH TO LOW)</option>
+              <option value="your_score_asc">YOUR SCORE (LOW TO HIGH)</option>
+              <option value="graders_desc">GRADERS COUNT (HIGH TO LOW)</option>
+              <option value="graders_asc">GRADERS COUNT (LOW TO HIGH)</option>
               <option value="name_asc">GROUP NAME (A - Z)</option>
               <option value="name_desc">GROUP NAME (Z - A)</option>
             </select>
