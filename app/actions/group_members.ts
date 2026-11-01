@@ -1,8 +1,20 @@
 'use server';
 
+import { revalidatePath } from "next/cache";
 import { GroupMemberInsert } from "../types/group_members";
 import { GroupMember } from "../types/groups";
 import { createClient } from "../utils/supabase/server";
+import { getUserRole } from "./profile";
+import { PROFILE_ROLE } from "../types/enum";
+
+async function verifyAdminRole(): Promise<boolean> {
+    const supabase = await createClient();
+    const { data: authData } = await supabase.auth.getUser();
+    const user = authData?.user;
+    if (!user) return false;
+    const role = await getUserRole(user.id);
+    return String(role || "").toLowerCase() === PROFILE_ROLE.ADMIN;
+}
 
 /**
  * PURPOSE:
@@ -15,11 +27,17 @@ import { createClient } from "../utils/supabase/server";
  * - groupMemberId (string, Required): Unique identifier of the group member record to remove.
  */
 export async function deleteGroupMember(groupMemberId: string) {
+    const isAdmin = await verifyAdminRole();
+    if (!isAdmin) {
+        return { data: null, error: "Unauthorized: admin role required" };
+    }
+
     const supabase = await createClient();
     const { data, error } = await supabase.from('group_members').delete().eq('id', groupMemberId);
     if (error) {
         return { data: null, error: "Fail to delete group member" };
     }
+    revalidatePath('/groups-management');
     return { data, error: null };
 }
 
@@ -36,6 +54,11 @@ export async function deleteGroupMember(groupMemberId: string) {
  * - memberEmail (string, Required): Email address of the member.
  */
 export async function createGroupMemberDirectly(groupId: string, memberName: string, memberEmail: string) {
+    const isAdmin = await verifyAdminRole();
+    if (!isAdmin) {
+        return { data: null, error: "Unauthorized: admin role required" };
+    }
+
     const supabase = await createClient();
     const sanitizedEmail = memberEmail.toLowerCase().trim();
     const sanitizedName = memberName.trim();
@@ -51,10 +74,11 @@ export async function createGroupMemberDirectly(groupId: string, memberName: str
         .single();
 
     if (error || !newMember) {
-        console.log(error);
+        console.error("Failed to add group member:", error);
         return { data: null, error: "Fail to add group member" };
     }
 
+    revalidatePath('/groups-management');
     return { data: newMember as GroupMember, error: null };
 }
 
@@ -69,11 +93,17 @@ export async function createGroupMemberDirectly(groupId: string, memberName: str
  * - groupMember (GroupMemberInsert, Required): Payload containing group_id, member_name, and member_email.
  */
 export async function addGroupMember(groupMember: GroupMemberInsert) {
+    const isAdmin = await verifyAdminRole();
+    if (!isAdmin) {
+        return { data: null, error: "Unauthorized: admin role required" };
+    }
+
     const supabase = await createClient();
     const { data, error } = await supabase.from('group_members').insert(groupMember).select().single();
     if (error) {
         return { data: null, error: "Fail to create group member" };
     }
+    revalidatePath('/groups-management');
     return { data: data as GroupMember, error: null };
 }
 
@@ -90,6 +120,11 @@ export async function addGroupMember(groupMember: GroupMemberInsert) {
  * - memberEmail (string, Required): Updated email address of member.
  */
 export async function updateGroupMember(groupMemberId: string, memberName: string, memberEmail: string) {
+    const isAdmin = await verifyAdminRole();
+    if (!isAdmin) {
+        return { data: null, error: "Unauthorized: admin role required" };
+    }
+
     const supabase = await createClient();
     const sanitizedEmail = memberEmail.toLowerCase().trim();
     const sanitizedName = memberName.trim();
@@ -105,10 +140,10 @@ export async function updateGroupMember(groupMemberId: string, memberName: strin
         .single();
 
     if (error || !updatedMember) {
-        console.log(error);
+        console.error("Failed to update group member:", error);
         return { data: null, error: "Fail to update group member" };
     }
 
+    revalidatePath('/groups-management');
     return { data: updatedMember as GroupMember, error: null };
 }
-

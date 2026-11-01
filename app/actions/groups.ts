@@ -1,7 +1,19 @@
 'use server';
 
+import { revalidatePath } from "next/cache";
 import { GroupInsert, GroupUpdate, GroupWithMembersAndEvent } from "../types/groups";
 import { createClient } from "../utils/supabase/server";
+import { getUserRole } from "./profile";
+import { PROFILE_ROLE } from "../types/enum";
+
+async function verifyAdminRole(): Promise<boolean> {
+    const supabase = await createClient();
+    const { data: authData } = await supabase.auth.getUser();
+    const user = authData?.user;
+    if (!user) return false;
+    const role = await getUserRole(user.id);
+    return String(role || "").toLowerCase() === PROFILE_ROLE.ADMIN;
+}
 
 /**
  * PURPOSE:
@@ -16,8 +28,8 @@ import { createClient } from "../utils/supabase/server";
 export async function getAllGroupsWithMembersWithEvent() {
     /**
      * BEHAVIORAL MECHANISM:
-     * Connects to Supabase client, queries 'groups' table joining 'events', fetches corresponding
-     * 'group_members' records and matches user 'profiles' by member_id.
+     * Connects to Supabase client and executes a single consolidated relational query on 'groups'
+     * embedding associated 'events' metadata and child 'group_members' records.
      *
      * PARAMETERS:
      * None.
@@ -27,50 +39,42 @@ export async function getAllGroupsWithMembersWithEvent() {
      */
     const supabase = await createClient();
 
-    // 1. Fetch groups with events relation
+    // 1. Fetch groups with embedded events and group_members in a single indexed query
     const { data: groupsData, error: groupsError } = await supabase
         .from('groups')
         .select(`
             *,
             events (
                 id,
+                title,
                 short_description,
                 location
+            ),
+            group_members (
+                id,
+                group_id,
+                member_name,
+                member_email,
+                created_at
             )
         `)
         .order('created_at', { ascending: false });
 
     if (groupsError) {
-        console.log(groupsError)
+        console.error("Fail to fetch groups:", groupsError);
         return { data: null, error: "Fail to fetch groups" };
     }
 
-    // 2. Fetch all group_members records directly
-    const { data: membersData, error: membersError } = await supabase
-        .from('group_members')
-        .select('id, group_id, member_name, member_email, created_at');
-
-    if (membersError) {
-        return { data: null, error: "Fail to fetch group members" };
+    if (!groupsData || groupsData.length === 0) {
+        return { data: [], error: null };
     }
 
-    // 3. Map members to groups
-    const membersByGroup: Record<string, typeof membersData> = {};
-    (membersData || []).forEach((m) => {
-        if (!m.group_id) return;
-        if (!membersByGroup[m.group_id]) {
-            membersByGroup[m.group_id] = [];
-        }
-        membersByGroup[m.group_id].push(m);
-    });
-
-    const joinedGroups: GroupWithMembersAndEvent[] = groupsData.map((group) => ({
+    const result: GroupWithMembersAndEvent[] = groupsData.map((group) => ({
         ...group,
-        events: group.events,
-        group_members: membersByGroup[group.id] || [],
+        group_members: group.group_members || [],
     }));
 
-    return { data: joinedGroups, error: null };
+    return { data: result, error: null };
 }
 
 /**
@@ -120,7 +124,7 @@ export async function getGroupByGroupId(groupId: string) {
 export async function createGroup(group: GroupInsert) {
     /**
      * BEHAVIORAL MECHANISM:
-     * Inserts the group record into Supabase and returns the newly created record.
+     * Validates admin role, inserts the group record into Supabase, and revalidates cache.
      *
      * PARAMETERS:
      * - group (GroupInsert): Group insertion payload.
@@ -128,10 +132,19 @@ export async function createGroup(group: GroupInsert) {
      * RETURNS:
      * - Object: { data: any, error: string | null }
      */
+    const isAdmin = await verifyAdminRole();
+    if (!isAdmin) {
+        return { data: null, error: "Unauthorized: admin role required" };
+    }
+
     const supabase = await createClient();
     const { data, error } = await supabase.from('groups').insert(group).select().single();
     if (error) {
         return { data: null, error: "Fail to create group" };
+    }
+    revalidatePath('/groups-management');
+    if (group.event_id) {
+        revalidatePath(`/events/${group.event_id}/groups`);
     }
     return { data, error: null };
 }
@@ -149,18 +162,27 @@ export async function createGroup(group: GroupInsert) {
 export async function updateGroup(group: GroupUpdate) {
     /**
      * BEHAVIORAL MECHANISM:
-     * Updates matching group record by ID in Supabase and returns the updated record.
+     * Validates admin role, updates matching group record by ID in Supabase, and revalidates cache.
      *
      * PARAMETERS:
-     * - group (GroupInsert): Group payload with valid ID.
+     * - group (GroupUpdate): Group payload with valid ID.
      *
      * RETURNS:
      * - Object: { data: any, error: string | null }
      */
+    const isAdmin = await verifyAdminRole();
+    if (!isAdmin) {
+        return { data: null, error: "Unauthorized: admin role required" };
+    }
+
     const supabase = await createClient();
     const { data, error } = await supabase.from('groups').update(group).eq('id', group.id!).select().single();
     if (error) {
         return { data: null, error: "Fail to update group" };
+    }
+    revalidatePath('/groups-management');
+    if (group.event_id) {
+        revalidatePath(`/events/${group.event_id}/groups`);
     }
     return { data, error: null };
 }
@@ -178,7 +200,7 @@ export async function updateGroup(group: GroupUpdate) {
 export async function deleteGroup(groupId: string) {
     /**
      * BEHAVIORAL MECHANISM:
-     * Removes the group record matching groupId from Supabase database.
+     * Validates admin role, removes the group record matching groupId from Supabase database, and revalidates cache.
      *
      * PARAMETERS:
      * - groupId (string): Target group UUID.
@@ -186,11 +208,17 @@ export async function deleteGroup(groupId: string) {
      * RETURNS:
      * - Object: { data: any, error: string | null }
      */
+    const isAdmin = await verifyAdminRole();
+    if (!isAdmin) {
+        return { data: null, error: "Unauthorized: admin role required" };
+    }
+
     const supabase = await createClient();
     const { data, error } = await supabase.from('groups').delete().eq('id', groupId);
     if (error) {
         return { data: null, error: "Fail to delete group" };
     }
+    revalidatePath('/groups-management');
     return { data, error: null };
 }
 

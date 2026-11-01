@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useState, useMemo } from "react";
-import { useRouter } from "next/navigation";
 import { Event } from "../types/event";
 import { GroupWithMembersAndEvent, GroupMember } from "../types/groups";
 import { deleteGroup } from "../actions/groups";
@@ -21,13 +20,14 @@ type SortOrder = "asc" | "desc";
 interface GroupManagementClientProps {
   initialGroups: GroupWithMembersAndEvent[];
   eventsList: Event[];
+  isAdmin?: boolean;
 }
 
 export default function GroupManagementClient({
   initialGroups,
   eventsList,
+  isAdmin = false,
 }: GroupManagementClientProps) {
-  const router = useRouter();
   const { setIsOpenLoader } = useLoader();
   const { showNotification } = useNotification();
 
@@ -85,7 +85,6 @@ export default function GroupManagementClient({
 
       showNotification("Group deleted successfully");
       setGroupsList((prev) => prev.filter((g) => g.id !== groupId));
-      router.refresh();
     } catch {
       showNotification("Fail to delete group");
     } finally {
@@ -105,7 +104,6 @@ export default function GroupManagementClient({
         return g;
       })
     );
-    router.refresh();
   };
 
   const handleMemberAdded = (groupId: string, newMemberRecord: GroupMember) => {
@@ -120,7 +118,6 @@ export default function GroupManagementClient({
         return g;
       })
     );
-    router.refresh();
   };
 
   const handleMemberUpdated = (updatedMemberRecord: GroupMember) => {
@@ -137,25 +134,25 @@ export default function GroupManagementClient({
         return g;
       })
     );
-    router.refresh();
   };
 
   const handleGroupCreated = (newGroup: GroupWithMembersAndEvent) => {
     setGroupsList((prev) => [newGroup, ...prev]);
-    router.refresh();
   };
 
   const handleGroupUpdated = (updatedGroup: GroupWithMembersAndEvent) => {
     setGroupsList((prev) =>
       prev.map((g) => (g.id === updatedGroup.id ? updatedGroup : g))
     );
-    router.refresh();
   };
 
   return (
     <div className="w-full flex flex-col gap-8 select-text">
       {/* Top Section Header */}
-      <HeaderSection onOpenCreateModal={() => setIsCreateModalOpen(true)} />
+      <HeaderSection
+        onOpenCreateModal={() => setIsCreateModalOpen(true)}
+        isAdmin={isAdmin}
+      />
 
       {/* Search Bar & Filter Controls */}
       <GroupFilterControls
@@ -188,41 +185,50 @@ export default function GroupManagementClient({
           onOpenEditMemberModal={(member) => setEditingMember(member)}
           onDeleteGroup={handleDeleteGroup}
           onMemberRemoved={handleMemberRemoved}
+          isAdmin={isAdmin}
         />
       </div>
 
       {/* Create Group Modal */}
-      <CreateGroupModal
-        isOpen={isCreateModalOpen}
-        onClose={() => setIsCreateModalOpen(false)}
-        eventsList={eventsList}
-        onGroupCreated={handleGroupCreated}
-      />
+      {isAdmin && (
+        <CreateGroupModal
+          isOpen={isCreateModalOpen}
+          onClose={() => setIsCreateModalOpen(false)}
+          eventsList={eventsList}
+          onGroupCreated={handleGroupCreated}
+        />
+      )}
 
       {/* Edit Group Modal */}
-      <EditGroupModal
-        group={editingGroup}
-        isOpen={Boolean(editingGroup)}
-        onClose={() => setEditingGroup(null)}
-        eventsList={eventsList}
-        onGroupUpdated={handleGroupUpdated}
-      />
+      {isAdmin && (
+        <EditGroupModal
+          group={editingGroup}
+          isOpen={Boolean(editingGroup)}
+          onClose={() => setEditingGroup(null)}
+          eventsList={eventsList}
+          onGroupUpdated={handleGroupUpdated}
+        />
+      )}
 
       {/* Add Member Modal */}
-      <AddMemberModal
-        group={addMemberGroup}
-        isOpen={Boolean(addMemberGroup)}
-        onClose={() => setAddMemberGroup(null)}
-        onMemberAdded={handleMemberAdded}
-      />
+      {isAdmin && (
+        <AddMemberModal
+          group={addMemberGroup}
+          isOpen={Boolean(addMemberGroup)}
+          onClose={() => setAddMemberGroup(null)}
+          onMemberAdded={handleMemberAdded}
+        />
+      )}
 
       {/* Edit Member Modal */}
-      <EditMemberModal
-        member={editingMember}
-        isOpen={Boolean(editingMember)}
-        onClose={() => setEditingMember(null)}
-        onMemberUpdated={handleMemberUpdated}
-      />
+      {isAdmin && (
+        <EditMemberModal
+          member={editingMember}
+          isOpen={Boolean(editingMember)}
+          onClose={() => setEditingMember(null)}
+          onMemberUpdated={handleMemberUpdated}
+        />
+      )}
     </div>
   );
 }

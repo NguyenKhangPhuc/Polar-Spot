@@ -5,9 +5,10 @@ import BackButton from "@/app/components/BackButton";
 
 interface HeaderSectionProps {
   onOpenCreateModal: () => void;
+  isAdmin?: boolean;
 }
 
-export function HeaderSection({ onOpenCreateModal }: HeaderSectionProps) {
+export function HeaderSection({ onOpenCreateModal, isAdmin = false }: HeaderSectionProps) {
   return (
     <div className="flex flex-col gap-2">
       <BackButton href="/" label="BACK TO HOME" className="mb-0" />
@@ -23,13 +24,15 @@ export function HeaderSection({ onOpenCreateModal }: HeaderSectionProps) {
           </div>
         </div>
 
-        <button
-          type="button"
-          onClick={onOpenCreateModal}
-          className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-sm text-xs font-bold text-[#00382b] bg-[#00ffec] hover:brightness-110 transition-all shadow-[0_0_15px_rgba(0,255,236,0.15)] uppercase tracking-wider font-mono cursor-pointer self-start md:self-auto"
-        >
-          <span>+ CREATE NEW GROUP</span>
-        </button>
+        {isAdmin && (
+          <button
+            type="button"
+            onClick={onOpenCreateModal}
+            className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-sm text-xs font-bold text-[#00382b] bg-[#00ffec] hover:brightness-110 transition-all shadow-[0_0_15px_rgba(0,255,236,0.15)] uppercase tracking-wider font-mono cursor-pointer self-start md:self-auto"
+          >
+            <span>+ CREATE NEW GROUP</span>
+          </button>
+        )}
       </div>
     </div>
   );

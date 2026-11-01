@@ -1,5 +1,8 @@
 import { getAllGroupsWithMembersWithEvent } from "../actions/groups";
 import { getAllEvents } from "../actions/events";
+import { getUser } from "../actions/authentication";
+import { getUserRole } from "../actions/profile";
+import { PROFILE_ROLE } from "../types/enum";
 import GroupManagementClient from "./GroupManagementClient";
 import Link from "next/link";
 
@@ -9,11 +12,17 @@ export const metadata = {
 };
 
 export default async function GroupsManagementPage() {
-  // Concurrently fetch groups with member/event joins AND all events list
-  const [groupsRes, eventsRes] = await Promise.all([
+  // Concurrently fetch auth session, groups with joins, and events list
+  const [authRes, groupsRes, eventsRes] = await Promise.all([
+    getUser(),
     getAllGroupsWithMembersWithEvent(),
     getAllEvents(),
   ]);
+
+  const user = authRes.data?.user ?? null;
+  const role = user ? await getUserRole(user.id) : null;
+  const roleStr = role ? String(role).toLowerCase() : "";
+  const isAdmin = roleStr === PROFILE_ROLE.ADMIN || roleStr === "admin";
 
   const initialGroups = groupsRes.data;
   const groupsError = groupsRes.error;
@@ -57,6 +66,7 @@ export default async function GroupsManagementPage() {
         <GroupManagementClient
           initialGroups={initialGroups}
           eventsList={eventsList}
+          isAdmin={isAdmin}
         />
       </div>
     </div>

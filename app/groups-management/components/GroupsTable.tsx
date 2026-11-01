@@ -15,6 +15,7 @@ interface GroupsTableProps {
   onOpenEditMemberModal?: (member: GroupMember) => void;
   onDeleteGroup: (groupId: string) => void;
   onMemberRemoved: (groupId: string, memberRecordId: string) => void;
+  isAdmin?: boolean;
 }
 
 export function GroupsTable({
@@ -24,6 +25,7 @@ export function GroupsTable({
   onOpenEditMemberModal,
   onDeleteGroup,
   onMemberRemoved,
+  isAdmin = false,
 }: GroupsTableProps) {
   const { setIsOpenLoader } = useLoader();
   const { showNotification } = useNotification();
@@ -76,7 +78,7 @@ export function GroupsTable({
               const members = group.group_members || [];
               const memberCount = members.length;
               const eventName =
-                (group.events as any)?.title ||
+                group.events?.title ||
                 group.events?.short_description ||
                 group.events?.location ||
                 "UNASSIGNED EVENT";
@@ -166,32 +168,36 @@ export function GroupsTable({
                         </Link>
 
                         {/* Edit Group Button */}
-                        <button
-                          type="button"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            onOpenEditModal(group);
-                          }}
-                          title="Edit Group Details"
-                          className="px-2.5 py-1.5 rounded-sm bg-[#151312] hover:bg-[#252220] text-[#e8e1df] border border-white/10 hover:border-[#00ffec]/40 text-[9px] font-bold uppercase tracking-wider transition-all cursor-pointer"
-                        >
-                          EDIT
-                        </button>
+                        {isAdmin && (
+                          <button
+                            type="button"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              onOpenEditModal(group);
+                            }}
+                            title="Edit Group Details"
+                            className="px-2.5 py-1.5 rounded-sm bg-[#151312] hover:bg-[#252220] text-[#e8e1df] border border-white/10 hover:border-[#00ffec]/40 text-[9px] font-bold uppercase tracking-wider transition-all cursor-pointer"
+                          >
+                            EDIT
+                          </button>
+                        )}
 
                         {/* Delete Group Button */}
-                        <button
-                          type="button"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            onDeleteGroup(group.id);
-                          }}
-                          title="Delete Group"
-                          className="p-1.5 rounded-sm bg-red-950/40 hover:bg-red-900/60 text-red-400 border border-red-500/30 transition-colors cursor-pointer"
-                        >
-                          <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                          </svg>
-                        </button>
+                        {isAdmin && (
+                          <button
+                            type="button"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              onDeleteGroup(group.id);
+                            }}
+                            title="Delete Group"
+                            className="p-1.5 rounded-sm bg-red-950/40 hover:bg-red-900/60 text-red-400 border border-red-500/30 transition-colors cursor-pointer"
+                          >
+                            <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                            </svg>
+                          </button>
+                        )}
                       </div>
                     </td>
                   </tr>
@@ -229,16 +235,18 @@ export function GroupsTable({
                                 </Link>
 
                                 {/* Add Member Modal Trigger */}
-                                <button
-                                  type="button"
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    onOpenAddMemberModal(group);
-                                  }}
-                                  className="px-2.5 py-1.5 rounded-sm bg-[#151312] hover:bg-[#252220] text-[#e8e1df] border border-white/10 hover:border-[#00ffec]/40 text-[9px] font-bold uppercase tracking-wider transition-all cursor-pointer"
-                                >
-                                  + ADD MEMBER
-                                </button>
+                                {isAdmin && (
+                                  <button
+                                    type="button"
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      onOpenAddMemberModal(group);
+                                    }}
+                                    className="px-2.5 py-1.5 rounded-sm bg-[#151312] hover:bg-[#252220] text-[#e8e1df] border border-white/10 hover:border-[#00ffec]/40 text-[9px] font-bold uppercase tracking-wider transition-all cursor-pointer"
+                                  >
+                                    + ADD MEMBER
+                                  </button>
+                                )}
                               </div>
                             </div>
 
@@ -263,30 +271,32 @@ export function GroupsTable({
                                           {emailStr}
                                         </span>
                                       </div>
-                                      <div className="flex items-center gap-2 shrink-0">
-                                        {onOpenEditMemberModal && (
+                                      {isAdmin && (
+                                        <div className="flex items-center gap-2 shrink-0">
+                                          {onOpenEditMemberModal && (
+                                            <button
+                                              type="button"
+                                              onClick={(e) => {
+                                                e.stopPropagation();
+                                                onOpenEditMemberModal(member);
+                                              }}
+                                              className="px-2 py-1 bg-white/5 hover:bg-white/10 text-[#e8e1df] border border-white/10 text-[9px] font-bold uppercase tracking-wider rounded-sm transition-colors cursor-pointer font-mono"
+                                            >
+                                              EDIT
+                                            </button>
+                                          )}
                                           <button
                                             type="button"
                                             onClick={(e) => {
                                               e.stopPropagation();
-                                              onOpenEditMemberModal(member);
+                                              handleRemoveMember(group.id, member.id);
                                             }}
-                                            className="px-2 py-1 bg-white/5 hover:bg-white/10 text-[#e8e1df] border border-white/10 text-[9px] font-bold uppercase tracking-wider rounded-sm transition-colors cursor-pointer font-mono"
+                                            className="px-2 py-1 bg-red-950/40 border border-red-500/30 hover:bg-red-900/60 text-red-300 text-[9px] uppercase font-bold tracking-wider rounded-sm transition-colors cursor-pointer shrink-0 font-mono"
                                           >
-                                            EDIT
+                                            REMOVE
                                           </button>
-                                        )}
-                                        <button
-                                          type="button"
-                                          onClick={(e) => {
-                                            e.stopPropagation();
-                                            handleRemoveMember(group.id, member.id);
-                                          }}
-                                          className="px-2 py-1 bg-red-950/40 border border-red-500/30 hover:bg-red-900/60 text-red-300 text-[9px] uppercase font-bold tracking-wider rounded-sm transition-colors cursor-pointer shrink-0 font-mono"
-                                        >
-                                          REMOVE
-                                        </button>
-                                      </div>
+                                        </div>
+                                      )}
                                     </div>
                                   );
                                 })}

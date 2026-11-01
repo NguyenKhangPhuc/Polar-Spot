@@ -126,12 +126,12 @@ export default function NavigationBarClient({
     ? isAdmin
       ? "Auth: ADMIN"
       : isJudge
-      ? "Auth: JUDGE"
-      : "Auth: USER"
+        ? "Auth: JUDGE"
+        : "Auth: USER"
     : "Auth: Offline";
 
   return (
-    <aside className="hidden lg:flex lg:flex-col fixed top-0 left-0 bottom-0 w-64 bg-[#151312]/95 backdrop-blur-xl border-r border-white/5 z-40 p-6 overflow-y-auto font-montserrat select-none">
+    <aside className="hidden lg:flex lg:flex-col fixed top-0 left-0 bottom-0 w-73 bg-[#151312]/95 backdrop-blur-xl border-r border-white/5 z-40 p-6 overflow-y-auto font-montserrat select-none">
       {/* Brand Logo & Name */}
       <div className="mb-8 flex flex-col justify-start pb-6 border-b border-white/5">
         <Link href="/" className="flex items-center gap-3.5 group">
@@ -171,16 +171,14 @@ export default function NavigationBarClient({
                   <Link
                     key={`item-${item.title}`}
                     href={item.link}
-                    className={`flex items-center gap-3.5 px-4 py-3 rounded-sm transition-all font-semibold text-[15px] group ${
-                      isActive
-                        ? "text-[#00ffec] bg-[#00ffec]/5 border-r-2 border-[#00ffec]"
-                        : "text-[#b9cbc2] hover:text-[#00ffec] hover:bg-[#00ffec]/5"
-                    }`}
+                    className={`flex items-center gap-3.5 px-4 py-3 rounded-sm transition-all font-semibold text-[15px] group ${isActive
+                      ? "text-[#00ffec] bg-[#00ffec]/5 border-r-2 border-[#00ffec]"
+                      : "text-[#b9cbc2] hover:text-[#00ffec] hover:bg-[#00ffec]/5"
+                      }`}
                   >
                     <Icon
-                      className={`w-5 h-5 shrink-0 transition-transform group-hover:scale-110 ${
-                        isActive ? "text-[#00ffec]" : "text-[#83958d] group-hover:text-[#00ffec]"
-                      }`}
+                      className={`w-5 h-5 shrink-0 transition-transform group-hover:scale-110 ${isActive ? "text-[#00ffec]" : "text-[#83958d] group-hover:text-[#00ffec]"
+                        }`}
                     />
                     <span>{item.title}</span>
                   </Link>
