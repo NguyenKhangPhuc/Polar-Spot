@@ -88,7 +88,7 @@ export function EventsClient({ events }: EventsClientProps) {
       if (searchQuery.trim()) {
         const q = searchQuery.toLowerCase();
         const matchesTitle =
-          (event as any).title && (event as any).title.toLowerCase().includes(q);
+          event.title && event.title.toLowerCase().includes(q);
         const matchesDesc =
           event.short_description && event.short_description.toLowerCase().includes(q);
         const matchesLocation =
@@ -164,12 +164,12 @@ export function EventsClient({ events }: EventsClientProps) {
         const dateB = new Date(b.start_date || b.organized_date || b.created_at || 0).getTime();
         return dateA - dateB;
       } else if (sortBy === "title_asc") {
-        const titleA = ((a as any).title || a.short_description || "").toLowerCase();
-        const titleB = ((b as any).title || b.short_description || "").toLowerCase();
+        const titleA = (a.title || a.short_description || "").toLowerCase();
+        const titleB = (b.title || b.short_description || "").toLowerCase();
         return titleA.localeCompare(titleB);
       } else if (sortBy === "title_desc") {
-        const titleA = ((a as any).title || a.short_description || "").toLowerCase();
-        const titleB = ((b as any).title || b.short_description || "").toLowerCase();
+        const titleA = (a.title || a.short_description || "").toLowerCase();
+        const titleB = (b.title || b.short_description || "").toLowerCase();
         return titleB.localeCompare(titleA);
       }
       return 0;

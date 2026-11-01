@@ -12,7 +12,7 @@ interface HeaderSectionProps {
 
 export function HeaderSection({ event }: HeaderSectionProps) {
   const eventTitle =
-    (event as any).title ||
+    event.title ||
     event.short_description ||
     "POLAR BEAR PITCHING EVENT";
 

@@ -21,7 +21,7 @@ const getPublicSupabase = () =>
  * Cached public query for all events with column pruning (omitting content).
  * Tagged for targeted revalidation on mutations.
  */
-export const getCachedAllEvents = unstable_cache(
+const getCachedAllEvents = unstable_cache(
     async () => {
         const supabase = getPublicSupabase();
         const { data, error } = await supabase
@@ -42,7 +42,7 @@ export const getCachedAllEvents = unstable_cache(
  * Cached public query for a single event by ID.
  * Tagged for targeted revalidation on mutations.
  */
-export const getCachedEventById = (eventId: string) =>
+const getCachedEventById = (eventId: string) =>
     unstable_cache(
         async () => {
             const supabase = getPublicSupabase();
@@ -89,7 +89,8 @@ export async function getAllEvents() {
  */
 export async function createEvent(event: EventInsert) {
     const supabase = await createClient();
-    const { data, error } = await supabase.from('events').insert(event as any).select().single();
+    const payload = event as Database["public"]["Tables"]["events"]["Insert"];
+    const { data, error } = await supabase.from('events').insert(payload).select().single();
     if (error) {
         return { data: null, error: "Fail to create event" };
     }
@@ -103,7 +104,8 @@ export async function createEvent(event: EventInsert) {
  */
 export async function updateEvent(event: EventInsert) {
     const supabase = await createClient();
-    const { data, error } = await supabase.from('events').update(event as any).eq('id', event.id!).select().single();
+    const payload = event as Database["public"]["Tables"]["events"]["Update"];
+    const { data, error } = await supabase.from('events').update(payload).eq('id', event.id!).select().single();
     if (error) {
         return { data: null, error: "Fail to update event" };
     }
@@ -208,7 +210,7 @@ export async function updateEventPoster({
 
         const { error } = await supabase
             .from('events')
-            .update({ poster_path: posterPath } as any)
+            .update({ poster_path: posterPath })
             .eq('id', eventId);
 
         if (error) {
@@ -224,7 +226,7 @@ export async function updateEventPoster({
     }
     const { error } = await supabase
         .from('events')
-        .update({ poster_path: null } as any)
+        .update({ poster_path: null })
         .eq('id', eventId);
 
     if (error) {

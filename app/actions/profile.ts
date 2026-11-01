@@ -3,6 +3,7 @@
 import { PROFILE_ROLE } from "../types/enum";
 import { Profile, ProfileInsert } from "../types/profile";
 import { createClient } from "../utils/supabase/server";
+import { Database } from "../types/database.types";
 
 /**
  * PURPOSE:
@@ -40,7 +41,8 @@ export async function getProfileById(userId: string) {
  */
 export async function updateProfile(profile: ProfileInsert) {
     const supabase = await createClient();
-    const { data, error } = await supabase.from('profiles').update(profile as any).eq('id', profile.id);
+    const payload = profile as Database["public"]["Tables"]["profiles"]["Update"];
+    const { error } = await supabase.from('profiles').update(payload).eq('id', profile.id);
 
     if (error) {
         return { error: "Failed to update profile" };

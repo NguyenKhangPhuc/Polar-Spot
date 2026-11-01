@@ -247,7 +247,7 @@ export async function getGroupsByEventId(eventId: string) {
         return { data: [], error: null };
     }
 
-    const result: GroupWithMembersAndEvent[] = (groupsData as any[]).map((g) => ({
+    const result: GroupWithMembersAndEvent[] = (groupsData as unknown as GroupWithMembersAndEvent[]).map((g) => ({
         ...g,
         group_members: g.group_members || [],
     }));
