@@ -92,37 +92,42 @@ export function EventGroupsClient({
       {/* 1. Header Title & Actions Section */}
       <HeaderSection event={event} totalFound={processedGroups.length} />
 
-      {/* 2. Top-Level Filter & Search Controls */}
-      <GroupFilterControls
-        searchQuery={searchQuery}
-        setSearchQuery={setSearchQuery}
-        sortOrder={sortOrder}
-        setSortOrder={setSortOrder}
-        onResetFilters={handleResetFilters}
-      />
-
-      {/* 3. Groups List Section */}
-      <div className="flex flex-col gap-4">
-        {/* Metric Bar */}
-        <div className="flex items-center justify-between select-none">
-          <div className="flex items-center gap-2 text-xs font-mono font-bold text-[#e8e1df] uppercase tracking-wider">
-            <div className="w-[3px] h-3 bg-[#00ffec]" />
-            <span>01 REGISTERED PITCHING GROUPS</span>
-          </div>
-          <span className="font-mono text-[9px] text-[#83958d]">
-            TOTAL GROUPS: {processedGroups.length}
-          </span>
+      {/* 2. Main 2-Column Responsive Body (Sidebar on Left, Groups on Right) */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+        {/* Left Column: Filter Sidebar */}
+        <div className="w-full lg:col-span-4 xl:col-span-3 lg:sticky lg:top-24">
+          <GroupFilterControls
+            searchQuery={searchQuery}
+            setSearchQuery={setSearchQuery}
+            sortOrder={sortOrder}
+            setSortOrder={setSortOrder}
+            onResetFilters={handleResetFilters}
+          />
         </div>
 
-        {/* 2-Column Groups Grid */}
-        <GroupGrid
-          groups={processedGroups}
-          onResetFilters={handleResetFilters}
-          canGrade={canGrade}
-          canGiveFeedback={canGiveFeedback}
-          onSelectGroup={(group) => setSelectedGroupForModal(group)}
-          onOpenGiveFeedback={handleOpenGiveFeedback}
-        />
+        {/* Right Column: Groups List Section */}
+        <div className="w-full lg:col-span-8 xl:col-span-9 flex flex-col gap-4">
+          {/* Metric Bar */}
+          <div className="flex items-center justify-between select-none">
+            <div className="flex items-center gap-2 text-xs font-mono font-bold text-[#e8e1df] uppercase tracking-wider">
+              <div className="w-[3px] h-3 bg-[#00ffec]" />
+              <span>01 REGISTERED PITCHING GROUPS</span>
+            </div>
+            <span className="font-mono text-[9px] text-[#83958d]">
+              TOTAL GROUPS: {processedGroups.length}
+            </span>
+          </div>
+
+          {/* Groups Grid */}
+          <GroupGrid
+            groups={processedGroups}
+            onResetFilters={handleResetFilters}
+            canGrade={canGrade}
+            canGiveFeedback={canGiveFeedback}
+            onSelectGroup={(group) => setSelectedGroupForModal(group)}
+            onOpenGiveFeedback={handleOpenGiveFeedback}
+          />
+        </div>
       </div>
 
       {/* 4. Large Centered Group Detail Modal with YouTube Video */}
