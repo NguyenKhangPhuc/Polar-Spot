@@ -10,9 +10,14 @@ import EventStatusSelect from "./EventStatusSelect";
 interface EventsTableProps {
   events: Event[];
   onStatusUpdated: (eventId: string, newStatus: EVENT_STATUS) => void;
+  isAdmin?: boolean;
 }
 
-export function EventsTable({ events, onStatusUpdated }: EventsTableProps) {
+export function EventsTable({
+  events,
+  onStatusUpdated,
+  isAdmin = false,
+}: EventsTableProps) {
   return (
     <div className="bg-[#1d1b1a] border border-white/5 rounded-sm overflow-x-auto shadow-xl">
       <table className="w-full border-collapse font-mono text-[10px] text-[#b9cbc2] text-left min-w-[950px]">
@@ -25,7 +30,7 @@ export function EventsTable({ events, onStatusUpdated }: EventsTableProps) {
             <th className="p-4 min-w-[110px]">END DATE</th>
             <th className="p-4 min-w-[140px]">ORGANIZED DATETIME</th>
             <th className="p-4 min-w-[150px]">LOCATION STAGE</th>
-            <th className="p-4 text-center w-40">ACTIONS</th>
+            <th className="p-4 text-center min-w-[200px]">ACTIONS</th>
           </tr>
         </thead>
         <tbody>
@@ -33,8 +38,8 @@ export function EventsTable({ events, onStatusUpdated }: EventsTableProps) {
             {events.length > 0 ? (
               events.map((event, index) => {
                 const eventTitle =
-                  typeof (event as any).title === "string" && (event as any).title.trim()
-                    ? (event as any).title
+                  typeof event.title === "string" && event.title.trim()
+                    ? event.title
                     : typeof event.short_description === "string" && event.short_description.trim()
                     ? event.short_description
                     : "UNTITLED EVENT";
@@ -99,6 +104,7 @@ export function EventsTable({ events, onStatusUpdated }: EventsTableProps) {
                         eventId={event.id}
                         currentStatus={event.status}
                         onStatusChanged={onStatusUpdated}
+                        disabled={!isAdmin}
                       />
                     </td>
 
@@ -125,8 +131,9 @@ export function EventsTable({ events, onStatusUpdated }: EventsTableProps) {
                     </td>
 
                     {/* Action Column */}
-                    <td className="p-4 text-center w-40 select-none">
+                    <td className="p-4 text-center min-w-[200px] select-none">
                       <div className="flex items-center justify-center gap-2">
+                        {/* View Event Details */}
                         <Link
                           href={`/events/${event.id}`}
                           className="px-2.5 py-1.5 rounded-sm bg-[#00ffec] hover:brightness-110 text-[#00382b] font-bold text-[9px] uppercase tracking-wider transition-all"
@@ -134,13 +141,26 @@ export function EventsTable({ events, onStatusUpdated }: EventsTableProps) {
                         >
                           VIEW
                         </Link>
+
+                        {/* View Event Result */}
                         <Link
-                          href={`/events/${event.id}/edit`}
-                          className="px-2.5 py-1.5 rounded-sm bg-[#151312] hover:bg-[#252220] text-[#e8e1df] border border-white/10 hover:border-[#00ffec]/40 text-[9px] font-bold uppercase tracking-wider transition-all"
-                          title="Edit Event"
+                          href={`/events/${event.id}/result`}
+                          className="px-2.5 py-1.5 rounded-sm bg-[#151312] hover:bg-[#252220] text-[#00ffec] border border-[#00ffec]/30 hover:border-[#00ffec] text-[9px] font-bold uppercase tracking-wider transition-all"
+                          title="View Event Result"
                         >
-                          EDIT
+                          RESULT
                         </Link>
+
+                        {/* Edit Event (Admin Only) */}
+                        {isAdmin && (
+                          <Link
+                            href={`/events/${event.id}/edit`}
+                            className="px-2.5 py-1.5 rounded-sm bg-[#151312] hover:bg-[#252220] text-[#e8e1df] border border-white/10 hover:border-[#00ffec]/40 text-[9px] font-bold uppercase tracking-wider transition-all"
+                            title="Edit Event"
+                          >
+                            EDIT
+                          </Link>
+                        )}
                       </div>
                     </td>
                   </tr>

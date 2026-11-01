@@ -1,4 +1,7 @@
 import { getAllEvents } from "../actions/events";
+import { getUser } from "../actions/authentication";
+import { getUserRole } from "../actions/profile";
+import { PROFILE_ROLE } from "../types/enum";
 import EventsManagementClient from "./EventsManagementClient";
 import Link from "next/link";
 
@@ -8,7 +11,18 @@ export const metadata = {
 };
 
 export default async function EventsManagementPage() {
-  const { data: initialEvents, error } = await getAllEvents();
+  // Concurrently fetch auth session and events list
+  const [authRes, eventsRes] = await Promise.all([
+    getUser(),
+    getAllEvents(),
+  ]);
+
+  const user = authRes.data?.user ?? null;
+  const role = user ? await getUserRole(user.id) : null;
+  const roleStr = role ? String(role).toLowerCase() : "";
+  const isAdmin = roleStr === PROFILE_ROLE.ADMIN || roleStr === "admin";
+
+  const { data: initialEvents, error } = eventsRes;
 
   // Handle server fetch error directly in page.tsx
   if (error) {
@@ -42,7 +56,10 @@ export default async function EventsManagementPage() {
   return (
     <div className="w-full min-h-screen bg-[#151312] text-[#e8e1df] font-mono px-6 md:px-16 py-24">
       <div className="max-w-7xl mx-auto flex flex-col">
-        <EventsManagementClient initialEvents={initialEvents || []} />
+        <EventsManagementClient
+          initialEvents={initialEvents || []}
+          isAdmin={isAdmin}
+        />
       </div>
     </div>
   );

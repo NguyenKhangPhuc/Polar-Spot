@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useState, useMemo } from "react";
-import { useRouter } from "next/navigation";
 import { Event } from "../types/event";
 import { EVENT_STATUS } from "../types/enum";
 
@@ -14,13 +13,13 @@ type SortOrder = "asc" | "desc";
 
 interface EventsManagementClientProps {
   initialEvents: Event[];
+  isAdmin?: boolean;
 }
 
 export default function EventsManagementClient({
   initialEvents,
+  isAdmin = false,
 }: EventsManagementClientProps) {
-  const router = useRouter();
-
   // Local state management
   const [eventsList, setEventsList] = useState<Event[]>(initialEvents);
   const [searchQuery, setSearchQuery] = useState("");
@@ -34,10 +33,12 @@ export default function EventsManagementClient({
     if (searchQuery.trim()) {
       const q = searchQuery.toLowerCase().trim();
       result = result.filter((event) => {
+        const title = typeof event.title === "string" ? event.title : "";
         const desc = typeof event.short_description === "string" ? event.short_description : "";
         const cnt = typeof event.content === "string" ? event.content : "";
         const loc = typeof event.location === "string" ? event.location : "";
         return (
+          title.toLowerCase().includes(q) ||
           desc.toLowerCase().includes(q) ||
           cnt.toLowerCase().includes(q) ||
           loc.toLowerCase().includes(q)
@@ -50,12 +51,12 @@ export default function EventsManagementClient({
     }
 
     result.sort((a, b) => {
-      const descA = typeof a.short_description === "string" ? a.short_description : "";
-      const descB = typeof b.short_description === "string" ? b.short_description : "";
+      const nameA = typeof a.title === "string" && a.title.trim() ? a.title : (a.short_description || "");
+      const nameB = typeof b.title === "string" && b.title.trim() ? b.title : (b.short_description || "");
       if (sortBy === "asc") {
-        return descA.localeCompare(descB);
+        return nameA.localeCompare(nameB);
       } else {
-        return descB.localeCompare(descA);
+        return nameB.localeCompare(nameA);
       }
     });
 
@@ -68,18 +69,16 @@ export default function EventsManagementClient({
         item.id === eventId ? { ...item, status: newStatus } : item
       )
     );
-    router.refresh();
   };
 
   const handleEventCreated = (newEvent: Event) => {
     setEventsList((prev) => [newEvent, ...prev]);
-    router.refresh();
   };
 
   return (
     <div className="w-full flex flex-col gap-8 select-text">
       {/* Header Title & Trigger Section */}
-      <HeaderSection onOpenModal={() => setIsModalOpen(true)} />
+      <HeaderSection onOpenModal={() => setIsModalOpen(true)} isAdmin={isAdmin} />
 
       {/* Search Bar & Filter Controls */}
       <EventFilterControls
@@ -107,15 +106,18 @@ export default function EventsManagementClient({
         <EventsTable
           events={filteredAndSortedEvents}
           onStatusUpdated={handleStatusUpdated}
+          isAdmin={isAdmin}
         />
       </div>
 
       {/* Create Event Modal Dialog */}
-      <CreateEventModal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        onEventCreated={handleEventCreated}
-      />
+      {isAdmin && (
+        <CreateEventModal
+          isOpen={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+          onEventCreated={handleEventCreated}
+        />
+      )}
     </div>
   );
 }

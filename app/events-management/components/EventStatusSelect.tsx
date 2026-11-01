@@ -10,12 +10,14 @@ interface EventStatusSelectProps {
   eventId: string;
   currentStatus: string | null;
   onStatusChanged: (eventId: string, newStatus: EVENT_STATUS) => void;
+  disabled?: boolean;
 }
 
 export function EventStatusSelect({
   eventId,
   currentStatus,
   onStatusChanged,
+  disabled = false,
 }: EventStatusSelectProps) {
   const { setIsOpenLoader } = useLoader();
   const { showNotification } = useNotification();
@@ -28,6 +30,7 @@ export function EventStatusSelect({
   const handleChangeStatus = async (
     e: React.ChangeEvent<HTMLSelectElement>
   ) => {
+    if (disabled) return;
     const newStatus = e.target.value as EVENT_STATUS;
     setSelectedStatus(newStatus);
     setIsUpdating(true);
@@ -55,12 +58,26 @@ export function EventStatusSelect({
 
   const isOngoing = selectedStatus === EVENT_STATUS.ONGOING;
 
+  if (disabled) {
+    return (
+      <span
+        className={`inline-flex items-center px-2.5 py-1.5 rounded-sm text-[9px] font-bold uppercase tracking-wider border font-mono select-none ${
+          isOngoing
+            ? "bg-[#00ffec]/10 text-[#00ffec] border-[#00ffec]/30"
+            : "bg-white/5 text-[#83958d] border-white/10"
+        }`}
+      >
+        {selectedStatus.toUpperCase()}
+      </span>
+    );
+  }
+
   return (
     <div className="relative inline-flex items-center font-mono">
       <select
         value={selectedStatus}
         onChange={handleChangeStatus}
-        disabled={isUpdating}
+        disabled={isUpdating || disabled}
         className={`px-2.5 py-1.5 rounded-sm text-[9px] font-bold uppercase tracking-wider outline-none cursor-pointer transition-colors border appearance-none pr-6 ${
           isOngoing
             ? "bg-[#00ffec]/10 text-[#00ffec] border-[#00ffec]/30"
