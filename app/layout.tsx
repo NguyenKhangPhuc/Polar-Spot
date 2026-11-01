@@ -1,7 +1,9 @@
+import { Suspense } from "react";
 import type { Metadata } from "next";
 import { Roboto, Montserrat } from "next/font/google";
 import "./globals.css";
-import Navbar from "./components/Navbar";
+import NavbarServer from "./components/NavbarServer";
+import NavbarSkeleton from "./components/NavbarSkeleton";
 import Footer from "./components/Footer";
 import Loader from "./components/Loader";
 import Notification from "./components/Notification";
@@ -46,7 +48,9 @@ export default function RootLayout({
               <Notification />
 
               {/* Global Left Navigation Bar */}
-              <Navbar />
+              <Suspense fallback={<NavbarSkeleton />}>
+                <NavbarServer />
+              </Suspense>
 
               {/* Main Content Area */}
               <div className="flex-1 flex flex-col lg:pl-64 pt-16 lg:pt-0 min-h-screen">
