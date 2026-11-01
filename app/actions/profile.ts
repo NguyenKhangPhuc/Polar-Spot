@@ -106,3 +106,27 @@ export async function updateProfileRole(userId: string, role: PROFILE_ROLE) {
     }
     return { data: data as Profile, error: null };
 }
+
+/**
+ * PURPOSE:
+ * Fetches only the role field of a specific user profile for lightweight permission checks.
+ *
+ * CONTEXT/PARENT FILE:
+ * Called by app/events/[id]/page.tsx.
+ *
+ * INPUTS / PARAMETERS:
+ * - userId (string, Required): Unique identifier of target user.
+ */
+export async function getUserRole(userId: string) {
+    const supabase = await createClient();
+    const { data, error } = await supabase
+        .from('profiles')
+        .select('role')
+        .eq('id', userId)
+        .maybeSingle();
+
+    if (error || !data) {
+        return null;
+    }
+    return data.role;
+}

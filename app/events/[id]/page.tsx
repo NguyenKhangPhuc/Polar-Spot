@@ -1,7 +1,7 @@
 import React from "react";
 import { getSingleEventById } from "@/app/actions/events";
 import { getUser } from "@/app/actions/authentication";
-import { getProfileById } from "@/app/actions/profile";
+import { getUserRole } from "@/app/actions/profile";
 import { PROFILE_ROLE } from "@/app/types/enum";
 import SingleEventClient from "./SingleEventClient";
 import BackButton from "@/app/components/BackButton";
@@ -21,9 +21,8 @@ export default async function SingleEventPage({ params }: SingleEventPageProps) 
   let isAdmin = false;
 
   if (user) {
-    const { data: profile } = await getProfileById(user.id);
     const role =
-      profile?.role ||
+      (await getUserRole(user.id)) ||
       user.user_metadata?.role ||
       user.app_metadata?.role ||
       null;

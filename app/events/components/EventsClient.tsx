@@ -3,6 +3,8 @@
 import React, { useState, useMemo } from "react";
 import { motion } from "framer-motion";
 import { Event } from "@/app/types/event";
+import { createClient } from "@/app/utils/supabase/client";
+import { handleGetUrl } from "@/app/helpers/file_url";
 import HeaderSection from "./HeaderSection";
 import EventFilterControls from "./EventFilterControls";
 import EventList from "./EventList";
@@ -33,6 +35,7 @@ export function EventsClient({ events }: EventsClientProps) {
   // Pagination State
   const [currentPage, setCurrentPage] = useState<number>(1);
   const itemsPerPage = 6;
+  const supabase = createClient();
 
   /**
    * Generates public asset URL for event poster image.
@@ -46,7 +49,7 @@ export function EventsClient({ events }: EventsClientProps) {
     ) {
       return posterPath;
     }
-    return `http://127.0.0.1:54321/storage/v1/object/public/attachments/${posterPath}`;
+    return handleGetUrl(supabase, posterPath);
   };
 
   /**
