@@ -1,6 +1,6 @@
 'use server';
 
-import { GroupInsert, GroupWithMembersAndEvent } from "../types/groups";
+import { GroupInsert, GroupUpdate, GroupWithMembersAndEvent } from "../types/groups";
 import { createClient } from "../utils/supabase/server";
 
 /**
@@ -66,7 +66,7 @@ export async function getAllGroupsWithMembersWithEvent() {
 
     const joinedGroups: GroupWithMembersAndEvent[] = groupsData.map((group) => ({
         ...group,
-        events: group.events ? (group.events as any) : null,
+        events: group.events,
         group_members: membersByGroup[group.id] || [],
     }));
 
@@ -144,9 +144,9 @@ export async function createGroup(group: GroupInsert) {
  * Called by EditGroupModal component in app/groups-management/components/EditGroupModal.tsx.
  *
  * INPUTS / PARAMETERS:
- * - group (GroupInsert, Required): Group record update payload containing target ID.
+ * - group (GroupUpdate, Required): Group record update payload containing target ID.
  */
-export async function updateGroup(group: GroupInsert) {
+export async function updateGroup(group: GroupUpdate) {
     /**
      * BEHAVIORAL MECHANISM:
      * Updates matching group record by ID in Supabase and returns the updated record.
@@ -247,7 +247,7 @@ export async function getGroupsByEventId(eventId: string) {
         return { data: [], error: null };
     }
 
-    const result: GroupWithMembersAndEvent[] = (groupsData as unknown as GroupWithMembersAndEvent[]).map((g) => ({
+    const result: GroupWithMembersAndEvent[] = groupsData.map((g) => ({
         ...g,
         group_members: g.group_members || [],
     }));

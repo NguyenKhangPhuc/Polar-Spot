@@ -2,7 +2,7 @@
 
 import { unstable_cache, revalidatePath } from "next/cache";
 import { createClient as createSupabaseClient } from "@supabase/supabase-js";
-import { Event, EventInsert } from "../types/event";
+import { Event, EventInsert, EventUpdate } from "../types/event";
 import { EVENT_STATUS } from "../types/enum";
 import { createClient } from "../utils/supabase/server";
 import { Database } from "../types/database.types";
@@ -89,23 +89,21 @@ export async function getAllEvents() {
  */
 export async function createEvent(event: EventInsert) {
     const supabase = await createClient();
-    const payload = event as Database["public"]["Tables"]["events"]["Insert"];
-    const { data, error } = await supabase.from('events').insert(payload).select().single();
+    const { data, error } = await supabase.from('events').insert(event).select().single();
     if (error) {
         return { data: null, error: "Fail to create event" };
     }
     revalidatePath('/events');
-    return { data: data as Event, error: null };
+    return { data, error: null };
 }
 
 /**
  * PURPOSE:
  * Updates an existing event record in the database and revalidates cache.
  */
-export async function updateEvent(event: EventInsert) {
+export async function updateEvent(event: EventUpdate) {
     const supabase = await createClient();
-    const payload = event as Database["public"]["Tables"]["events"]["Update"];
-    const { data, error } = await supabase.from('events').update(payload).eq('id', event.id!).select().single();
+    const { data, error } = await supabase.from('events').update(event).eq('id', event.id!).select().single();
     if (error) {
         return { data: null, error: "Fail to update event" };
     }
@@ -113,11 +111,11 @@ export async function updateEvent(event: EventInsert) {
     if (event.id) {
         revalidatePath(`/events/${event.id}`);
     }
-    return { data: data as Event, error: null };
+    return { data, error: null };
 }
 
 // Alias for compatibility with user example
-export async function updateEventInfo({ event }: { event: EventInsert }) {
+export async function updateEventInfo({ event }: { event: EventUpdate }) {
     return updateEvent(event);
 }
 

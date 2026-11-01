@@ -1,9 +1,8 @@
 'use server';
 
 import { PROFILE_ROLE } from "../types/enum";
-import { Profile, ProfileInsert } from "../types/profile";
+import { Profile, ProfileUpdate } from "../types/profile";
 import { createClient } from "../utils/supabase/server";
-import { Database } from "../types/database.types";
 
 /**
  * PURPOSE:
@@ -37,12 +36,11 @@ export async function getProfileById(userId: string) {
  * Called by profile edit components.
  *
  * INPUTS / PARAMETERS:
- * - profile (ProfileInsert, Required): Profile payload containing target id.
+ * - profile (ProfileUpdate & { id: string }, Required): Profile payload containing target id.
  */
-export async function updateProfile(profile: ProfileInsert) {
+export async function updateProfile(profile: ProfileUpdate & { id: string }) {
     const supabase = await createClient();
-    const payload = profile as Database["public"]["Tables"]["profiles"]["Update"];
-    const { error } = await supabase.from('profiles').update(payload).eq('id', profile.id);
+    const { error } = await supabase.from('profiles').update(profile).eq('id', profile.id);
 
     if (error) {
         return { error: "Failed to update profile" };
