@@ -1,10 +1,10 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { updateSession } from "./app/utils/supabase/proxy";
 import { adminRouteProxy } from "./app/middleware/admin_route_proxy";
+import { nonStudentsRouteProxy } from "./app/middleware/non-students_route_proxy";
 import { eventResultRoute } from "./app/middleware/event_result_proxy";
 import { groupGradingRoute } from "./app/middleware/group_grading_proxy";
 import { editEventRoute } from "./app/middleware/edit_event_proxy";
-import { viewAllGroups } from "./app/middleware/view_events_group_proxy";
 
 /**
  * PURPOSE:
@@ -36,12 +36,17 @@ export async function proxy(request: NextRequest): Promise<NextResponse> {
     const pathname = request.nextUrl.pathname;
     const isAdminScoresRoute = /^\/events\/[^/]+\/admin\/scores(\/.*)?$/.test(pathname);
     if (
-        pathname.startsWith("/events-management") ||
-        pathname.startsWith("/groups-management") ||
         pathname.startsWith("/users-management") ||
         isAdminScoresRoute
     ) {
         const result = await adminRouteProxy({ request, user, supabase });
+        if (result.status !== 200) return result;
+
+    } else if (
+        pathname.startsWith("/events-management") ||
+        pathname.startsWith("/groups-management")
+    ) {
+        const result = await nonStudentsRouteProxy({ request, user, supabase });
         if (result.status !== 200) return result;
 
     } else if (pathname.startsWith("/events/")) {
