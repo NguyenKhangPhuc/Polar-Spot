@@ -43,7 +43,7 @@ export default function Footer() {
             </Link>
 
             <p className="text-sm text-[#b9cbc2] opacity-75 max-w-sm mb-6 leading-relaxed font-sans">
-              Official event management and live evaluation platform for Polar Bear Pitching. Empowering arctic entrepreneurs and international investors in Oulu, Finland.
+              Official event management and live evaluation platform managed by BusinessOulu. Dedicated to managing and keeping event and team data visible for visitors in Oulu, Finland.
             </p>
           </div>
 
@@ -84,7 +84,7 @@ export default function Footer() {
                   href="/terms-and-conditions"
                   className={tw.text.footerLink}
                 >
-                  Terms of Service
+                  Terms &amp; Conditions
                 </Link>
               </li>
               <li>

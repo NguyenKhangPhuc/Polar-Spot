@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Image from "next/image";
+import Link from "next/link";
 import BackButton from "@/app/components/BackButton";
 
 export const metadata: Metadata = {
@@ -95,10 +96,10 @@ export default function AboutPage() {
 
               <div className="bg-[#151312] border border-white/5 p-6 rounded-sm flex flex-col gap-3">
                 <span className="text-xs font-mono font-bold text-[#00ffec] tracking-wider uppercase">
-                  Transparent Evaluation
+                  Feedback &amp; Evaluation
                 </span>
                 <p className="text-xs text-[#b9cbc2] leading-relaxed font-sans opacity-80">
-                  Provides a structured scoring workflow allowing judges to submit transparent criteria grades and display final rankings clearly.
+                  Allows judges to provide constructive qualitative feedback that can be shared with teams, while keeping all numerical scoring, criteria ratings, and final score calculations strictly confidential and private.
                 </p>
               </div>
             </div>
@@ -151,7 +152,7 @@ export default function AboutPage() {
                 </span>
                 <h3 className="text-base font-bold text-[#e8e1df]">Platform Manager</h3>
                 <p className="text-xs text-[#b9cbc2] leading-relaxed font-sans opacity-80">
-                  BusinessOulu is the primary manager of the platform, organizing events, coordinating participating teams, and publishing event results.
+                  BusinessOulu is the primary manager of the platform, organizing events, coordinating participating teams, and overseeing all event operations.
                 </p>
               </div>
 
@@ -248,7 +249,7 @@ export default function AboutPage() {
             </div>
 
             <p className="text-sm sm:text-base text-[#b9cbc2] leading-relaxed font-sans opacity-90">
-              Phuc Nguyen is a Computer Sciences and Engineering student at the University of Oulu who architected the platform. Professionals in Web developments, full-stack application architecture, cloud solutions, and UI/UX design, building intuitive systems for events / data management.
+              Phuc Nguyen is a Computer Sciences and Engineering student at the University of Oulu who architected the platform. Phuc.Nguyen@student.oulu.fi. Professionals in Web developments, full-stack application architecture, cloud solutions, and responsive user experience design. He engineered the platform to be self-hosted on independent cloud infrastructure rather than using Supabase Cloud, ensuring BusinessOulu maintains full sovereign control and ownership over all platform data.
             </p>
           </div>
         </section>
@@ -358,6 +359,27 @@ export default function AboutPage() {
             </div>
           </div>
         </section>
+
+        {/* Bottom Legal / Protocol Navigation */}
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-8 border-t border-white/5 text-xs font-mono">
+          <span className="text-[#83958d] uppercase tracking-wider">
+            Polar-Spot // Managed by BusinessOulu
+          </span>
+          <div className="flex items-center gap-6">
+            <Link
+              href="/terms-and-conditions"
+              className="text-[#00ffec] hover:underline uppercase tracking-wider"
+            >
+              Terms &amp; Conditions &rarr;
+            </Link>
+            <Link
+              href="/privacy-policy"
+              className="text-[#00ffec] hover:underline uppercase tracking-wider"
+            >
+              Privacy Policy &rarr;
+            </Link>
+          </div>
+        </div>
       </div>
     </div>
   );
