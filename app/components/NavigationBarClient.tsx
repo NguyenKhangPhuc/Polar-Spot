@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 import type { User } from "@supabase/supabase-js";
 import { signout } from "@/app/actions/authentication";
 import { useNotification } from "@/app/context/NotificationContext";
+import { useLoader } from "@/app/context/LoaderContext";
 
 interface NavItem {
   title: string;
@@ -95,11 +96,14 @@ export default function NavigationBarClient({
 }: NavigationBarClientProps) {
   const pathname = usePathname();
   const { showNotification } = useNotification();
+  const { setIsOpenLoader } = useLoader();
 
   const handleLogout = async (): Promise<void> => {
+    setIsOpenLoader(true);
     try {
       await signout();
     } catch (error) {
+      setIsOpenLoader(false);
       if (error instanceof Error && error.message !== "NEXT_REDIRECT") {
         showNotification(error.message);
       }

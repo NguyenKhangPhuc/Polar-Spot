@@ -15,8 +15,8 @@ export default function Footer() {
   const currentYear = new Date().getFullYear();
 
   return (
-    <footer className={`${tw.bg.footer} w-full py-16 text-[#e8e1df] select-none`}>
-      <div className="max-w-7xl mx-auto px-6 md:px-16">
+    <footer className={`${tw.bg.footer} w-full py-16 px-6 md:px-16 text-[#e8e1df] select-none`}>
+      <div className="max-w-7xl mx-auto">
         {/* Main 4-Column Grid */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-12 mb-16">
           {/* Brand & Mission Column (Spans 2 columns on tablet/desktop) */}

@@ -8,6 +8,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import type { User } from "@supabase/supabase-js";
 import { signout } from "@/app/actions/authentication";
 import { useNotification } from "@/app/context/NotificationContext";
+import { useLoader } from "@/app/context/LoaderContext";
 
 interface NavItem {
   title: string;
@@ -98,11 +99,15 @@ export default function NavigationBarMobile({
   const [isOpen, setIsOpen] = useState(false);
   const pathname = usePathname();
   const { showNotification } = useNotification();
+  const { setIsOpenLoader } = useLoader();
 
   const handleLogout = async (): Promise<void> => {
+    setIsOpenLoader(true);
     try {
       await signout();
+
     } catch (error) {
+      setIsOpenLoader(false);
       if (error instanceof Error && error.message !== "NEXT_REDIRECT") {
         showNotification(error.message);
       }
@@ -129,8 +134,8 @@ export default function NavigationBarMobile({
     ? isAdmin
       ? "Auth: ADMIN"
       : isJudge
-      ? "Auth: JUDGE"
-      : "Auth: USER"
+        ? "Auth: JUDGE"
+        : "Auth: USER"
     : "Auth: Offline";
 
   return (
@@ -250,16 +255,14 @@ export default function NavigationBarMobile({
                           key={`item-${item.title}`}
                           href={item.link}
                           onClick={() => setIsOpen(false)}
-                          className={`flex items-center gap-3.5 px-3.5 py-3 rounded-sm transition-all font-semibold text-[15px] group ${
-                            isActive
-                              ? "text-[#00ffec] bg-[#00ffec]/5 border-r-2 border-[#00ffec]"
-                              : "text-[#b9cbc2] hover:text-[#00ffec] hover:bg-[#00ffec]/5"
-                          }`}
+                          className={`flex items-center gap-3.5 px-3.5 py-3 rounded-sm transition-all font-semibold text-[15px] group ${isActive
+                            ? "text-[#00ffec] bg-[#00ffec]/5 border-r-2 border-[#00ffec]"
+                            : "text-[#b9cbc2] hover:text-[#00ffec] hover:bg-[#00ffec]/5"
+                            }`}
                         >
                           <Icon
-                            className={`w-5 h-5 shrink-0 transition-transform group-hover:scale-110 ${
-                              isActive ? "text-[#00ffec]" : "text-[#83958d] group-hover:text-[#00ffec]"
-                            }`}
+                            className={`w-5 h-5 shrink-0 transition-transform group-hover:scale-110 ${isActive ? "text-[#00ffec]" : "text-[#83958d] group-hover:text-[#00ffec]"
+                              }`}
                           />
                           <span>{item.title}</span>
                         </Link>
