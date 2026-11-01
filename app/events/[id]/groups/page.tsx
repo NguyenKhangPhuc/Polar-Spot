@@ -5,6 +5,7 @@ import { createClient } from "@/app/utils/supabase/server";
 import EventGroupsClient from "./components/EventGroupsClient";
 import BackButton from "@/app/components/BackButton";
 import { getProfileById } from "@/app/actions/profile";
+import { PROFILE_ROLE } from "@/app/types/enum";
 
 interface EventGroupsPageProps {
   params: Promise<{ id: string }>;
@@ -14,11 +15,18 @@ export default async function EventGroupsPage({ params }: EventGroupsPageProps) 
   const { id } = await params;
 
   const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
 
-  const { data: profile, error: profileError } = await getProfileById(user?.id ?? "");
+  // Execute independent data requests concurrently to eliminate sequential network latency
+  const [authRes, eventRes, groupsRes] = await Promise.all([
+    supabase.auth.getUser(),
+    getSingleEventById(id),
+    getGroupsByEventId(id),
+  ]);
+
+  const user = authRes.data.user;
+  const { data: profile, error: profileError } = user
+    ? await getProfileById(user.id)
+    : { data: null, error: "User session not found" };
 
   if (profileError || !profile) {
     return (
@@ -43,13 +51,10 @@ export default async function EventGroupsPage({ params }: EventGroupsPageProps) 
     );
   }
 
-  const roleStr = profile.role;
-  const canGrade = roleStr === "admin" || roleStr === "judge";
-
-  const [eventRes, groupsRes] = await Promise.all([
-    getSingleEventById(id),
-    getGroupsByEventId(id),
-  ]);
+  // Check role: only show grade and give feedback if role is NOT student
+  const roleStr = profile.role ? String(profile.role).toLowerCase() : "";
+  const isStudent = roleStr === PROFILE_ROLE.STUDENT || roleStr === "student";
+  const canGradeAndFeedback = !isStudent;
 
   const event = eventRes.data;
   const groups = groupsRes.data;
@@ -84,7 +89,8 @@ export default async function EventGroupsPage({ params }: EventGroupsPageProps) 
         <EventGroupsClient
           event={event}
           groups={groups || []}
-          canGrade={canGrade}
+          canGrade={canGradeAndFeedback}
+          canGiveFeedback={canGradeAndFeedback}
           profile={profile}
         />
       </div>

@@ -9,6 +9,7 @@ interface GroupGridProps {
   groups: GroupWithMembersAndEvent[];
   onResetFilters: () => void;
   canGrade?: boolean;
+  canGiveFeedback?: boolean;
   onSelectGroup: (group: GroupWithMembersAndEvent) => void;
   onOpenGiveFeedback: (group: GroupWithMembersAndEvent) => void;
 }
@@ -17,6 +18,7 @@ export function GroupGrid({
   groups,
   onResetFilters,
   canGrade = false,
+  canGiveFeedback = false,
   onSelectGroup,
   onOpenGiveFeedback,
 }: GroupGridProps) {
@@ -56,6 +58,7 @@ export function GroupGrid({
             group={group}
             index={index}
             canGrade={canGrade}
+            canGiveFeedback={canGiveFeedback}
             onSelectGroup={onSelectGroup}
             onOpenGiveFeedback={onOpenGiveFeedback}
           />

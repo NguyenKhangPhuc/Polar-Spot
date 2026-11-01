@@ -17,6 +17,7 @@ interface EventGroupsClientProps {
   event: Event;
   groups: GroupWithMembersAndEvent[];
   canGrade?: boolean;
+  canGiveFeedback?: boolean;
   profile: ProfileInsert;
 }
 
@@ -24,6 +25,7 @@ export function EventGroupsClient({
   event,
   groups,
   canGrade = false,
+  canGiveFeedback = false,
   profile,
 }: EventGroupsClientProps) {
   const { setIsOpenLoader } = useLoader();
@@ -117,6 +119,7 @@ export function EventGroupsClient({
           groups={processedGroups}
           onResetFilters={handleResetFilters}
           canGrade={canGrade}
+          canGiveFeedback={canGiveFeedback}
           onSelectGroup={(group) => setSelectedGroupForModal(group)}
           onOpenGiveFeedback={handleOpenGiveFeedback}
         />
@@ -128,6 +131,7 @@ export function EventGroupsClient({
         isOpen={Boolean(selectedGroupForModal)}
         onClose={() => setSelectedGroupForModal(null)}
         canGrade={canGrade}
+        canGiveFeedback={canGiveFeedback}
         onOpenGiveFeedback={handleOpenGiveFeedback}
       />
 

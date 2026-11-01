@@ -207,8 +207,8 @@ export async function deleteGroup(groupId: string) {
 export async function getGroupsByEventId(eventId: string) {
     /**
      * BEHAVIORAL MECHANISM:
-     * Queries 'groups' table filtered by event_id, fetches associated 'group_members' records,
-     * extracts unique member_ids to query user 'profiles', and maps profile data to each member.
+     * Queries 'groups' table filtered by event_id with embedded relational joins for
+     * associated 'events' metadata and child 'group_members' records in a single query.
      *
      * PARAMETERS:
      * - eventId (string): Target event UUID.
@@ -218,7 +218,7 @@ export async function getGroupsByEventId(eventId: string) {
      */
     const supabase = await createClient();
 
-    // 1. Fetch groups matching event_id
+    // 1. Fetch groups matching event_id with embedded events and group_members
     const { data: groupsData, error: groupsError } = await supabase
         .from('groups')
         .select(`
@@ -227,6 +227,13 @@ export async function getGroupsByEventId(eventId: string) {
                 id,
                 short_description,
                 location
+            ),
+            group_members (
+                id,
+                group_id,
+                member_name,
+                member_email,
+                created_at
             )
         `)
         .eq('event_id', eventId)
@@ -240,31 +247,9 @@ export async function getGroupsByEventId(eventId: string) {
         return { data: [], error: null };
     }
 
-    const groupIds = groupsData.map((g) => g.id);
-
-    // 2. Fetch group_members for these groups directly
-    const { data: membersData, error: membersError } = await supabase
-        .from('group_members')
-        .select('id, group_id, member_name, member_email, created_at')
-        .in('group_id', groupIds);
-
-    if (membersError) {
-        return { data: null, error: "Fail to fetch group members" };
-    }
-
-    // 3. Map members to their groups
-    const membersByGroup: Record<string, typeof membersData> = {};
-    (membersData || []).forEach((m) => {
-        if (!m.group_id) return;
-        if (!membersByGroup[m.group_id]) {
-            membersByGroup[m.group_id] = [];
-        }
-        membersByGroup[m.group_id].push(m);
-    });
-
-    const result: GroupWithMembersAndEvent[] = groupsData.map((g) => ({
+    const result: GroupWithMembersAndEvent[] = (groupsData as any[]).map((g) => ({
         ...g,
-        group_members: membersByGroup[g.id] || [],
+        group_members: g.group_members || [],
     }));
 
     return { data: result, error: null };
