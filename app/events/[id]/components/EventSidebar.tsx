@@ -9,6 +9,7 @@ import { EVENT_STATUS } from "@/app/types/enum";
 interface EventSidebarProps {
   event: Event;
   isAdmin?: boolean;
+  isNotStudent?: boolean;
 }
 
 /**
@@ -17,7 +18,7 @@ interface EventSidebarProps {
  * Displays structured mono metadata (Status, Group Capacity, Execution Timeline,
  * Organized Date & Time) and high-tech action buttons.
  */
-export default function EventSidebar({ event, isAdmin }: EventSidebarProps) {
+export default function EventSidebar({ event, isAdmin, isNotStudent }: EventSidebarProps) {
   const isOngoing =
     event.status?.toLowerCase() === EVENT_STATUS.ONGOING.toLowerCase() ||
     event.status?.toUpperCase() === "ONGOING";
@@ -158,16 +159,18 @@ export default function EventSidebar({ event, isAdmin }: EventSidebarProps) {
           </svg>
         </Link>
 
-        {/* Results Action Button */}
-        <Link
-          href={`/events/${event.id}/result`}
-          className="w-full py-3 bg-[#1d1b1a] hover:bg-[#252220] border border-[#00ffec]/40 hover:border-[#00ffec] text-[#00ffec] font-bold text-xs uppercase tracking-widest text-center transition-all duration-300 rounded-none flex items-center justify-center gap-2"
-        >
-          <span>EVALUATION RESULTS</span>
-          <svg className="w-3.5 h-3.5 text-[#00ffec]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 012-2h2a2 2 0 012 2v6m-6 0h10" />
-          </svg>
-        </Link>
+        {/* Results Action Button (Only for non-students) */}
+        {isNotStudent && (
+          <Link
+            href={`/events/${event.id}/result`}
+            className="w-full py-3 bg-[#1d1b1a] hover:bg-[#252220] border border-[#00ffec]/40 hover:border-[#00ffec] text-[#00ffec] font-bold text-xs uppercase tracking-widest text-center transition-all duration-300 rounded-none flex items-center justify-center gap-2"
+          >
+            <span>EVALUATION RESULTS</span>
+            <svg className="w-3.5 h-3.5 text-[#00ffec]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 012-2h2a2 2 0 012 2v6m-6 0h10" />
+            </svg>
+          </Link>
+        )}
 
         {/* Admin Actions (Admin only) */}
         {isAdmin && (

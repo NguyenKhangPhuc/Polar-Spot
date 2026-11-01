@@ -7,73 +7,127 @@ interface UserGradingBreakdownProps {
   data: UserGroupFinalScores;
 }
 
+type Table1SortOption =
+  | "score_desc"
+  | "score_asc"
+  | "evaluator_asc"
+  | "evaluator_desc"
+  | "group_asc"
+  | "group_desc";
+
 export function UserGradingBreakdown({ data }: UserGradingBreakdownProps) {
-  console.log(data)
   const [selectedUser, setSelectedUser] = useState<string>("ALL");
   const [selectedGroup, setSelectedGroup] = useState<string>("ALL");
+  const [searchQuery, setSearchQuery] = useState<string>("");
+  const [table1Sort, setTable1Sort] = useState<Table1SortOption>("score_desc");
 
-  // 1. Extract unique users for Filter 1 & Table 2 Columns
-  const uniqueUsers = useMemo(() => {
-    const set = new Set<string>();
+  // Single-pass extraction of users, groups, criteria, and O(1) grade lookups
+  const {
+    uniqueUsers,
+    uniqueGroups,
+    uniqueCriteria,
+    criteriaGradeLookup,
+    scoreMatrixLookup,
+  } = useMemo(() => {
+    const usersSet = new Set<string>();
+    const groupsSet = new Set<string>();
+    const criteriaMap = new Map<string, string>();
+    const matrixLookup = new Map<string, number>();
+    const gradeLookup = new Map<string, number | null>();
+
     (data || []).forEach((item) => {
-      if (item.full_name) {
-        set.add(item.full_name);
+      if (item.full_name) usersSet.add(item.full_name);
+      if (item.group_name) groupsSet.add(item.group_name);
+
+      if (item.group_name && item.full_name) {
+        matrixLookup.set(
+          `${item.group_name}___${item.full_name}`,
+          Number(item.user_group_final_score) || 0
+        );
       }
-    });
-    return Array.from(set).sort();
-  }, [data]);
 
-  // 2. Extract unique groups for Filter 2 & Table 2 Rows
-  const uniqueGroups = useMemo(() => {
-    const set = new Set<string>();
-    (data || []).forEach((item) => {
-      if (item.group_name) {
-        set.add(item.group_name);
-      }
-    });
-    return Array.from(set).sort();
-  }, [data]);
-
-  // 3. Extract unique criteria across all items for Table 1 columns
-  const uniqueCriteria = useMemo(() => {
-    const map = new Map<string, string>();
-    (data || []).forEach((item) => {
       (item.grading_details || []).forEach((detail) => {
-        if (detail.criteria_id && !map.has(detail.criteria_id)) {
-          map.set(detail.criteria_id, detail.criteria_name || "CRITERIA");
+        if (detail.criteria_id && !criteriaMap.has(detail.criteria_id)) {
+          criteriaMap.set(detail.criteria_id, detail.criteria_name || "CRITERIA");
+        }
+        if (item.user_id && item.group_id && detail.criteria_id) {
+          gradeLookup.set(
+            `${item.user_id}_${item.group_id}_${detail.criteria_id}`,
+            detail.user_grade ?? null
+          );
         }
       });
     });
-    return Array.from(map.entries()).map(([id, name]) => ({ id, name }));
+
+    return {
+      uniqueUsers: Array.from(usersSet).sort(),
+      uniqueGroups: Array.from(groupsSet).sort(),
+      uniqueCriteria: Array.from(criteriaMap.entries()).map(([id, name]) => ({
+        id,
+        name,
+      })),
+      criteriaGradeLookup: gradeLookup,
+      scoreMatrixLookup: matrixLookup,
+    };
   }, [data]);
 
-  // 4. Filtered data for Table 1 (by Evaluator)
-  const filteredByUserRows = useMemo(() => {
-    if (selectedUser === "ALL" || !selectedUser) {
-      return data || [];
-    }
-    return (data || []).filter((item) => item.full_name === selectedUser);
-  }, [data, selectedUser]);
+  // Filtered and sorted data for Table 1 (by Evaluator + Search + Sort)
+  const filteredAndSortedRows = useMemo(() => {
+    let list = data || [];
 
-  // 5. Filtered groups for Table 2 (by Group)
+    // Filter by selected user
+    if (selectedUser !== "ALL" && selectedUser) {
+      list = list.filter((item) => item.full_name === selectedUser);
+    }
+
+    // Filter by search query
+    if (searchQuery.trim()) {
+      const q = searchQuery.toLowerCase().trim();
+      list = list.filter(
+        (item) =>
+          (item.full_name || "").toLowerCase().includes(q) ||
+          (item.group_name || "").toLowerCase().includes(q)
+      );
+    }
+
+    // Sort rows
+    const sorted = [...list];
+    sorted.sort((a, b) => {
+      const scoreA = Number(a.user_group_final_score) || 0;
+      const scoreB = Number(b.user_group_final_score) || 0;
+      const evalA = (a.full_name || "").toLowerCase();
+      const evalB = (b.full_name || "").toLowerCase();
+      const grpA = (a.group_name || "").toLowerCase();
+      const grpB = (b.group_name || "").toLowerCase();
+
+      switch (table1Sort) {
+        case "score_desc":
+          return scoreB - scoreA;
+        case "score_asc":
+          return scoreA - scoreB;
+        case "evaluator_asc":
+          return evalA.localeCompare(evalB);
+        case "evaluator_desc":
+          return evalB.localeCompare(evalA);
+        case "group_asc":
+          return grpA.localeCompare(grpB);
+        case "group_desc":
+          return grpB.localeCompare(grpA);
+        default:
+          return 0;
+      }
+    });
+
+    return sorted;
+  }, [data, selectedUser, searchQuery, table1Sort]);
+
+  // Filtered groups for Table 2 (by Group)
   const filteredGroupRows = useMemo(() => {
     if (selectedGroup === "ALL" || !selectedGroup) {
       return uniqueGroups;
     }
     return uniqueGroups.filter((g) => g === selectedGroup);
   }, [uniqueGroups, selectedGroup]);
-
-  // Map quick lookup for Table 2: (group_name + '___' + full_name) -> user_group_final_score
-  const scoreMatrixLookup = useMemo(() => {
-    const map = new Map<string, number>();
-    (data || []).forEach((item) => {
-      if (item.group_name && item.full_name) {
-        const key = `${item.group_name}___${item.full_name}`;
-        map.set(key, Number(item.user_group_final_score) || 0);
-      }
-    });
-    return map;
-  }, [data]);
 
   if (!data || data.length === 0) {
     return (
@@ -110,46 +164,109 @@ export function UserGradingBreakdown({ data }: UserGradingBreakdownProps) {
         <div className="absolute top-0 left-0 right-0 h-[2px] bg-[#00ffec]/50" />
 
         {/* Filter Controls & Subsection Header */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-white/5 pb-4">
-          <div className="flex items-baseline gap-2.5">
-            <span className="text-xs font-bold text-[#e8e1df] uppercase tracking-wider">
-              Evaluator Criteria Breakdown
-            </span>
-            <span className="text-[10px] text-[#83958d]">
-              ({filteredByUserRows.length} {filteredByUserRows.length === 1 ? "RECORD" : "RECORDS"})
-            </span>
+        <div className="flex flex-col gap-4 border-b border-white/5 pb-4">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div className="flex items-baseline gap-2.5">
+              <span className="text-xs font-bold text-[#e8e1df] uppercase tracking-wider">
+                Evaluator Criteria Breakdown
+              </span>
+              <span className="text-[10px] text-[#83958d]">
+                ({filteredAndSortedRows.length} {filteredAndSortedRows.length === 1 ? "RECORD" : "RECORDS"})
+              </span>
+            </div>
+
+            {/* User Select Filter */}
+            <div className="flex items-center gap-2">
+              <label
+                htmlFor="user-evaluator-filter"
+                className="text-[7.5px] font-bold text-[#83958d] uppercase tracking-widest shrink-0"
+              >
+                EVALUATOR:
+              </label>
+              <div className="relative flex items-center">
+                <select
+                  id="user-evaluator-filter"
+                  value={selectedUser}
+                  onChange={(e) => setSelectedUser(e.target.value)}
+                  className="bg-[#151312] text-[#e8e1df] border border-white/5 font-mono text-xs p-2.5 pr-8 rounded-sm outline-none focus:border-[#00ffec]/50 transition-colors appearance-none cursor-pointer uppercase font-bold"
+                >
+                  <option value="ALL">ALL EVALUATORS ({uniqueUsers.length})</option>
+                  {uniqueUsers.map((user) => (
+                    <option key={user} value={user}>
+                      {user}
+                    </option>
+                  ))}
+                </select>
+                <svg
+                  className="w-3.5 h-3.5 absolute right-2.5 text-[#83958d] pointer-events-none"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                </svg>
+              </div>
+            </div>
           </div>
 
-          {/* User Select Filter */}
-          <div className="flex items-center gap-2">
-            <label
-              htmlFor="user-evaluator-filter"
-              className="text-[7.5px] font-bold text-[#83958d] uppercase tracking-widest shrink-0"
-            >
-              EVALUATOR:
-            </label>
-            <div className="relative flex items-center">
-              <select
-                id="user-evaluator-filter"
-                value={selectedUser}
-                onChange={(e) => setSelectedUser(e.target.value)}
-                className="bg-[#151312] text-[#e8e1df] border border-white/5 font-mono text-xs p-2.5 pr-8 rounded-sm outline-none focus:border-[#00ffec]/50 transition-colors appearance-none cursor-pointer uppercase font-bold"
-              >
-                <option value="ALL">ALL EVALUATORS ({uniqueUsers.length})</option>
-                {uniqueUsers.map((user) => (
-                  <option key={user} value={user}>
-                    {user}
-                  </option>
-                ))}
-              </select>
+          {/* Search and Sort Sub-bar */}
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 pt-1">
+            {/* Search Input */}
+            <div className="relative flex items-center flex-1">
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Search evaluator or group name..."
+                className="w-full bg-[#151312] text-[#e8e1df] border border-white/5 rounded-sm pl-9 pr-4 py-2 text-xs outline-none focus:border-[#00ffec]/50 transition-colors font-mono placeholder:text-[#83958d]/50"
+              />
               <svg
-                className="w-3.5 h-3.5 absolute right-2.5 text-[#83958d] pointer-events-none"
+                className="w-3.5 h-3.5 absolute left-3 text-[#00ffec] pointer-events-none"
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
               >
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                />
               </svg>
+            </div>
+
+            {/* Sort Selector */}
+            <div className="flex items-center gap-2 shrink-0">
+              <label className="text-[7.5px] font-mono text-[#83958d] uppercase font-bold tracking-widest">
+                SORT BY:
+              </label>
+              <div className="relative flex items-center">
+                <select
+                  value={table1Sort}
+                  onChange={(e) => setTable1Sort(e.target.value as Table1SortOption)}
+                  className="bg-[#151312] text-[#e8e1df] border border-white/5 rounded-sm p-2 pr-8 text-xs font-bold font-mono outline-none uppercase cursor-pointer focus:border-[#00ffec]/50 appearance-none"
+                >
+                  <option value="score_desc">FINAL SCORE (HIGH TO LOW)</option>
+                  <option value="score_asc">FINAL SCORE (LOW TO HIGH)</option>
+                  <option value="evaluator_asc">EVALUATOR (A - Z)</option>
+                  <option value="evaluator_desc">EVALUATOR (Z - A)</option>
+                  <option value="group_asc">GROUP NAME (A - Z)</option>
+                  <option value="group_desc">GROUP NAME (Z - A)</option>
+                </select>
+                <svg
+                  className="w-3.5 h-3.5 absolute right-2 text-[#83958d] pointer-events-none"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M19 9l-7 7-7-7"
+                  />
+                </svg>
+              </div>
             </div>
           </div>
         </div>
@@ -184,8 +301,8 @@ export function UserGradingBreakdown({ data }: UserGradingBreakdownProps) {
               </tr>
             </thead>
             <tbody>
-              {filteredByUserRows.length > 0 ? (
-                filteredByUserRows.map((item, index) => {
+              {filteredAndSortedRows.length > 0 ? (
+                filteredAndSortedRows.map((item, index) => {
                   const evaluatorName = item.full_name || "UNREGISTERED USER";
                   const groupName = item.group_name || "UNNAMED GROUP";
                   const finalScore =
@@ -213,15 +330,11 @@ export function UserGradingBreakdown({ data }: UserGradingBreakdownProps) {
                         {groupName}
                       </td>
 
-                      {/* Column 3..n: Criteria Grades */}
+                      {/* Column 3..n: Criteria Grades (O(1) Hash Map Lookup) */}
                       {uniqueCriteria.map((crit) => {
-                        const detail = (item.grading_details || []).find(
-                          (d) => d.criteria_id === crit.id
-                        );
-                        const hasGrade =
-                          detail !== undefined &&
-                          detail.user_grade !== null &&
-                          detail.user_grade !== undefined;
+                        const gradeKey = `${item.user_id}_${item.group_id}_${crit.id}`;
+                        const grade = criteriaGradeLookup.get(gradeKey);
+                        const hasGrade = grade !== undefined && grade !== null;
 
                         return (
                           <td
@@ -230,7 +343,7 @@ export function UserGradingBreakdown({ data }: UserGradingBreakdownProps) {
                           >
                             {hasGrade ? (
                               <span className="font-bold text-[10px] text-[#e8e1df]">
-                                {detail.user_grade}
+                                {grade}
                               </span>
                             ) : (
                               <span className="text-[#83958d]/50 text-[9px]">-</span>
@@ -254,7 +367,7 @@ export function UserGradingBreakdown({ data }: UserGradingBreakdownProps) {
                     colSpan={4 + uniqueCriteria.length}
                     className="p-12 text-center text-[#83958d] select-none text-xs font-mono"
                   >
-                    NO EVALUATION RECORDS MATCH THE SELECTED EVALUATOR
+                    NO EVALUATION RECORDS MATCH THE SELECTED EVALUATOR OR SEARCH QUERY
                   </td>
                 </tr>
               )}
@@ -359,7 +472,7 @@ export function UserGradingBreakdown({ data }: UserGradingBreakdownProps) {
                         {groupName}
                       </td>
 
-                      {/* Columns 2..n: Evaluator Final Scores */}
+                      {/* Columns 2..n: Evaluator Final Scores (O(1) Hash Map Lookup) */}
                       {uniqueUsers.map((evaluator) => {
                         const key = `${groupName}___${evaluator}`;
                         const score = scoreMatrixLookup.get(key);

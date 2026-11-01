@@ -20,25 +20,22 @@ export function AdminResultClient({
   const eventId = event?.id || "";
 
   const eventTitle =
-    (event as any)?.title ||
+    event?.title ||
     event?.short_description ||
     event?.location ||
     "EVENT EVALUATION";
 
-  const totalEvaluators = useMemo(() => {
-    const set = new Set<string>();
+  const { totalEvaluators, totalEvaluatedGroups } = useMemo(() => {
+    const evaluators = new Set<string>();
+    const groups = new Set<string>();
     (allUsersGradings || []).forEach((item) => {
-      if (item.full_name) set.add(item.full_name);
+      if (item.full_name) evaluators.add(item.full_name);
+      if (item.group_name) groups.add(item.group_name);
     });
-    return set.size;
-  }, [allUsersGradings]);
-
-  const totalEvaluatedGroups = useMemo(() => {
-    const set = new Set<string>();
-    (allUsersGradings || []).forEach((item) => {
-      if (item.group_name) set.add(item.group_name);
-    });
-    return set.size;
+    return {
+      totalEvaluators: evaluators.size,
+      totalEvaluatedGroups: groups.size,
+    };
   }, [allUsersGradings]);
 
   return (
