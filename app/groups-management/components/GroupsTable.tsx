@@ -10,6 +10,7 @@ import { useNotification } from "../../context/NotificationContext";
 
 interface GroupsTableProps {
   groups: GroupWithMembersAndEvent[];
+  startIndex?: number;
   onOpenEditModal: (group: GroupWithMembersAndEvent) => void;
   onOpenAddMemberModal: (group: GroupWithMembersAndEvent) => void;
   onOpenEditMemberModal?: (member: GroupMember) => void;
@@ -20,6 +21,7 @@ interface GroupsTableProps {
 
 export function GroupsTable({
   groups,
+  startIndex = 0,
   onOpenEditModal,
   onOpenAddMemberModal,
   onOpenEditMemberModal,
@@ -94,7 +96,7 @@ export function GroupsTable({
                   >
                     {/* Index */}
                     <td className="p-4 text-center font-bold text-[#83958d]">
-                      {String(index + 1).padStart(3, "0")}
+                      {String(startIndex + index + 1).padStart(3, "0")}
                     </td>
 
                     {/* Expand Details Icon */}

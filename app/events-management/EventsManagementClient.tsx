@@ -3,6 +3,7 @@
 import React, { useState, useMemo } from "react";
 import { Event } from "../types/event";
 import { EVENT_STATUS } from "../types/enum";
+import Pagination from "@/components/Pagination";
 
 import HeaderSection from "./components/HeaderSection";
 import EventFilterControls from "./components/EventFilterControls";
@@ -16,6 +17,8 @@ interface EventsManagementClientProps {
   isAdmin?: boolean;
 }
 
+const ITEMS_PER_PAGE = 10;
+
 export default function EventsManagementClient({
   initialEvents,
   isAdmin = false,
@@ -25,6 +28,7 @@ export default function EventsManagementClient({
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<EVENT_STATUS | "">("");
   const [sortBy, setSortBy] = useState<SortOrder>("asc");
+  const [currentPage, setCurrentPage] = useState<number>(1);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const filteredAndSortedEvents = useMemo(() => {
@@ -63,6 +67,14 @@ export default function EventsManagementClient({
     return result;
   }, [eventsList, searchQuery, statusFilter, sortBy]);
 
+  const totalPages = Math.ceil(filteredAndSortedEvents.length / ITEMS_PER_PAGE);
+  const safeCurrentPage = Math.min(currentPage, Math.max(1, totalPages));
+  const startIndex = (safeCurrentPage - 1) * ITEMS_PER_PAGE;
+
+  const paginatedEvents = useMemo(() => {
+    return filteredAndSortedEvents.slice(startIndex, startIndex + ITEMS_PER_PAGE);
+  }, [filteredAndSortedEvents, startIndex]);
+
   const handleStatusUpdated = (eventId: string, newStatus: EVENT_STATUS) => {
     setEventsList((prev) =>
       prev.map((item) =>
@@ -83,11 +95,20 @@ export default function EventsManagementClient({
       {/* Search Bar & Filter Controls */}
       <EventFilterControls
         searchQuery={searchQuery}
-        setSearchQuery={setSearchQuery}
+        setSearchQuery={(q) => {
+          setSearchQuery(q);
+          setCurrentPage(1);
+        }}
         statusFilter={statusFilter}
-        setStatusFilter={setStatusFilter}
+        setStatusFilter={(s) => {
+          setStatusFilter(s);
+          setCurrentPage(1);
+        }}
         sortBy={sortBy}
-        setSortBy={setSortBy}
+        setSortBy={(s) => {
+          setSortBy(s);
+          setCurrentPage(1);
+        }}
       />
 
       {/* Tabular Display of Events */}
@@ -104,9 +125,17 @@ export default function EventsManagementClient({
         </div>
 
         <EventsTable
-          events={filteredAndSortedEvents}
+          events={paginatedEvents}
+          startIndex={startIndex}
           onStatusUpdated={handleStatusUpdated}
           isAdmin={isAdmin}
+        />
+
+        {/* Dynamic Pagination */}
+        <Pagination
+          currentPage={safeCurrentPage}
+          totalPages={totalPages}
+          onPageChange={(page) => setCurrentPage(page)}
         />
       </div>
 

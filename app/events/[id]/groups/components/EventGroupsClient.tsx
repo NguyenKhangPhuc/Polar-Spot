@@ -7,6 +7,7 @@ import { ProfileInsert } from "@/app/types/profile";
 import { GroupFeedback } from "@/app/types/group_feedbacks";
 import { getGroupFeedbacksByGroupId } from "@/app/actions/group_feedbacks";
 import { useLoader } from "@/app/context/LoaderContext";
+import Pagination from "@/components/Pagination";
 import HeaderSection from "./HeaderSection";
 import GroupFilterControls, { GroupSortOrder } from "./GroupFilterControls";
 import GroupGrid from "./GroupGrid";
@@ -21,6 +22,8 @@ interface EventGroupsClientProps {
   profile: ProfileInsert;
 }
 
+const ITEMS_PER_PAGE = 6;
+
 export function EventGroupsClient({
   event,
   groups,
@@ -31,6 +34,7 @@ export function EventGroupsClient({
   const { setIsOpenLoader } = useLoader();
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [sortOrder, setSortOrder] = useState<GroupSortOrder>("newest");
+  const [currentPage, setCurrentPage] = useState<number>(1);
   const [selectedGroupForModal, setSelectedGroupForModal] =
     useState<GroupWithMembersAndEvent | null>(null);
   const [feedbackTargetGroup, setFeedbackTargetGroup] =
@@ -82,9 +86,18 @@ export function EventGroupsClient({
     return result;
   }, [groups, searchQuery, sortOrder]);
 
+  const totalPages = Math.ceil(processedGroups.length / ITEMS_PER_PAGE);
+  const safeCurrentPage = Math.min(currentPage, Math.max(1, totalPages));
+
+  const paginatedGroups = useMemo(() => {
+    const startIndex = (safeCurrentPage - 1) * ITEMS_PER_PAGE;
+    return processedGroups.slice(startIndex, startIndex + ITEMS_PER_PAGE);
+  }, [processedGroups, safeCurrentPage]);
+
   const handleResetFilters = (): void => {
     setSearchQuery("");
     setSortOrder("newest");
+    setCurrentPage(1);
   };
 
   return (
@@ -98,9 +111,15 @@ export function EventGroupsClient({
         <div className="w-full lg:col-span-4 xl:col-span-3 lg:sticky lg:top-24">
           <GroupFilterControls
             searchQuery={searchQuery}
-            setSearchQuery={setSearchQuery}
+            setSearchQuery={(q) => {
+              setSearchQuery(q);
+              setCurrentPage(1);
+            }}
             sortOrder={sortOrder}
-            setSortOrder={setSortOrder}
+            setSortOrder={(s) => {
+              setSortOrder(s);
+              setCurrentPage(1);
+            }}
             onResetFilters={handleResetFilters}
           />
         </div>
@@ -120,12 +139,19 @@ export function EventGroupsClient({
 
           {/* Groups Grid */}
           <GroupGrid
-            groups={processedGroups}
+            groups={paginatedGroups}
             onResetFilters={handleResetFilters}
             canGrade={canGrade}
             canGiveFeedback={canGiveFeedback}
             onSelectGroup={(group) => setSelectedGroupForModal(group)}
             onOpenGiveFeedback={handleOpenGiveFeedback}
+          />
+
+          {/* Dynamic Pagination */}
+          <Pagination
+            currentPage={safeCurrentPage}
+            totalPages={totalPages}
+            onPageChange={(page) => setCurrentPage(page)}
           />
         </div>
       </div>

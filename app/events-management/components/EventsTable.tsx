@@ -9,12 +9,14 @@ import EventStatusSelect from "./EventStatusSelect";
 
 interface EventsTableProps {
   events: Event[];
+  startIndex?: number;
   onStatusUpdated: (eventId: string, newStatus: EVENT_STATUS) => void;
   isAdmin?: boolean;
 }
 
 export function EventsTable({
   events,
+  startIndex = 0,
   onStatusUpdated,
   isAdmin = false,
 }: EventsTableProps) {
@@ -71,7 +73,7 @@ export function EventsTable({
                   >
                     {/* Index */}
                     <td className="p-4 text-center font-bold text-[#83958d]">
-                      {String(index + 1).padStart(3, "0")}
+                      {String(startIndex + index + 1).padStart(3, "0")}
                     </td>
 
                     {/* Event Title */}

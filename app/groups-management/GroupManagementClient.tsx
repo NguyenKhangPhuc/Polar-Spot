@@ -6,6 +6,7 @@ import { GroupWithMembersAndEvent, GroupMember } from "../types/groups";
 import { deleteGroup } from "../actions/groups";
 import { useLoader } from "../context/LoaderContext";
 import { useNotification } from "../context/NotificationContext";
+import Pagination from "@/components/Pagination";
 
 import HeaderSection from "./components/HeaderSection";
 import GroupFilterControls from "./components/GroupFilterControls";
@@ -23,6 +24,8 @@ interface GroupManagementClientProps {
   isAdmin?: boolean;
 }
 
+const ITEMS_PER_PAGE = 10;
+
 export default function GroupManagementClient({
   initialGroups,
   eventsList,
@@ -36,6 +39,7 @@ export default function GroupManagementClient({
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedEventFilter, setSelectedEventFilter] = useState("all");
   const [sortOrder, setSortOrder] = useState<SortOrder>("asc");
+  const [currentPage, setCurrentPage] = useState<number>(1);
 
   // Modal open states
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
@@ -71,6 +75,14 @@ export default function GroupManagementClient({
 
     return result;
   }, [groupsList, searchQuery, selectedEventFilter, sortOrder]);
+
+  const totalPages = Math.ceil(filteredAndSortedGroups.length / ITEMS_PER_PAGE);
+  const safeCurrentPage = Math.min(currentPage, Math.max(1, totalPages));
+  const startIndex = (safeCurrentPage - 1) * ITEMS_PER_PAGE;
+
+  const paginatedGroups = useMemo(() => {
+    return filteredAndSortedGroups.slice(startIndex, startIndex + ITEMS_PER_PAGE);
+  }, [filteredAndSortedGroups, startIndex]);
 
   const handleDeleteGroup = async (groupId: string) => {
     if (!confirm("Are you sure you want to delete this group?")) return;
@@ -157,11 +169,20 @@ export default function GroupManagementClient({
       {/* Search Bar & Filter Controls */}
       <GroupFilterControls
         searchQuery={searchQuery}
-        setSearchQuery={setSearchQuery}
+        setSearchQuery={(q) => {
+          setSearchQuery(q);
+          setCurrentPage(1);
+        }}
         selectedEventFilter={selectedEventFilter}
-        setSelectedEventFilter={setSelectedEventFilter}
+        setSelectedEventFilter={(f) => {
+          setSelectedEventFilter(f);
+          setCurrentPage(1);
+        }}
         sortOrder={sortOrder}
-        setSortOrder={setSortOrder}
+        setSortOrder={(s) => {
+          setSortOrder(s);
+          setCurrentPage(1);
+        }}
         eventsList={eventsList}
       />
 
@@ -179,13 +200,21 @@ export default function GroupManagementClient({
         </div>
 
         <GroupsTable
-          groups={filteredAndSortedGroups}
+          groups={paginatedGroups}
+          startIndex={startIndex}
           onOpenEditModal={(group) => setEditingGroup(group)}
           onOpenAddMemberModal={(group) => setAddMemberGroup(group)}
           onOpenEditMemberModal={(member) => setEditingMember(member)}
           onDeleteGroup={handleDeleteGroup}
           onMemberRemoved={handleMemberRemoved}
           isAdmin={isAdmin}
+        />
+
+        {/* Dynamic Pagination */}
+        <Pagination
+          currentPage={safeCurrentPage}
+          totalPages={totalPages}
+          onPageChange={(page) => setCurrentPage(page)}
         />
       </div>
 
