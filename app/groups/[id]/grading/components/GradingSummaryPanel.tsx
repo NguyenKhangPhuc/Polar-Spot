@@ -4,6 +4,7 @@ import React from "react";
 import { Control, useWatch } from "react-hook-form";
 import { motion } from "framer-motion";
 import { Criteria } from "@/app/types/event_criteria";
+import { formatScore } from "@/lib/utils";
 
 interface GradingSummaryPanelProps {
   control: Control<Record<string, number>>;
@@ -42,15 +43,15 @@ export function GradingSummaryPanel({
   });
 
   // Calculate average score out of maxScore
-  const averageScore =
-    criteriaList.length > 0
-      ? (totalSumPoints / criteriaList.length).toFixed(2)
-      : "0.00";
+  const averageScore = formatScore(
+    criteriaList.length > 0 ? totalSumPoints / criteriaList.length : 0,
+    2
+  );
 
   const overallPercentage =
     maxPossiblePoints > 0
-      ? Math.round((totalSumPoints / maxPossiblePoints) * 100)
-      : 0;
+      ? formatScore((totalSumPoints / maxPossiblePoints) * 100, 2)
+      : "0.00";
 
   return (
     <div className="bg-[#1d1b1a] border border-white/5 rounded-sm p-6 flex flex-col gap-5 relative overflow-hidden select-none font-mono text-xs shadow-2xl">
@@ -87,7 +88,7 @@ export function GradingSummaryPanel({
               const score =
                 typeof rawGrade === "number" ? rawGrade : Number(rawGrade) || 0;
               const percentageOfMax =
-                maxScore > 0 ? ((score / maxScore) * 100).toFixed(0) : "0";
+                maxScore > 0 ? formatScore((score / maxScore) * 100, 2) : "0.00";
 
               return (
                 <div
@@ -98,7 +99,7 @@ export function GradingSummaryPanel({
                     #{index + 1} {criteria.name || "Unnamed Criteria"}
                   </span>
                   <span className="shrink-0 text-right select-text font-bold whitespace-nowrap">
-                    <span className="text-[#e8e1df]">{score}</span>
+                    <span className="text-[#e8e1df]">{formatScore(score, 2)}</span>
                     <span className="text-[#83958d]">/{maxScore}</span>
                     <span className="text-[#00ffec] ml-2 font-mono text-[9px]">
                       ({percentageOfMax}%)
@@ -127,7 +128,7 @@ export function GradingSummaryPanel({
           Average Grade / {maxScore}
         </span>
         <span className="text-[8px] font-mono text-[#00ffec]/80 uppercase tracking-widest mt-0.5 select-none z-10">
-          Total: {totalSumPoints} / {maxPossiblePoints} ({overallPercentage}%)
+          Total: {formatScore(totalSumPoints, 2)} / {formatScore(maxPossiblePoints, 2)} ({overallPercentage}%)
         </span>
       </div>
 

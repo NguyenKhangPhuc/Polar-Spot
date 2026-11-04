@@ -16,6 +16,7 @@ import { useLoader } from "@/app/context/LoaderContext";
 import { useNotification } from "@/app/context/NotificationContext";
 import GradingSummaryPanel from "./components/GradingSummaryPanel";
 import GroupFeedbackSection from "./components/GroupFeedbackSection";
+import { formatScore } from "@/lib/utils";
 
 interface GroupGradingClientProps {
   group: Group;
@@ -223,7 +224,7 @@ export default function GroupGradingClient({
                           animate={{ scale: 1, opacity: 1 }}
                           className="font-mono text-xs text-[#00ffec] font-bold min-w-[5.5rem] w-24 text-right shrink-0 select-text whitespace-nowrap"
                         >
-                          {currentVal} / {maxScore}
+                          {formatScore(currentVal, 2)} / {maxScore}
                         </motion.span>
                       </div>
 

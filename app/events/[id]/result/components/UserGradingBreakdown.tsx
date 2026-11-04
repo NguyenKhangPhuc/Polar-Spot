@@ -2,6 +2,7 @@
 
 import React, { useState, useMemo } from "react";
 import { UserGroupFinalScores } from "@/app/types/all_users_group";
+import { formatScore } from "@/lib/utils";
 
 interface UserGradingBreakdownProps {
   data: UserGroupFinalScores;
@@ -305,10 +306,7 @@ export function UserGradingBreakdown({ data }: UserGradingBreakdownProps) {
                 filteredAndSortedRows.map((item, index) => {
                   const evaluatorName = item.full_name || "UNREGISTERED USER";
                   const groupName = item.group_name || "UNNAMED GROUP";
-                  const finalScore =
-                    typeof item.user_group_final_score === "number"
-                      ? Number(item.user_group_final_score).toFixed(1)
-                      : "0.0";
+                  const finalScore = formatScore(item.user_group_final_score, 2);
 
                   return (
                     <tr
@@ -343,7 +341,7 @@ export function UserGradingBreakdown({ data }: UserGradingBreakdownProps) {
                           >
                             {hasGrade ? (
                               <span className="font-bold text-[10px] text-[#e8e1df]">
-                                {grade}
+                                {formatScore(grade, 2)}
                               </span>
                             ) : (
                               <span className="text-[#83958d]/50 text-[9px]">-</span>
@@ -485,7 +483,7 @@ export function UserGradingBreakdown({ data }: UserGradingBreakdownProps) {
                           >
                             {hasScore ? (
                               <span className="inline-block px-2.5 py-1 rounded-sm bg-[#151312] border border-white/5 text-[#00ffec] font-bold text-[9px] shadow-sm">
-                                {score.toFixed(1)}
+                                {formatScore(score, 2)}
                               </span>
                             ) : (
                               <span className="text-[#83958d]/50 text-[9px]">-</span>

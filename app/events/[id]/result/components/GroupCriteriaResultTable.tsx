@@ -4,6 +4,7 @@ import React, { useMemo } from "react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import { GroupFinalScore } from "@/app/types/final_score";
+import { formatScore } from "@/lib/utils";
 
 interface GroupCriteriaResultTableProps {
   filteredScores: GroupFinalScore[];
@@ -169,16 +170,14 @@ export function GroupCriteriaResultTable({
                             <div className="flex flex-col items-center justify-center gap-1">
                               {/* Average Score */}
                               <span className="font-bold text-[10px] text-[#e8e1df]">
-                                {cell?.avg_score !== null && cell?.avg_score !== undefined
-                                  ? cell.avg_score.toFixed(1)
-                                  : "0.0"}
+                                {formatScore(cell?.avg_score, 2)}
                               </span>
 
                               {/* Logged-in User Evaluation Grade Badge */}
                               <span className="text-[8px] font-mono tracking-wider uppercase">
                                 {userGrade !== undefined && userGrade !== null ? (
                                   <span className="inline-block px-1.5 py-0.5 rounded-sm bg-[#151312] text-[#00ffec] border border-white/5 font-bold">
-                                    YOURS: {userGrade}
+                                    YOURS: {formatScore(userGrade, 2)}
                                   </span>
                                 ) : (
                                   <span className="text-[#83958d]/50 font-medium text-[8px]">
@@ -207,7 +206,7 @@ export function GroupCriteriaResultTable({
                       <td className="p-4 text-center whitespace-nowrap font-bold">
                         {userFinalScore !== null ? (
                           <span className="inline-block px-2.5 py-1 rounded-sm bg-[#151312] border border-[#00ffec]/30 text-[#00ffec] font-bold text-[9px] shadow-sm">
-                            {userFinalScore.toFixed(1)}
+                            {formatScore(userFinalScore, 2)}
                           </span>
                         ) : (
                           <span className="text-[#83958d]/50 font-medium text-[8px] uppercase tracking-wider">
@@ -219,9 +218,7 @@ export function GroupCriteriaResultTable({
                       {/* Overall Average Final Score */}
                       <td className="p-4 text-center w-36 whitespace-nowrap font-bold">
                         <span className="inline-block px-3 py-1 rounded-sm bg-[#151312] border border-white/5 text-[#00ffec] font-bold text-[9px] shadow-sm">
-                          {score.final_avg_score !== null && score.final_avg_score !== undefined
-                            ? score.final_avg_score.toFixed(1)
-                            : "0.0"}
+                          {formatScore(score.final_avg_score, 2)}
                         </span>
                       </td>
                     </motion.tr>

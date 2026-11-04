@@ -7,6 +7,7 @@ import { Event } from "@/app/types/event";
 import { GroupFinalScore } from "@/app/types/final_score";
 import BackButton from "@/app/components/BackButton";
 import GroupCriteriaResultTable from "./components/GroupCriteriaResultTable";
+import { formatScore } from "@/lib/utils";
 
 interface EventResultClientProps {
   event: Event | null;
@@ -201,7 +202,7 @@ export function EventResultClient({
             </span>
           </div>
           <div className="mt-2 flex items-baseline gap-2">
-            <span className="text-3xl font-black text-[#00ffec] font-mono">{topScore.toFixed(1)}</span>
+            <span className="text-3xl font-black text-[#00ffec] font-mono">{formatScore(topScore, 2)}</span>
             <span className="text-xs text-[#b9cbc2]">/ {maxScore} MAX SCORE</span>
           </div>
         </div>
