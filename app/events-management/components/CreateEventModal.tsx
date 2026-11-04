@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useSyncExternalStore } from "react";
 import { createPortal } from "react-dom";
 import { useForm, Controller } from "react-hook-form";
 import { AnimatePresence, motion } from "framer-motion";
@@ -35,11 +35,11 @@ export function CreateEventModal({
   onClose,
   onEventCreated,
 }: CreateEventModalProps) {
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
+  const mounted = useSyncExternalStore(
+    () => () => {},
+    () => true,
+    () => false
+  );
 
   const { setIsOpenLoader } = useLoader();
   const { showNotification } = useNotification();
@@ -117,7 +117,7 @@ export function CreateEventModal({
   return createPortal(
     <AnimatePresence>
       {isOpen && (
-        <div className="fixed inset-0 z-[60] overflow-y-auto bg-black/80 backdrop-blur-md p-4 sm:p-6 lg:p-8 flex items-center justify-center min-h-screen">
+        <div className="fixed inset-0 z-50 overflow-y-auto bg-black/80 backdrop-blur-md p-4 sm:p-6 lg:p-8 flex items-center justify-center min-h-screen">
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
@@ -149,261 +149,252 @@ export function CreateEventModal({
               </div>
             )}
 
-            {/* Form using react-hook-form in 2 Columns */}
+            {/* Form using react-hook-form */}
             <form onSubmit={handleSubmit(onFormSubmit)} className="space-y-6 font-mono text-xs">
-              <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-                
-                {/* Left Column (lg:col-span-5): Title, Short Description Textarea & Logistics */}
-                <div className="lg:col-span-5 space-y-4">
-                  
-                  {/* Field 1: Event Title */}
-                  <div className="flex flex-col gap-1.5">
-                    <label className="text-[11px] font-bold text-[#83958d] uppercase tracking-wider">
-                      EVENT TITLE <span className="text-[#00ffec]">*</span>
-                    </label>
-                    <input
-                      {...register("title", {
-                        required: "Event title is required",
-                      })}
-                      type="text"
-                      placeholder="e.g. Polar Bear Pitching Main Stage 2026"
-                      className={`bg-[#151312] text-[#e8e1df] placeholder-[#83958d]/50 border text-xs p-3.5 rounded-sm w-full outline-none transition-colors ${
-                        errors.title
-                          ? "border-red-500/70 focus:border-red-400"
-                          : "border-white/10 focus:border-[#00ffec]/60"
-                      }`}
-                    />
-                    {errors.title && (
-                      <span className="text-xs text-red-400 font-medium mt-0.5">
-                        {errors.title.message}
-                      </span>
-                    )}
-                  </div>
-
-                  {/* Field 2: Short Description Textarea */}
-                  <div className="flex flex-col gap-1.5">
-                    <label className="text-[11px] font-bold text-[#83958d] uppercase tracking-wider">
-                      SHORT DESCRIPTION SUMMARY <span className="text-[#00ffec]">*</span>
-                    </label>
-                    <textarea
-                      {...register("short_description", {
-                        required: "Short description is required",
-                      })}
-                      rows={3}
-                      placeholder="Brief overview summary displayed on cards..."
-                      className={`bg-[#151312] text-[#e8e1df] placeholder-[#83958d]/50 border text-xs p-3.5 rounded-sm w-full outline-none transition-colors resize-none ${
-                        errors.short_description
-                          ? "border-red-500/70 focus:border-red-400"
-                          : "border-white/10 focus:border-[#00ffec]/60"
-                      }`}
-                    />
-                    {errors.short_description && (
-                      <span className="text-xs text-red-400 font-medium mt-0.5">
-                        {errors.short_description.message}
-                      </span>
-                    )}
-                  </div>
-
-                  {/* Logistics Row 1: Status Select & Member Limit */}
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    {/* Status Select */}
-                    <div className="flex flex-col gap-1.5">
-                      <label className="text-[11px] font-bold text-[#83958d] uppercase tracking-wider">
-                        INITIAL STATUS <span className="text-[#00ffec]">*</span>
-                      </label>
-                      <select
-                        {...register("status")}
-                        className="bg-[#151312] text-[#e8e1df] border border-white/10 text-xs p-3.5 rounded-sm w-full outline-none focus:border-[#00ffec]/60 transition-colors uppercase cursor-pointer"
-                      >
-                        {Object.entries(EVENT_STATUS).map(([key, val]) => (
-                          <option key={key} value={val} className="bg-[#151312] text-[#e8e1df]">
-                            {key.toUpperCase()}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
-
-                    {/* Member Limit */}
-                    <div className="flex flex-col gap-1.5">
-                      <label className="text-[11px] font-bold text-[#83958d] uppercase tracking-wider">
-                        MEMBERS / GROUP <span className="text-[#00ffec]">*</span>
-                      </label>
-                      <input
-                        {...register("member_per_groups", {
-                          required: "Capacity is required",
-                          min: { value: 1, message: "Minimum 1 member" },
-                        })}
-                        type="number"
-                        placeholder="5"
-                        className={`bg-[#151312] text-[#e8e1df] placeholder-[#83958d]/50 border text-xs p-3.5 rounded-sm w-full outline-none transition-colors ${
-                          errors.member_per_groups
-                            ? "border-red-500/70 focus:border-red-400"
-                            : "border-white/10 focus:border-[#00ffec]/60"
-                        }`}
-                      />
-                      {errors.member_per_groups && (
-                        <span className="text-xs text-red-400 font-medium mt-0.5">
-                          {errors.member_per_groups.message}
-                        </span>
-                      )}
-                    </div>
-                  </div>
-
-                  {/* Logistics Row 2: Location & Max Score */}
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    {/* Location Input */}
-                    <div className="flex flex-col gap-1.5">
-                      <label className="text-[11px] font-bold text-[#83958d] uppercase tracking-wider">
-                        LOCATION / STAGE NODE <span className="text-[#00ffec]">*</span>
-                      </label>
-                      <input
-                        {...register("location", {
-                          required: "Location is required",
-                        })}
-                        type="text"
-                        placeholder="e.g. Oulu Market Square Ice Hole, Finland"
-                        className={`bg-[#151312] text-[#e8e1df] placeholder-[#83958d]/50 border text-xs p-3.5 rounded-sm w-full outline-none transition-colors ${
-                          errors.location
-                            ? "border-red-500/70 focus:border-red-400"
-                            : "border-white/10 focus:border-[#00ffec]/60"
-                        }`}
-                      />
-                      {errors.location && (
-                        <span className="text-xs text-red-400 font-medium mt-0.5">
-                          {errors.location.message}
-                        </span>
-                      )}
-                    </div>
-
-                    {/* Max Score Input */}
-                    <div className="flex flex-col gap-1.5">
-                      <label className="text-[11px] font-bold text-[#83958d] uppercase tracking-wider">
-                        MAX SCORE <span className="text-[#00ffec]">*</span>
-                      </label>
-                      <input
-                        {...register("max_score", {
-                          required: "Max score is required",
-                          valueAsNumber: true,
-                          min: { value: 1, message: "Minimum 1" },
-                        })}
-                        type="number"
-                        placeholder="100"
-                        className={`bg-[#151312] text-[#e8e1df] placeholder-[#83958d]/50 border text-xs p-3.5 rounded-sm w-full outline-none transition-colors ${
-                          errors.max_score
-                            ? "border-red-500/70 focus:border-red-400"
-                            : "border-white/10 focus:border-[#00ffec]/60"
-                        }`}
-                      />
-                      {errors.max_score && (
-                        <span className="text-xs text-red-400 font-medium mt-0.5">
-                          {errors.max_score.message}
-                        </span>
-                      )}
-                    </div>
-                  </div>
-
-                  {/* Dates Grid: Start & End Date */}
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div className="flex flex-col gap-1.5">
-                      <label className="text-[11px] font-bold text-[#83958d] uppercase tracking-wider">
-                        START DATE <span className="text-[#00ffec]">*</span>
-                      </label>
-                      <input
-                        {...register("start_date", {
-                          required: "Start date is required",
-                        })}
-                        type="date"
-                        className={`bg-[#151312] text-[#e8e1df] border text-xs p-3 rounded-sm w-full outline-none transition-colors ${
-                          errors.start_date
-                            ? "border-red-500/70 focus:border-red-400"
-                            : "border-white/10 focus:border-[#00ffec]/60"
-                        }`}
-                      />
-                      {errors.start_date && (
-                        <span className="text-xs text-red-400 font-medium mt-0.5">
-                          {errors.start_date.message}
-                        </span>
-                      )}
-                    </div>
-
-                    <div className="flex flex-col gap-1.5">
-                      <label className="text-[11px] font-bold text-[#83958d] uppercase tracking-wider">
-                        END DATE <span className="text-[#00ffec]">*</span>
-                      </label>
-                      <input
-                        {...register("end_date", {
-                          required: "End date is required",
-                        })}
-                        type="date"
-                        className={`bg-[#151312] text-[#e8e1df] border text-xs p-3 rounded-sm w-full outline-none transition-colors ${
-                          errors.end_date
-                            ? "border-red-500/70 focus:border-red-400"
-                            : "border-white/10 focus:border-[#00ffec]/60"
-                        }`}
-                      />
-                      {errors.end_date && (
-                        <span className="text-xs text-red-400 font-medium mt-0.5">
-                          {errors.end_date.message}
-                        </span>
-                      )}
-                    </div>
-                  </div>
-
-                  {/* Organized Date */}
-                  <div className="flex flex-col gap-1.5">
-                    <label className="text-[11px] font-bold text-[#83958d] uppercase tracking-wider">
-                      ORGANIZED DATE &amp; TIME <span className="text-[#00ffec]">*</span>
-                    </label>
-                    <input
-                      {...register("organized_date", {
-                        required: "Organized date & time is required",
-                      })}
-                      type="datetime-local"
-                      className={`bg-[#151312] text-[#e8e1df] border text-xs p-3.5 rounded-sm w-full outline-none transition-colors ${
-                        errors.organized_date
-                          ? "border-red-500/70 focus:border-red-400"
-                          : "border-white/10 focus:border-[#00ffec]/60"
-                      }`}
-                    />
-                    {errors.organized_date && (
-                      <span className="text-xs text-red-400 font-medium mt-0.5">
-                        {errors.organized_date.message}
-                      </span>
-                    )}
-                  </div>
-                </div>
-
-                {/* Right Column (lg:col-span-7): Plate Rich Text Editor for Content */}
-                <div className="lg:col-span-7 flex flex-col gap-1.5">
+              {/* Event Metadata Grid */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                {/* Field 1: Event Title */}
+                <div className="flex flex-col gap-1.5 sm:col-span-2">
                   <label className="text-[11px] font-bold text-[#83958d] uppercase tracking-wider">
-                    EVENT CONTENT (RICH TEXT DETAILS) <span className="text-[#00ffec]">*</span>
+                    EVENT TITLE <span className="text-[#00ffec]">*</span>
                   </label>
-                  <Controller
-                    name="content"
-                    control={control}
-                    rules={{
-                      required: "Event content is required",
-                      validate: (val) =>
-                        (val && val.trim().length > 0) || "Event content cannot be empty",
-                    }}
-                    render={({ field }) => (
-                      <RichTextEditor
-                        value={field.value || ""}
-                        onChange={field.onChange}
-                        placeholder="Write detailed event description, schedule rules, guidelines..."
-                        className={`min-h-[360px] ${
-                          errors.content ? "border-red-500/70" : ""
-                        }`}
-                      />
-                    )}
+                  <input
+                    {...register("title", {
+                      required: "Event title is required",
+                    })}
+                    type="text"
+                    placeholder="e.g. Polar Bear Pitching Main Stage 2026"
+                    className={`bg-[#151312] text-[#e8e1df] placeholder-[#83958d]/50 border text-xs p-3.5 rounded-sm w-full outline-none transition-colors ${
+                      errors.title
+                        ? "border-red-500/70 focus:border-red-400"
+                        : "border-white/10 focus:border-[#00ffec]/60"
+                    }`}
                   />
-                  {errors.content && (
+                  {errors.title && (
                     <span className="text-xs text-red-400 font-medium mt-0.5">
-                      {errors.content.message}
+                      {errors.title.message}
                     </span>
                   )}
                 </div>
 
+                {/* Field 2: Short Description Textarea */}
+                <div className="flex flex-col gap-1.5 sm:col-span-2">
+                  <label className="text-[11px] font-bold text-[#83958d] uppercase tracking-wider">
+                    SHORT DESCRIPTION SUMMARY <span className="text-[#00ffec]">*</span>
+                  </label>
+                  <textarea
+                    {...register("short_description", {
+                      required: "Short description is required",
+                    })}
+                    rows={3}
+                    placeholder="Brief overview summary displayed on cards..."
+                    className={`bg-[#151312] text-[#e8e1df] placeholder-[#83958d]/50 border text-xs p-3.5 rounded-sm w-full outline-none transition-colors resize-none ${
+                      errors.short_description
+                        ? "border-red-500/70 focus:border-red-400"
+                        : "border-white/10 focus:border-[#00ffec]/60"
+                    }`}
+                  />
+                  {errors.short_description && (
+                    <span className="text-xs text-red-400 font-medium mt-0.5">
+                      {errors.short_description.message}
+                    </span>
+                  )}
+                </div>
+
+                {/* Logistics: Status Select */}
+                <div className="flex flex-col gap-1.5">
+                  <label className="text-[11px] font-bold text-[#83958d] uppercase tracking-wider">
+                    INITIAL STATUS <span className="text-[#00ffec]">*</span>
+                  </label>
+                  <select
+                    {...register("status")}
+                    className="bg-[#151312] text-[#e8e1df] border border-white/10 text-xs p-3.5 rounded-sm w-full outline-none focus:border-[#00ffec]/60 transition-colors uppercase cursor-pointer"
+                  >
+                    {Object.entries(EVENT_STATUS).map(([key, val]) => (
+                      <option key={key} value={val} className="bg-[#151312] text-[#e8e1df]">
+                        {key.toUpperCase()}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                {/* Logistics: Member Limit */}
+                <div className="flex flex-col gap-1.5">
+                  <label className="text-[11px] font-bold text-[#83958d] uppercase tracking-wider">
+                    MEMBERS / GROUP <span className="text-[#00ffec]">*</span>
+                  </label>
+                  <input
+                    {...register("member_per_groups", {
+                      required: "Capacity is required",
+                      min: { value: 1, message: "Minimum 1 member" },
+                    })}
+                    type="number"
+                    placeholder="5"
+                    className={`bg-[#151312] text-[#e8e1df] placeholder-[#83958d]/50 border text-xs p-3.5 rounded-sm w-full outline-none transition-colors ${
+                      errors.member_per_groups
+                        ? "border-red-500/70 focus:border-red-400"
+                        : "border-white/10 focus:border-[#00ffec]/60"
+                    }`}
+                  />
+                  {errors.member_per_groups && (
+                    <span className="text-xs text-red-400 font-medium mt-0.5">
+                      {errors.member_per_groups.message}
+                    </span>
+                  )}
+                </div>
+
+                {/* Logistics: Location Input */}
+                <div className="flex flex-col gap-1.5">
+                  <label className="text-[11px] font-bold text-[#83958d] uppercase tracking-wider">
+                    LOCATION / STAGE NODE <span className="text-[#00ffec]">*</span>
+                  </label>
+                  <input
+                    {...register("location", {
+                      required: "Location is required",
+                    })}
+                    type="text"
+                    placeholder="e.g. Oulu Market Square Ice Hole, Finland"
+                    className={`bg-[#151312] text-[#e8e1df] placeholder-[#83958d]/50 border text-xs p-3.5 rounded-sm w-full outline-none transition-colors ${
+                      errors.location
+                        ? "border-red-500/70 focus:border-red-400"
+                        : "border-white/10 focus:border-[#00ffec]/60"
+                    }`}
+                  />
+                  {errors.location && (
+                    <span className="text-xs text-red-400 font-medium mt-0.5">
+                      {errors.location.message}
+                    </span>
+                  )}
+                </div>
+
+                {/* Logistics: Max Score Input */}
+                <div className="flex flex-col gap-1.5">
+                  <label className="text-[11px] font-bold text-[#83958d] uppercase tracking-wider">
+                    MAX SCORE <span className="text-[#00ffec]">*</span>
+                  </label>
+                  <input
+                    {...register("max_score", {
+                      required: "Max score is required",
+                      valueAsNumber: true,
+                      min: { value: 1, message: "Minimum 1" },
+                    })}
+                    type="number"
+                    placeholder="100"
+                    className={`bg-[#151312] text-[#e8e1df] placeholder-[#83958d]/50 border text-xs p-3.5 rounded-sm w-full outline-none transition-colors ${
+                      errors.max_score
+                        ? "border-red-500/70 focus:border-red-400"
+                        : "border-white/10 focus:border-[#00ffec]/60"
+                    }`}
+                  />
+                  {errors.max_score && (
+                    <span className="text-xs text-red-400 font-medium mt-0.5">
+                      {errors.max_score.message}
+                    </span>
+                  )}
+                </div>
+
+                {/* Schedule: Start Date */}
+                <div className="flex flex-col gap-1.5">
+                  <label className="text-[11px] font-bold text-[#83958d] uppercase tracking-wider">
+                    START DATE <span className="text-[#00ffec]">*</span>
+                  </label>
+                  <input
+                    {...register("start_date", {
+                      required: "Start date is required",
+                    })}
+                    type="date"
+                    className={`bg-[#151312] text-[#e8e1df] border text-xs p-3 rounded-sm w-full outline-none transition-colors ${
+                      errors.start_date
+                        ? "border-red-500/70 focus:border-red-400"
+                        : "border-white/10 focus:border-[#00ffec]/60"
+                    }`}
+                  />
+                  {errors.start_date && (
+                    <span className="text-xs text-red-400 font-medium mt-0.5">
+                      {errors.start_date.message}
+                    </span>
+                  )}
+                </div>
+
+                {/* Schedule: End Date */}
+                <div className="flex flex-col gap-1.5">
+                  <label className="text-[11px] font-bold text-[#83958d] uppercase tracking-wider">
+                    END DATE <span className="text-[#00ffec]">*</span>
+                  </label>
+                  <input
+                    {...register("end_date", {
+                      required: "End date is required",
+                    })}
+                    type="date"
+                    className={`bg-[#151312] text-[#e8e1df] border text-xs p-3 rounded-sm w-full outline-none transition-colors ${
+                      errors.end_date
+                        ? "border-red-500/70 focus:border-red-400"
+                        : "border-white/10 focus:border-[#00ffec]/60"
+                    }`}
+                  />
+                  {errors.end_date && (
+                    <span className="text-xs text-red-400 font-medium mt-0.5">
+                      {errors.end_date.message}
+                    </span>
+                  )}
+                </div>
+
+                {/* Schedule: Organized Date & Time */}
+                <div className="flex flex-col gap-1.5 sm:col-span-2">
+                  <label className="text-[11px] font-bold text-[#83958d] uppercase tracking-wider">
+                    ORGANIZED DATE &amp; TIME <span className="text-[#00ffec]">*</span>
+                  </label>
+                  <input
+                    {...register("organized_date", {
+                      required: "Organized date & time is required",
+                    })}
+                    type="datetime-local"
+                    className={`bg-[#151312] text-[#e8e1df] border text-xs p-3.5 rounded-sm w-full outline-none transition-colors ${
+                      errors.organized_date
+                        ? "border-red-500/70 focus:border-red-400"
+                        : "border-white/10 focus:border-[#00ffec]/60"
+                    }`}
+                  />
+                  {errors.organized_date && (
+                    <span className="text-xs text-red-400 font-medium mt-0.5">
+                      {errors.organized_date.message}
+                    </span>
+                  )}
+                </div>
+              </div>
+
+              {/* Full-Width Section: Plate Rich Text Editor for Content */}
+              <div className="flex flex-col gap-2 pt-2 border-t border-white/5">
+                <div className="flex items-center justify-between pb-1 select-none">
+                  <span className="text-xs font-bold text-[#e8e1df] uppercase tracking-wider flex items-center gap-2 font-mono">
+                    <span className="w-[3px] h-3 bg-[#00ffec]" />
+                    FULL SPECIFICATION (RICH TEXT DETAILS) <span className="text-[#00ffec]">*</span>
+                  </span>
+                </div>
+                <Controller
+                  name="content"
+                  control={control}
+                  rules={{
+                    required: "Event content is required",
+                    validate: (val) =>
+                      (val && val.trim().length > 0) || "Event content cannot be empty",
+                  }}
+                  render={({ field }) => (
+                    <RichTextEditor
+                      value={field.value || ""}
+                      onChange={field.onChange}
+                      placeholder="Write detailed event specification, rules, schedule..."
+                      className={`min-h-[320px] ${
+                        errors.content ? "border-red-500/70" : ""
+                      }`}
+                    />
+                  )}
+                />
+                {errors.content && (
+                  <span className="text-xs text-red-400 font-medium mt-0.5">
+                    {errors.content.message}
+                  </span>
+                )}
               </div>
 
               {/* Form Action Buttons */}

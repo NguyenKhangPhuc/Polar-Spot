@@ -427,7 +427,7 @@ export function UserGradingBreakdown({ data }: UserGradingBreakdownProps) {
 
         {/* Table 2 Matrix View */}
         <div className="bg-[#1d1b1a] border border-white/5 rounded-sm overflow-x-auto shadow-xl">
-          <table className="w-full border-collapse font-mono text-[10px] text-[#b9cbc2] text-left min-w-[750px]">
+          <table className="w-full border-collapse font-mono text-[10px] text-[#b9cbc2] text-left min-w-[880px]">
             <thead>
               <tr className="border-b border-white/5 bg-[#151312] text-[#83958d] select-none text-[8.5px] uppercase tracking-wider font-bold">
                 <th className="p-4 font-bold text-center w-14">NO</th>
@@ -450,11 +450,41 @@ export function UserGradingBreakdown({ data }: UserGradingBreakdownProps) {
                     </div>
                   </th>
                 ))}
+                {/* Final Average Column Header */}
+                <th className="p-4 text-center whitespace-nowrap min-w-[140px] align-top bg-[#100e0d] border-l border-white/10">
+                  <div className="flex flex-col items-center justify-start text-center w-full">
+                    <span
+                      className="block font-bold text-[#00ffec] text-[8.5px] uppercase tracking-wider text-center"
+                      title="Final Average Score across all evaluators"
+                    >
+                      FINAL AVERAGE
+                    </span>
+                    <span className="block text-[7.5px] font-medium text-[#00ffec]/70 mt-0.5 text-center uppercase tracking-widest">
+                      MEAN SCORE
+                    </span>
+                  </div>
+                </th>
               </tr>
             </thead>
             <tbody>
               {filteredGroupRows.length > 0 ? (
                 filteredGroupRows.map((groupName, index) => {
+                  // Collect all non-null scores for this group across evaluators
+                  const groupEvaluatorScores: number[] = [];
+                  uniqueUsers.forEach((evaluator) => {
+                    const key = `${groupName}___${evaluator}`;
+                    const score = scoreMatrixLookup.get(key);
+                    if (score !== undefined && typeof score === "number") {
+                      groupEvaluatorScores.push(score);
+                    }
+                  });
+
+                  const groupFinalAvg =
+                    groupEvaluatorScores.length > 0
+                      ? groupEvaluatorScores.reduce((acc, val) => acc + val, 0) /
+                        groupEvaluatorScores.length
+                      : null;
+
                   return (
                     <tr
                       key={groupName}
@@ -491,13 +521,24 @@ export function UserGradingBreakdown({ data }: UserGradingBreakdownProps) {
                           </td>
                         );
                       })}
+
+                      {/* Column Final: Group Final Average Score */}
+                      <td className="p-4 text-center whitespace-nowrap bg-[#100e0d]/50 border-l border-white/10 font-bold">
+                        {groupFinalAvg !== null ? (
+                          <span className="inline-block px-3 py-1 rounded-sm bg-[#00ffec]/10 border border-[#00ffec]/30 text-[#00ffec] font-bold text-[10px] shadow-sm">
+                            {formatScore(groupFinalAvg, 2)}
+                          </span>
+                        ) : (
+                          <span className="text-[#83958d]/50 text-[9px]">-</span>
+                        )}
+                      </td>
                     </tr>
                   );
                 })
               ) : (
                 <tr>
                   <td
-                    colSpan={2 + uniqueUsers.length}
+                    colSpan={3 + uniqueUsers.length}
                     className="p-12 text-center text-[#83958d] select-none text-xs font-mono"
                   >
                     NO GROUPS MATCH THE ACTIVE FILTER
@@ -505,6 +546,69 @@ export function UserGradingBreakdown({ data }: UserGradingBreakdownProps) {
                 </tr>
               )}
             </tbody>
+            {filteredGroupRows.length > 0 && (
+              <tfoot>
+                <tr className="border-t-2 border-white/10 bg-[#100e0d] font-bold text-[9px]">
+                  <td className="p-4 text-center text-[#83958d] select-none font-bold">
+                    AVG
+                  </td>
+                  <td className="p-4 text-[#83958d] uppercase tracking-wider select-none font-bold">
+                    COLUMN AVERAGE
+                  </td>
+                  {uniqueUsers.map((evaluator) => {
+                    const colScores: number[] = [];
+                    filteredGroupRows.forEach((groupName) => {
+                      const key = `${groupName}___${evaluator}`;
+                      const score = scoreMatrixLookup.get(key);
+                      if (score !== undefined && typeof score === "number") {
+                        colScores.push(score);
+                      }
+                    });
+                    const colAvg =
+                      colScores.length > 0
+                        ? colScores.reduce((a, b) => a + b, 0) / colScores.length
+                        : null;
+
+                    return (
+                      <td key={evaluator} className="p-4 text-center whitespace-nowrap">
+                        {colAvg !== null ? (
+                          <span className="inline-block px-2.5 py-1 rounded-sm bg-[#151312] border border-white/5 text-[#e8e1df] font-bold text-[9px]">
+                            {formatScore(colAvg, 2)}
+                          </span>
+                        ) : (
+                          <span className="text-[#83958d]/50 text-[9px]">-</span>
+                        )}
+                      </td>
+                    );
+                  })}
+                  <td className="p-4 text-center whitespace-nowrap bg-[#100e0d] border-l border-white/10">
+                    {(() => {
+                      const allScores: number[] = [];
+                      filteredGroupRows.forEach((groupName) => {
+                        uniqueUsers.forEach((evaluator) => {
+                          const key = `${groupName}___${evaluator}`;
+                          const score = scoreMatrixLookup.get(key);
+                          if (score !== undefined && typeof score === "number") {
+                            allScores.push(score);
+                          }
+                        });
+                      });
+                      const totalAvg =
+                        allScores.length > 0
+                          ? allScores.reduce((a, b) => a + b, 0) / allScores.length
+                          : null;
+                      return totalAvg !== null ? (
+                        <span className="inline-block px-3 py-1 rounded-sm bg-[#00ffec]/20 border border-[#00ffec]/50 text-[#00ffec] font-black text-[10px] shadow-sm">
+                          {formatScore(totalAvg, 2)}
+                        </span>
+                      ) : (
+                        <span className="text-[#83958d]/50 text-[9px]">-</span>
+                      );
+                    })()}
+                  </td>
+                </tr>
+              </tfoot>
+            )}
           </table>
         </div>
       </div>

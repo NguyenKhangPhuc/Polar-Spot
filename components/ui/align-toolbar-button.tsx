@@ -8,7 +8,6 @@ import type { DropdownMenuProps } from '@radix-ui/react-dropdown-menu';
 import { TextAlignPlugin } from '@platejs/basic-styles/react';
 import {
   AlignCenterIcon,
-  AlignJustifyIcon,
   AlignLeftIcon,
   AlignRightIcon,
 } from 'lucide-react';
@@ -36,10 +35,6 @@ const items = [
   {
     icon: AlignRightIcon,
     value: 'right',
-  },
-  {
-    icon: AlignJustifyIcon,
-    value: 'justify',
   },
 ];
 

@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useId } from "react";
+import type { Value } from "platejs";
 import { Plate, usePlateEditor } from "platejs/react";
 import { FixedToolbar } from "@/components/ui/fixed-toolbar";
 import { EditorContainer, Editor } from "@/components/ui/editor";
@@ -11,61 +12,52 @@ import {
   BoldPlugin,
   ItalicPlugin,
   UnderlinePlugin,
-  StrikethroughPlugin,
-  CodePlugin,
-  SubscriptPlugin,
-  SuperscriptPlugin,
-  HighlightPlugin,
   H1Plugin,
   H2Plugin,
   H3Plugin,
   H4Plugin,
-  H5Plugin,
-  H6Plugin,
-  BlockquotePlugin,
-  HorizontalRulePlugin,
 } from "@platejs/basic-nodes/react";
 
 import {
   FontSizePlugin,
   FontColorPlugin,
-  FontBackgroundColorPlugin,
-  FontFamilyPlugin,
   TextAlignPlugin,
-  LineHeightPlugin,
 } from "@platejs/basic-styles/react";
 
+import { IndentPlugin } from "@platejs/indent/react";
 import { LinkPlugin } from "@platejs/link/react";
 import { ListPlugin } from "@platejs/list/react";
-import { IndentPlugin } from "@platejs/indent/react";
-import {
-  TablePlugin,
-  TableRowPlugin,
-  TableCellPlugin,
-  TableCellHeaderPlugin,
-} from "@platejs/table/react";
-import {
-  ImagePlugin,
-  VideoPlugin,
-  AudioPlugin,
-  FilePlugin,
-  MediaEmbedPlugin,
-} from "@platejs/media/react";
-import { DatePlugin } from "@platejs/date/react";
-import { TogglePlugin } from "@platejs/toggle/react";
+import { LinkElement } from "@/components/ui/link-node";
 
 import { cn } from "@/lib/utils";
 
 interface RichTextEditorProps {
-  value?: any;
+  value?: unknown;
   onChange?: (value: string) => void;
   placeholder?: string;
   className?: string;
   readOnly?: boolean;
 }
 
+const normalizeLoadedNodes = (nodes: unknown[]): Value =>
+  nodes.map((item) => {
+    if (item && typeof item === "object" && !Array.isArray(item)) {
+      const node = item as Record<string, unknown>;
+      if (
+        node.listStyleType &&
+        (typeof node.indent !== "number" || node.indent < 1)
+      ) {
+        return {
+          ...node,
+          indent: 1,
+        };
+      }
+    }
+    return item;
+  }) as Value;
+
 // Convert JSON value or HTML string to Slate/Plate value format safely
-const parseInitialValue = (val?: any) => {
+const parseInitialValue = (val?: unknown): Value => {
   if (!val) {
     return [
       {
@@ -75,7 +67,7 @@ const parseInitialValue = (val?: any) => {
     ];
   }
   if (Array.isArray(val) && val.length > 0) {
-    return val;
+    return normalizeLoadedNodes(val);
   }
   if (typeof val === "string") {
     const trimmed = val.trim();
@@ -90,7 +82,7 @@ const parseInitialValue = (val?: any) => {
     try {
       const parsed = JSON.parse(trimmed);
       if (Array.isArray(parsed) && parsed.length > 0) {
-        return parsed;
+        return normalizeLoadedNodes(parsed);
       }
     } catch {
       // If val is raw text or HTML, wrap in paragraph
@@ -114,39 +106,32 @@ const editorPlugins = [
   BoldPlugin,
   ItalicPlugin,
   UnderlinePlugin,
-  StrikethroughPlugin,
-  CodePlugin,
-  SubscriptPlugin,
-  SuperscriptPlugin,
-  HighlightPlugin,
   H1Plugin,
   H2Plugin,
   H3Plugin,
   H4Plugin,
-  H5Plugin,
-  H6Plugin,
-  BlockquotePlugin,
-  HorizontalRulePlugin,
   FontSizePlugin,
   FontColorPlugin,
-  FontBackgroundColorPlugin,
-  FontFamilyPlugin,
-  TextAlignPlugin,
-  LineHeightPlugin,
-  LinkPlugin,
-  ListPlugin,
-  IndentPlugin,
-  TablePlugin,
-  TableRowPlugin,
-  TableCellPlugin,
-  TableCellHeaderPlugin,
-  ImagePlugin,
-  VideoPlugin,
-  AudioPlugin,
-  FilePlugin,
-  MediaEmbedPlugin,
-  DatePlugin,
-  TogglePlugin,
+  TextAlignPlugin.configure({
+    inject: {
+      targetPlugins: ["p", "h1", "h2", "h3", "h4"],
+    },
+  }),
+  LinkPlugin.withComponent(LinkElement),
+  IndentPlugin.configure({
+    options: {
+      offset: 28,
+      unit: "px",
+    },
+    inject: {
+      targetPlugins: ["p", "h1", "h2", "h3", "h4"],
+    },
+  }),
+  ListPlugin.configure({
+    inject: {
+      targetPlugins: ["p", "h1", "h2", "h3", "h4"],
+    },
+  }),
 ];
 
 // Rich typography rules matching cyber-frost dark theme (#00ffec, #151312, #e8e1df, #b9cbc2)
@@ -177,8 +162,10 @@ const richtextThemeClasses = cn(
   // Blockquotes
   "[&_blockquote]:border-l-2 [&_blockquote]:border-[#00ffec] [&_blockquote]:bg-[#00ffec]/5 [&_blockquote]:text-[#b9cbc2] [&_blockquote]:italic [&_blockquote]:pl-4 [&_blockquote]:pr-3 [&_blockquote]:py-2.5 [&_blockquote]:my-3.5 [&_blockquote]:rounded-r-sm",
   // Lists
-  "[&_ul]:list-disc [&_ul]:pl-5 [&_ul]:space-y-1.5 [&_ul]:my-3 [&_ul]:text-[#b9cbc2] [&_ul]:marker:text-[#00ffec]",
-  "[&_ol]:list-decimal [&_ol]:pl-5 [&_ol]:space-y-1.5 [&_ol]:my-3 [&_ol]:text-[#b9cbc2] [&_ol]:marker:text-[#00ffec] [&_ol]:marker:font-mono",
+  "[&_ul]:list-disc [&_ul]:!pl-2 [&_ul]:space-y-1.5 [&_ul]:my-1.5 [&_ul]:text-[#b9cbc2] [&_ul]:marker:text-[#00ffec]",
+  "[&_ol]:list-decimal [&_ol]:!pl-2 [&_ol]:space-y-1.5 [&_ol]:my-1.5 [&_ol]:text-[#b9cbc2] [&_ol]:marker:text-[#00ffec] [&_ol]:marker:font-mono",
+  "[&:not([style*='margin-left'])>ul]:!pl-7 [&:not([style*='margin-left'])>ol]:!pl-7",
+  "[&_[style*='text-align:_center']_ol]:list-inside [&_[style*='text-align:_center']_ul]:list-inside [&_[style*='text-align:_right']_ol]:list-inside [&_[style*='text-align:_right']_ul]:list-inside",
   "[&_li]:text-sm [&_li]:leading-relaxed",
   // Dividers
   "[&_hr]:border-0 [&_hr]:border-t [&_hr]:border-white/10 [&_hr]:my-6",
@@ -203,7 +190,7 @@ export function RichTextEditor({
   });
 
   // Sync editor change to parent callback
-  const handleEditorChange = ({ value: newValue }: { value: any }) => {
+  const handleEditorChange = ({ value: newValue }: { value: unknown }) => {
     if (!readOnly && onChange) {
       // Serialize value as JSON string for storage
       const jsonString = JSON.stringify(newValue);
@@ -246,8 +233,8 @@ export function RichTextEditor({
               className={cn(
                 "flex-1 w-full text-sm leading-relaxed transition-colors focus-visible:outline-none",
                 readOnly
-                  ? "p-0 min-h-0 cursor-default select-text focus:ring-0 focus:outline-none"
-                  : "p-4 min-h-[220px] text-[#e8e1df] cursor-text caret-[#00ffec]",
+                  ? "px-2 py-1 min-h-0 cursor-default select-text focus:ring-0 focus:outline-none"
+                  : "px-5 py-4 min-h-[220px] text-[#e8e1df] cursor-text caret-[#00ffec]",
                 richtextThemeClasses
               )}
             />

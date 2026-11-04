@@ -130,10 +130,10 @@ export default function NavigationBarClient({
 
   const managementItems: NavItem[] = [];
   if (isAdmin || isJudge) {
-    managementItems.push(eventsManagementItem, groupsManagementItem);
+    managementItems.push(eventsManagementItem);
   }
   if (isAdmin) {
-    managementItems.push(userManagementItem);
+    managementItems.push(groupsManagementItem, userManagementItem);
   }
 
   const categories: NavCategory[] = [baseCategory];
