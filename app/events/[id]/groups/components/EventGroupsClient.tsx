@@ -24,8 +24,8 @@ interface EventGroupsClientProps {
 export function EventGroupsClient({
   event,
   groups,
-  canGrade = false,
-  canGiveFeedback = false,
+  canGrade = true,
+  canGiveFeedback = true,
   profile,
 }: EventGroupsClientProps) {
   const { setIsOpenLoader } = useLoader();

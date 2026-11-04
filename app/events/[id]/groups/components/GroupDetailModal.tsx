@@ -19,8 +19,8 @@ export function GroupDetailModal({
   group,
   isOpen,
   onClose,
-  canGrade = false,
-  canGiveFeedback = false,
+  canGrade = true,
+  canGiveFeedback = true,
   onOpenGiveFeedback,
 }: GroupDetailModalProps) {
   if (!group) return null;

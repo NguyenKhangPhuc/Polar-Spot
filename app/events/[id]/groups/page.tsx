@@ -5,7 +5,6 @@ import { createClient } from "@/app/utils/supabase/server";
 import EventGroupsClient from "./components/EventGroupsClient";
 import BackButton from "@/app/components/BackButton";
 import { getProfileById } from "@/app/actions/profile";
-import { PROFILE_ROLE } from "@/app/types/enum";
 
 interface EventGroupsPageProps {
   params: Promise<{ id: string }>;
@@ -51,11 +50,6 @@ export default async function EventGroupsPage({ params }: EventGroupsPageProps) 
     );
   }
 
-  // Check role: only show grade and give feedback if role is NOT student
-  const roleStr = profile.role ? String(profile.role).toLowerCase() : "";
-  const isStudent = roleStr === PROFILE_ROLE.STUDENT || roleStr === "student";
-  const canGradeAndFeedback = !isStudent;
-
   const event = eventRes.data;
   const groups = groupsRes.data;
   const serverError = eventRes.error || groupsRes.error;
@@ -89,8 +83,8 @@ export default async function EventGroupsPage({ params }: EventGroupsPageProps) 
         <EventGroupsClient
           event={event}
           groups={groups || []}
-          canGrade={canGradeAndFeedback}
-          canGiveFeedback={canGradeAndFeedback}
+          canGrade={true}
+          canGiveFeedback={true}
           profile={profile}
         />
       </div>

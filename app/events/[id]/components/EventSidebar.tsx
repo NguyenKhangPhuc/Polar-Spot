@@ -9,7 +9,7 @@ import { EVENT_STATUS } from "@/app/types/enum";
 interface EventSidebarProps {
   event: Event;
   isAdmin?: boolean;
-  isNotStudent?: boolean;
+  isJudge?: boolean;
 }
 
 /**
@@ -18,7 +18,7 @@ interface EventSidebarProps {
  * Displays structured mono metadata (Status, Group Capacity, Execution Timeline,
  * Organized Date & Time) and high-tech action buttons.
  */
-export default function EventSidebar({ event, isAdmin, isNotStudent }: EventSidebarProps) {
+export default function EventSidebar({ event, isAdmin, isJudge }: EventSidebarProps) {
   const isOngoing =
     event.status?.toLowerCase() === EVENT_STATUS.ONGOING.toLowerCase() ||
     event.status?.toUpperCase() === "ONGOING";
@@ -146,21 +146,21 @@ export default function EventSidebar({ event, isAdmin, isNotStudent }: EventSide
         </div>
       </div>
 
-      {/* Action Buttons */}
-      <div className="flex flex-col gap-3 font-mono">
-        {/* Primary Action Button */}
-        <Link
-          href={`/events/${event.id}/groups`}
-          className="w-full py-3 bg-[#00ffec] hover:brightness-110 text-[#00382b] font-bold text-xs uppercase tracking-widest text-center transition-all duration-300 rounded-none shadow-[0_0_15px_rgba(0,255,236,0.15)] flex items-center justify-center gap-2"
-        >
-          <span>VIEW PITCHING GROUPS</span>
-          <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M14 5l7 7m0 0l-7 7m7-7H3" />
-          </svg>
-        </Link>
+      {/* Action Buttons: Only show to Judge or Admin */}
+      {(isAdmin || isJudge) && (
+        <div className="flex flex-col gap-3 font-mono">
+          {/* Primary Action Button: View Pitching Groups (Judge & Admin) */}
+          <Link
+            href={`/events/${event.id}/groups`}
+            className="w-full py-3 bg-[#00ffec] hover:brightness-110 text-[#00382b] font-bold text-xs uppercase tracking-widest text-center transition-all duration-300 rounded-none shadow-[0_0_15px_rgba(0,255,236,0.15)] flex items-center justify-center gap-2"
+          >
+            <span>VIEW PITCHING GROUPS</span>
+            <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+            </svg>
+          </Link>
 
-        {/* Results Action Button (Only for non-students) */}
-        {isNotStudent && (
+          {/* Results Action Button: Evaluation Results (Judge & Admin) */}
           <Link
             href={`/events/${event.id}/result`}
             className="w-full py-3 bg-[#1d1b1a] hover:bg-[#252220] border border-[#00ffec]/40 hover:border-[#00ffec] text-[#00ffec] font-bold text-xs uppercase tracking-widest text-center transition-all duration-300 rounded-none flex items-center justify-center gap-2"
@@ -170,53 +170,53 @@ export default function EventSidebar({ event, isAdmin, isNotStudent }: EventSide
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 012-2h2a2 2 0 012 2v6m-6 0h10" />
             </svg>
           </Link>
-        )}
 
-        {/* Admin Actions (Admin only) */}
-        {isAdmin && (
-          <>
-            <Link
-              href={`/events/${event.id}/admin/scores`}
-              className="w-full py-3 bg-[#1d1b1a] hover:bg-[#252220] border border-white/10 hover:border-[#00ffec]/30 text-[#b9cbc2] hover:text-[#00ffec] font-bold text-xs uppercase tracking-widest text-center transition-all duration-300 rounded-none flex items-center justify-center gap-2"
-            >
-              <svg
-                className="w-3.5 h-3.5 text-[#00ffec]"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
+          {/* Admin Actions (Admin only) */}
+          {isAdmin && (
+            <>
+              <Link
+                href={`/events/${event.id}/admin/scores`}
+                className="w-full py-3 bg-[#1d1b1a] hover:bg-[#252220] border border-white/10 hover:border-[#00ffec]/30 text-[#b9cbc2] hover:text-[#00ffec] font-bold text-xs uppercase tracking-widest text-center transition-all duration-300 rounded-none flex items-center justify-center gap-2"
               >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"
-                />
-              </svg>
-              <span>ADMIN SCORES AUDIT</span>
-            </Link>
+                <svg
+                  className="w-3.5 h-3.5 text-[#00ffec]"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"
+                  />
+                </svg>
+                <span>ADMIN SCORES AUDIT</span>
+              </Link>
 
-            <Link
-              href={`/events/${event.id}/edit`}
-              className="w-full py-3 bg-[#1d1b1a] hover:bg-[#252220] border border-white/10 hover:border-[#00ffec]/30 text-[#b9cbc2] hover:text-[#00ffec] font-bold text-xs uppercase tracking-widest text-center transition-all duration-300 rounded-none flex items-center justify-center gap-2"
-            >
-              <svg
-                className="w-3.5 h-3.5 text-[#00ffec]"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
+              <Link
+                href={`/events/${event.id}/edit`}
+                className="w-full py-3 bg-[#1d1b1a] hover:bg-[#252220] border border-white/10 hover:border-[#00ffec]/30 text-[#b9cbc2] hover:text-[#00ffec] font-bold text-xs uppercase tracking-widest text-center transition-all duration-300 rounded-none flex items-center justify-center gap-2"
               >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
-                />
-              </svg>
-              <span>EDIT EVENT SPECIFICATION</span>
-            </Link>
-          </>
-        )}
-      </div>
+                <svg
+                  className="w-3.5 h-3.5 text-[#00ffec]"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+                  />
+                </svg>
+                <span>EDIT EVENT SPECIFICATION</span>
+              </Link>
+            </>
+          )}
+        </div>
+      )}
     </motion.aside>
   );
 }

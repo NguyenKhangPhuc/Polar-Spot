@@ -18,8 +18,8 @@ interface GroupCardProps {
 export function GroupCard({
   group,
   index = 0,
-  canGrade = false,
-  canGiveFeedback = false,
+  canGrade = true,
+  canGiveFeedback = true,
   onSelectGroup,
   onOpenGiveFeedback,
 }: GroupCardProps) {
@@ -146,7 +146,7 @@ export function GroupCard({
         )}
       </div>
 
-      {/* Action Buttons Section - Only displayed if role is not student */}
+      {/* Action Buttons Section */}
       {(canGrade || canGiveFeedback) && (
         <div className="pt-3 border-t border-white/5 space-y-2 font-mono">
           {/* Row 1: Grade Group (Admin/Judge) + Give Feedback */}

@@ -17,8 +17,8 @@ interface GroupGridProps {
 export function GroupGrid({
   groups,
   onResetFilters,
-  canGrade = false,
-  canGiveFeedback = false,
+  canGrade = true,
+  canGiveFeedback = true,
   onSelectGroup,
   onOpenGiveFeedback,
 }: GroupGridProps) {

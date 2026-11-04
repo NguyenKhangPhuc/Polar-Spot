@@ -19,7 +19,7 @@ export default async function SingleEventPage({ params }: SingleEventPageProps) 
 
   const user = authData?.user ?? null;
   let isAdmin = false;
-  let isNotStudent = false;
+  let isJudge = false;
 
   if (user) {
     const role =
@@ -29,7 +29,7 @@ export default async function SingleEventPage({ params }: SingleEventPageProps) 
       null;
     const roleStr = role ? String(role).toLowerCase() : "";
     isAdmin = roleStr === PROFILE_ROLE.ADMIN || roleStr === "admin";
-    isNotStudent = !!roleStr && roleStr !== PROFILE_ROLE.STUDENT && roleStr !== "student";
+    isJudge = roleStr === PROFILE_ROLE.JUDGES || roleStr === "judge";
   }
 
   if (error || !event) {
@@ -55,5 +55,5 @@ export default async function SingleEventPage({ params }: SingleEventPageProps) 
     );
   }
 
-  return <SingleEventClient event={event} isAdmin={isAdmin} isNotStudent={isNotStudent} />;
+  return <SingleEventClient event={event} isAdmin={isAdmin} isJudge={isJudge} />;
 }

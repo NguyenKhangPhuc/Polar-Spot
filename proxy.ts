@@ -35,6 +35,7 @@ export async function proxy(request: NextRequest): Promise<NextResponse> {
     //    Each branch only invokes handlers whose route patterns could possibly match.
     const pathname = request.nextUrl.pathname;
     const isAdminScoresRoute = /^\/events\/[^/]+\/admin\/scores(\/.*)?$/.test(pathname);
+    const isEventGroupsRoute = /^\/events\/[^/]+\/groups(\/.*)?$/.test(pathname);
     if (
         pathname.startsWith("/users-management") ||
         isAdminScoresRoute
@@ -44,7 +45,8 @@ export async function proxy(request: NextRequest): Promise<NextResponse> {
 
     } else if (
         pathname.startsWith("/events-management") ||
-        pathname.startsWith("/groups-management")
+        pathname.startsWith("/groups-management") ||
+        isEventGroupsRoute
     ) {
         const result = await nonStudentsRouteProxy({ request, user, supabase });
         if (result.status !== 200) return result;
@@ -54,8 +56,6 @@ export async function proxy(request: NextRequest): Promise<NextResponse> {
         if (editResult.status !== 200) return editResult
         const result = await eventResultRoute({ request, user, supabase });
         if (result.status !== 200) return result;
-        // const groupsResult = await viewAllGroups({ request, user, supabase })
-        // if (groupsResult.status !== 200) return groupsResult
 
     } else if (pathname.startsWith("/groups/")) {
         const result = await groupGradingRoute({ request, user, supabase });

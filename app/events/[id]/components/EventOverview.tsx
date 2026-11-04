@@ -6,12 +6,17 @@ import { motion } from "framer-motion";
 import RichTextEditor from "@/app/components/RichTextEditor";
 
 interface EventOverviewProps {
-  content: any;
+  content: unknown;
   eventId?: string;
   isAdmin?: boolean;
 }
 
-const isContentEmpty = (raw: any): boolean => {
+interface SlateNode {
+  text?: string;
+  children?: SlateNode[];
+}
+
+const isContentEmpty = (raw: unknown): boolean => {
   if (!raw) return true;
   if (typeof raw === "string") {
     const trimmed = raw.trim();
@@ -25,11 +30,12 @@ const isContentEmpty = (raw: any): boolean => {
   }
   if (Array.isArray(raw)) {
     if (raw.length === 0) return true;
-    return raw.every((node) => {
-      if (!node) return true;
-      if (Array.isArray(node.children)) {
-        return node.children.every(
-          (child: any) => !child.text || child.text.trim() === ""
+    return raw.every((node: unknown) => {
+      if (!node || typeof node !== "object") return true;
+      const slateNode = node as SlateNode;
+      if (Array.isArray(slateNode.children)) {
+        return slateNode.children.every(
+          (child: SlateNode) => !child.text || child.text.trim() === ""
         );
       }
       return false;
@@ -76,7 +82,7 @@ export default function EventOverview({ content, eventId, isAdmin }: EventOvervi
         </div>
 
         {/* Direct Edit Button */}
-        {eventId && (
+        {isAdmin && eventId && (
           <Link
             href={`/events/${eventId}/edit`}
             className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-none bg-[#151312] hover:bg-[#00ffec]/10 border border-white/10 hover:border-[#00ffec]/40 text-[11px] font-mono font-bold text-[#b9cbc2] hover:text-[#00ffec] uppercase tracking-wider transition-all cursor-pointer shadow-sm"
@@ -125,7 +131,7 @@ export default function EventOverview({ content, eventId, isAdmin }: EventOvervi
             <p className="text-xs font-mono text-[#83958d] uppercase tracking-wider mb-4">
               No specification content provided
             </p>
-            {eventId && (
+            {isAdmin && eventId && (
               <Link
                 href={`/events/${eventId}/edit`}
                 className="inline-flex items-center gap-2 px-4 py-2 rounded-none bg-[#00ffec]/10 hover:bg-[#00ffec]/20 border border-[#00ffec]/30 text-[#00ffec] font-mono text-xs font-bold uppercase tracking-wider transition-all shadow-sm"

@@ -13,7 +13,7 @@ import EventSidebar from "./components/EventSidebar";
 interface SingleEventClientProps {
   event: Event;
   isAdmin?: boolean;
-  isNotStudent?: boolean;
+  isJudge?: boolean;
 }
 
 /**
@@ -22,7 +22,7 @@ interface SingleEventClientProps {
  * Implements ITEE SPOT layout: Back navigation, full-width EventHero banner,
  * and 12-column two-column body (Overview + Location on left, Specification Sidebar on right).
  */
-export function SingleEventClient({ event, isAdmin, isNotStudent }: SingleEventClientProps) {
+export function SingleEventClient({ event, isAdmin, isJudge }: SingleEventClientProps) {
   const supabase = createClient();
 
   const getPosterUrl = (posterPath: string | null | undefined): string | null => {
@@ -61,7 +61,7 @@ export function SingleEventClient({ event, isAdmin, isNotStudent }: SingleEventC
           </div>
 
           {/* Right Column (5 cols): Technical Specification Sidebar */}
-          <EventSidebar event={event} isAdmin={isAdmin} isNotStudent={isNotStudent} />
+          <EventSidebar event={event} isAdmin={isAdmin} isJudge={isJudge} />
         </div>
       </div>
     </div>
