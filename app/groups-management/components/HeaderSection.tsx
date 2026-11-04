@@ -8,7 +8,7 @@ interface HeaderSectionProps {
   isAdmin?: boolean;
 }
 
-export function HeaderSection({ onOpenCreateModal, isAdmin = false }: HeaderSectionProps) {
+export function HeaderSection({ onOpenCreateModal, isAdmin = true }: HeaderSectionProps) {
   return (
     <div className="flex flex-col gap-2">
       <BackButton href="/" label="BACK TO HOME" className="mb-0" />

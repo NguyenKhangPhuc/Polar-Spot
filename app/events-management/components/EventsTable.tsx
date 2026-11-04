@@ -20,7 +20,7 @@ export function EventsTable({
 }: EventsTableProps) {
   return (
     <div className="bg-[#1d1b1a] border border-white/5 rounded-sm overflow-x-auto shadow-xl">
-      <table className="w-full border-collapse font-mono text-[10px] text-[#b9cbc2] text-left min-w-[950px]">
+      <table className="w-full border-collapse font-mono text-[10px] text-[#b9cbc2] text-left min-w-[1250px]">
         <thead>
           <tr className="border-b border-white/5 bg-[#151312] text-[#83958d] select-none text-[8.5px] uppercase tracking-wider font-bold">
             <th className="p-4 text-center w-14">NO</th>
@@ -30,7 +30,7 @@ export function EventsTable({
             <th className="p-4 min-w-[110px]">END DATE</th>
             <th className="p-4 min-w-[140px]">ORGANIZED DATETIME</th>
             <th className="p-4 min-w-[150px]">LOCATION STAGE</th>
-            <th className="p-4 text-center min-w-[200px]">ACTIONS</th>
+            <th className="p-4 text-center min-w-[320px]">ACTIONS</th>
           </tr>
         </thead>
         <tbody>
@@ -131,8 +131,8 @@ export function EventsTable({
                     </td>
 
                     {/* Action Column */}
-                    <td className="p-4 text-center min-w-[200px] select-none">
-                      <div className="flex items-center justify-center gap-2">
+                    <td className="p-4 text-center min-w-[320px] select-none">
+                      <div className="flex items-center justify-center gap-1.5 flex-nowrap">
                         {/* View Event Details */}
                         <Link
                           href={`/events/${event.id}`}
@@ -140,6 +140,15 @@ export function EventsTable({
                           title="View Details"
                         >
                           VIEW
+                        </Link>
+
+                        {/* View Event Pitching Groups */}
+                        <Link
+                          href={`/events/${event.id}/groups`}
+                          className="px-2.5 py-1.5 rounded-sm bg-[#151312] hover:bg-[#252220] text-[#b9cbc2] hover:text-[#00ffec] border border-white/10 hover:border-[#00ffec]/40 text-[9px] font-bold uppercase tracking-wider transition-all"
+                          title="View Groups"
+                        >
+                          GROUPS
                         </Link>
 
                         {/* View Event Result */}
@@ -150,6 +159,17 @@ export function EventsTable({
                         >
                           RESULT
                         </Link>
+
+                        {/* Admin Scores (Admin Only) */}
+                        {isAdmin && (
+                          <Link
+                            href={`/events/${event.id}/admin/scores`}
+                            className="px-2.5 py-1.5 rounded-sm bg-[#151312] hover:bg-[#252220] text-[#00ffec] border border-[#00ffec]/30 hover:border-[#00ffec] text-[9px] font-bold uppercase tracking-wider transition-all"
+                            title="View Admin Scores"
+                          >
+                            SCORES
+                          </Link>
+                        )}
 
                         {/* Edit Event (Admin Only) */}
                         {isAdmin && (

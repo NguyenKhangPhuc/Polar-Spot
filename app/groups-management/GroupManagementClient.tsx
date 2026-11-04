@@ -26,7 +26,7 @@ interface GroupManagementClientProps {
 export default function GroupManagementClient({
   initialGroups,
   eventsList,
-  isAdmin = false,
+  isAdmin = true,
 }: GroupManagementClientProps) {
   const { setIsOpenLoader } = useLoader();
   const { showNotification } = useNotification();

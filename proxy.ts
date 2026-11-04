@@ -36,8 +36,10 @@ export async function proxy(request: NextRequest): Promise<NextResponse> {
     const pathname = request.nextUrl.pathname;
     const isAdminScoresRoute = /^\/events\/[^/]+\/admin\/scores(\/.*)?$/.test(pathname);
     const isEventGroupsRoute = /^\/events\/[^/]+\/groups(\/.*)?$/.test(pathname);
+    const isGroupFeedbacksRoute = /^\/groups\/[^/]+\/feedbacks(\/.*)?$/.test(pathname);
     if (
         pathname.startsWith("/users-management") ||
+        pathname.startsWith("/groups-management") ||
         isAdminScoresRoute
     ) {
         const result = await adminRouteProxy({ request, user, supabase });
@@ -45,8 +47,8 @@ export async function proxy(request: NextRequest): Promise<NextResponse> {
 
     } else if (
         pathname.startsWith("/events-management") ||
-        pathname.startsWith("/groups-management") ||
-        isEventGroupsRoute
+        isEventGroupsRoute ||
+        isGroupFeedbacksRoute
     ) {
         const result = await nonStudentsRouteProxy({ request, user, supabase });
         if (result.status !== 200) return result;

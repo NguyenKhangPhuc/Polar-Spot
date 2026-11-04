@@ -25,7 +25,7 @@ export function GroupsTable({
   onOpenEditMemberModal,
   onDeleteGroup,
   onMemberRemoved,
-  isAdmin = false,
+  isAdmin = true,
 }: GroupsTableProps) {
   const { setIsOpenLoader } = useLoader();
   const { showNotification } = useNotification();
