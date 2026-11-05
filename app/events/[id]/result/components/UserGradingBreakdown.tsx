@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useMemo } from "react";
+import { useRouter } from "next/navigation";
 import { UserGroupFinalScores } from "@/app/types/all_users_group";
 import { formatScore } from "@/lib/utils";
 
@@ -17,6 +18,7 @@ type Table1SortOption =
   | "group_desc";
 
 export function UserGradingBreakdown({ data }: UserGradingBreakdownProps) {
+  const router = useRouter();
   const [selectedUser, setSelectedUser] = useState<string>("ALL");
   const [selectedGroup, setSelectedGroup] = useState<string>("ALL");
   const [searchQuery, setSearchQuery] = useState<string>("");
@@ -31,14 +33,16 @@ export function UserGradingBreakdown({ data }: UserGradingBreakdownProps) {
     scoreMatrixLookup,
   } = useMemo(() => {
     const usersSet = new Set<string>();
-    const groupsSet = new Set<string>();
+    const groupsMap = new Map<string, string>();
     const criteriaMap = new Map<string, string>();
     const matrixLookup = new Map<string, number>();
     const gradeLookup = new Map<string, number | null>();
 
     (data || []).forEach((item) => {
       if (item.full_name) usersSet.add(item.full_name);
-      if (item.group_name) groupsSet.add(item.group_name);
+      if (item.group_name && item.group_id && !groupsMap.has(item.group_name)) {
+        groupsMap.set(item.group_name, item.group_id);
+      }
 
       if (item.group_name && item.full_name) {
         matrixLookup.set(
@@ -62,7 +66,9 @@ export function UserGradingBreakdown({ data }: UserGradingBreakdownProps) {
 
     return {
       uniqueUsers: Array.from(usersSet).sort(),
-      uniqueGroups: Array.from(groupsSet).sort(),
+      uniqueGroups: Array.from(groupsMap.entries())
+        .map(([name, id]) => ({ id, name }))
+        .sort((a, b) => a.name.localeCompare(b.name)),
       uniqueCriteria: Array.from(criteriaMap.entries()).map(([id, name]) => ({
         id,
         name,
@@ -127,7 +133,7 @@ export function UserGradingBreakdown({ data }: UserGradingBreakdownProps) {
     if (selectedGroup === "ALL" || !selectedGroup) {
       return uniqueGroups;
     }
-    return uniqueGroups.filter((g) => g === selectedGroup);
+    return uniqueGroups.filter((g) => g.name === selectedGroup);
   }, [uniqueGroups, selectedGroup]);
 
   if (!data || data.length === 0) {
@@ -311,7 +317,8 @@ export function UserGradingBreakdown({ data }: UserGradingBreakdownProps) {
                   return (
                     <tr
                       key={`${item.user_id}_${item.group_id}_${index}`}
-                      className="border-b border-white/5 last:border-0 hover:bg-white/[0.01] transition-colors"
+                      onClick={() => item.group_id && router.push(`/groups/${item.group_id}/grading`)}
+                      className="border-b border-white/5 last:border-0 hover:bg-white/[0.04] transition-colors cursor-pointer group select-none"
                     >
                       {/* Index / NO */}
                       <td className="p-4 text-center font-bold text-[#83958d]">
@@ -324,7 +331,7 @@ export function UserGradingBreakdown({ data }: UserGradingBreakdownProps) {
                       </td>
 
                       {/* Column 2: Group Name */}
-                      <td className="p-4 text-[#b9cbc2] font-medium whitespace-nowrap">
+                      <td className="p-4 text-[#b9cbc2] group-hover:text-[#00ffec] transition-colors font-medium whitespace-nowrap">
                         {groupName}
                       </td>
 
@@ -408,8 +415,8 @@ export function UserGradingBreakdown({ data }: UserGradingBreakdownProps) {
               >
                 <option value="ALL">ALL GROUPS ({uniqueGroups.length})</option>
                 {uniqueGroups.map((group) => (
-                  <option key={group} value={group}>
-                    {group}
+                  <option key={group.id} value={group.name}>
+                    {group.name}
                   </option>
                 ))}
               </select>
@@ -468,11 +475,11 @@ export function UserGradingBreakdown({ data }: UserGradingBreakdownProps) {
             </thead>
             <tbody>
               {filteredGroupRows.length > 0 ? (
-                filteredGroupRows.map((groupName, index) => {
+                filteredGroupRows.map((group, index) => {
                   // Collect all non-null scores for this group across evaluators
                   const groupEvaluatorScores: number[] = [];
                   uniqueUsers.forEach((evaluator) => {
-                    const key = `${groupName}___${evaluator}`;
+                    const key = `${group.name}___${evaluator}`;
                     const score = scoreMatrixLookup.get(key);
                     if (score !== undefined && typeof score === "number") {
                       groupEvaluatorScores.push(score);
@@ -487,8 +494,9 @@ export function UserGradingBreakdown({ data }: UserGradingBreakdownProps) {
 
                   return (
                     <tr
-                      key={groupName}
-                      className="border-b border-white/5 last:border-0 hover:bg-white/[0.01] transition-colors"
+                      key={group.id}
+                      onClick={() => router.push(`/groups/${group.id}/grading`)}
+                      className="border-b border-white/5 last:border-0 hover:bg-white/[0.04] transition-colors cursor-pointer group select-none"
                     >
                       {/* Index / NO */}
                       <td className="p-4 text-center font-bold text-[#83958d]">
@@ -496,13 +504,13 @@ export function UserGradingBreakdown({ data }: UserGradingBreakdownProps) {
                       </td>
 
                       {/* Column 1: Group Name */}
-                      <td className="p-4 font-bold text-[#e8e1df] whitespace-nowrap">
-                        {groupName}
+                      <td className="p-4 font-bold text-[#e8e1df] group-hover:text-[#00ffec] transition-colors whitespace-nowrap">
+                        {group.name}
                       </td>
 
                       {/* Columns 2..n: Evaluator Final Scores (O(1) Hash Map Lookup) */}
                       {uniqueUsers.map((evaluator) => {
-                        const key = `${groupName}___${evaluator}`;
+                        const key = `${group.name}___${evaluator}`;
                         const score = scoreMatrixLookup.get(key);
                         const hasScore = score !== undefined;
 
@@ -557,8 +565,8 @@ export function UserGradingBreakdown({ data }: UserGradingBreakdownProps) {
                   </td>
                   {uniqueUsers.map((evaluator) => {
                     const colScores: number[] = [];
-                    filteredGroupRows.forEach((groupName) => {
-                      const key = `${groupName}___${evaluator}`;
+                    filteredGroupRows.forEach((group) => {
+                      const key = `${group.name}___${evaluator}`;
                       const score = scoreMatrixLookup.get(key);
                       if (score !== undefined && typeof score === "number") {
                         colScores.push(score);
@@ -584,9 +592,9 @@ export function UserGradingBreakdown({ data }: UserGradingBreakdownProps) {
                   <td className="p-4 text-center whitespace-nowrap bg-[#100e0d] border-l border-white/10">
                     {(() => {
                       const allScores: number[] = [];
-                      filteredGroupRows.forEach((groupName) => {
+                      filteredGroupRows.forEach((group) => {
                         uniqueUsers.forEach((evaluator) => {
-                          const key = `${groupName}___${evaluator}`;
+                          const key = `${group.name}___${evaluator}`;
                           const score = scoreMatrixLookup.get(key);
                           if (score !== undefined && typeof score === "number") {
                             allScores.push(score);

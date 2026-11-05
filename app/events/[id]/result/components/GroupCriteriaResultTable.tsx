@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useMemo } from "react";
-import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { GroupFinalScore } from "@/app/types/final_score";
 import { formatScore } from "@/lib/utils";
@@ -15,6 +15,8 @@ export function GroupCriteriaResultTable({
   filteredScores,
   userId,
 }: GroupCriteriaResultTableProps) {
+  const router = useRouter();
+
   const uniqueCriteriaList = useMemo(() => {
     const criteriaMap = new Map<string, string>();
     filteredScores.forEach((group) => {
@@ -135,7 +137,8 @@ export function GroupCriteriaResultTable({
                       animate={{ opacity: 1, y: 0 }}
                       exit={{ opacity: 0, scale: 0.95 }}
                       transition={{ duration: 0.2, delay: index * 0.02 }}
-                      className="border-b border-white/5 last:border-0 hover:bg-white/[0.01] transition-colors"
+                      onClick={() => router.push(`/groups/${score.group_id}/grading`)}
+                      className="border-b border-white/5 last:border-0 hover:bg-white/[0.04] transition-colors cursor-pointer group select-none"
                     >
                       {/* Index / NO */}
                       <td className="p-4 text-center font-bold text-[#83958d]">
@@ -144,12 +147,9 @@ export function GroupCriteriaResultTable({
 
                       {/* Group Name Column */}
                       <td className="p-4 text-[#e8e1df] font-bold whitespace-nowrap">
-                        <Link
-                          href={`/groups/${score.group_id}/grading`}
-                          className="hover:text-[#00ffec] transition-colors"
-                        >
+                        <span className="group-hover:text-[#00ffec] transition-colors">
                           {groupName}
-                        </Link>
+                        </span>
                       </td>
 
                       {/* Criteria Score Columns */}
