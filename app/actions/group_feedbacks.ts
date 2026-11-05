@@ -17,13 +17,17 @@ import { createClient } from "../utils/supabase/server";
 export async function upsertGroupFeedback(feedback: GroupFeedbackInsert) {
     const supabase = await createClient();
 
-    const {
-        data: { user },
-    } = await supabase.auth.getUser();
+    let resolvedUserId = feedback.user_id;
+    if (!resolvedUserId) {
+        const {
+            data: { user },
+        } = await supabase.auth.getUser();
+        resolvedUserId = user?.id;
+    }
 
     const payload: GroupFeedbackInsert = {
         ...feedback,
-        user_id: user?.id,
+        user_id: resolvedUserId,
     };
 
     const { data, error } = await supabase
@@ -49,21 +53,26 @@ export async function upsertGroupFeedback(feedback: GroupFeedbackInsert) {
  *
  * INPUTS / PARAMETERS:
  * - groupId (string, Required): Unique identifier of target group.
+ * - userId (string, Optional): Authenticated user UUID to avoid redundant auth.getUser() lookup.
  */
-export async function getGroupFeedbacksByGroupId(groupId: string) {
+export async function getGroupFeedbacksByGroupId(groupId: string, userId?: string) {
     const supabase = await createClient();
 
-    const {
-        data: { user },
-    } = await supabase.auth.getUser();
+    let resolvedUserId = userId;
+    if (!resolvedUserId) {
+        const {
+            data: { user },
+        } = await supabase.auth.getUser();
+        resolvedUserId = user?.id;
+    }
 
     let query = supabase
         .from('group_feedbacks')
         .select('*')
         .eq('group_id', groupId);
 
-    if (user?.id) {
-        query = query.eq('user_id', user.id);
+    if (resolvedUserId) {
+        query = query.eq('user_id', resolvedUserId);
     }
 
     const { data, error } = await query.maybeSingle();

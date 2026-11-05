@@ -60,24 +60,16 @@ export async function updateProfile(profile: ProfileUpdate & { id: string }) {
  */
 export async function getAllUserProfiles() {
     const supabase = await createClient();
-    const { data, count, error } = await supabase
+    const { data, error } = await supabase
         .from('profiles')
-        .select('*', { count: 'exact' })
+        .select('*')
         .order('created_at', { ascending: false });
 
     if (error) {
         console.error("Failed to fetch all user profiles:", error);
-        return { data: null, count: 0, error: "Failed to fetch user profiles" };
+        return { data: null, error: "Failed to fetch user profiles" };
     }
-    return { data: data as Profile[], count: count || 0, error: null };
-}
-
-/**
- * PURPOSE:
- * Alias function for getAllUserProfiles for flexibility in invocation naming.
- */
-export async function getAllProfile() {
-    return getAllUserProfiles();
+    return { data: data as Profile[], error: null };
 }
 
 /**

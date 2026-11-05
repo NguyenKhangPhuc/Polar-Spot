@@ -4,7 +4,7 @@ import UserManagementClient from "./UserManagementClient";
 import BackButton from "@/app/components/BackButton";
 
 export default async function UserManagementPage() {
-  const { data: profiles, count, error } = await getAllUserProfiles();
+  const { data: profiles, error } = await getAllUserProfiles();
 
   if (error) {
     return (
@@ -32,10 +32,7 @@ export default async function UserManagementPage() {
   return (
     <div className="w-full min-h-screen bg-[#151312] text-[#e8e1df] font-mono px-6 md:px-16 py-24">
       <div className="max-w-7xl mx-auto flex flex-col">
-        <UserManagementClient
-          initialProfiles={profiles || []}
-          totalCount={count || 0}
-        />
+        <UserManagementClient initialProfiles={profiles || []} />
       </div>
     </div>
   );

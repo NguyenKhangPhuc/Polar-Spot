@@ -16,20 +16,22 @@ export default async function Page({ params }: PageProps) {
   const resolvedParams = await params;
   const groupId = resolvedParams.id;
 
-  // 1. Authenticate user
-  const { data: userData } = await getUser();
+  // 1. Concurrently authenticate user and fetch group by ID
+  const [{ data: userData }, { data: group, error: groupError }] = await Promise.all([
+    getUser(),
+    getGroupByGroupId(groupId),
+  ]);
+
   if (!userData?.user) {
     redirect("/login");
   }
   const userId = userData.user.id;
 
-  // 2. Fetch group by ID
-  const { data: group, error: groupError } = await getGroupByGroupId(groupId);
   if (groupError || !group) {
     notFound();
   }
 
-  // 3. Concurrently fetch event, criteria, existing gradings, existing feedback, and user profile
+  // 2. Concurrently fetch event, criteria, existing gradings, existing feedback, and user profile
   const [
     { data: event },
     { data: criteriaData },
@@ -44,7 +46,7 @@ export default async function Page({ params }: PageProps) {
       ? getEventCriteriaByEventId(group.event_id)
       : Promise.resolve({ data: [], error: null }),
     getUserGroupGradingByGroupAndUserId(group.id, userId),
-    getGroupFeedbacksByGroupId(groupId),
+    getGroupFeedbacksByGroupId(groupId, userId),
     getProfileById(userId),
   ]);
 

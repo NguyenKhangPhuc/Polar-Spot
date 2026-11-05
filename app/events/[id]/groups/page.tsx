@@ -1,7 +1,7 @@
 import React from "react";
 import { getSingleEventById } from "@/app/actions/events";
 import { getGroupsByEventId } from "@/app/actions/groups";
-import { createClient } from "@/app/utils/supabase/server";
+import { getUser } from "@/app/actions/authentication";
 import EventGroupsClient from "./components/EventGroupsClient";
 import BackButton from "@/app/components/BackButton";
 import { getProfileById } from "@/app/actions/profile";
@@ -13,11 +13,9 @@ interface EventGroupsPageProps {
 export default async function EventGroupsPage({ params }: EventGroupsPageProps) {
   const { id } = await params;
 
-  const supabase = await createClient();
-
   // Execute independent data requests concurrently to eliminate sequential network latency
   const [authRes, eventRes, groupsRes] = await Promise.all([
-    supabase.auth.getUser(),
+    getUser(),
     getSingleEventById(id),
     getGroupsByEventId(id),
   ]);

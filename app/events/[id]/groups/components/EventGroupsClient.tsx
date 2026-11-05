@@ -44,7 +44,7 @@ export function EventGroupsClient({
   const handleOpenGiveFeedback = async (group: GroupWithMembersAndEvent) => {
     setIsOpenLoader(true);
     try {
-      const { data } = await getGroupFeedbacksByGroupId(group.id);
+      const { data } = await getGroupFeedbacksByGroupId(group.id, profile.id);
       setInitialFeedback(data || null);
     } catch (err) {
       console.error("Failed to load group feedback:", err);

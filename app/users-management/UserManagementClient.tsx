@@ -13,14 +13,12 @@ import UserTable from "./components/UserTable";
 
 interface UserManagementClientProps {
   initialProfiles: Profile[];
-  totalCount: number;
 }
 
 const ITEMS_PER_PAGE = 15;
 
 export function UserManagementClient({
   initialProfiles,
-  totalCount,
 }: UserManagementClientProps) {
   const { showNotification } = useNotification();
   const { setIsOpenLoader } = useLoader();
@@ -107,7 +105,7 @@ export function UserManagementClient({
       }
 
       setProfiles((prev) =>
-        prev.map((p) => (p.id === userId ? { ...p, role: newRole as any } : p))
+        prev.map((p) => (p.id === userId ? { ...p, role: newRole as PROFILE_ROLE } : p))
       );
 
       showNotification("User role updated successfully");
