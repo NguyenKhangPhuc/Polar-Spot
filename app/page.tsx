@@ -1,6 +1,5 @@
 import SnowEffect from "./components/home/SnowEffect";
 import HeroSection from "./components/home/HeroSection";
-import GroupsListSection from "./components/home/GroupsListSection";
 import OrganizersSection from "./components/home/OrganizersSection";
 
 export default function Home() {
@@ -12,7 +11,6 @@ export default function Home() {
       {/* Main Home Sections */}
       <div className="relative z-10">
         <HeroSection />
-        <GroupsListSection />
         <OrganizersSection />
       </div>
     </div>

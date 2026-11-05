@@ -148,8 +148,8 @@ export default function GroupGradingClient({
 
       {/* Main Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 select-text items-start">
-        {/* Left Column: Criteria Evaluation Form & Feedback Section (8 cols) */}
-        <div className="lg:col-span-8 flex flex-col gap-8">
+        {/* Evaluation Criteria Form (Row 1 on Mobile, Left Column Row 1 on Desktop) */}
+        <div className="w-full lg:col-span-8 lg:col-start-1 lg:row-start-1">
           <form
             id="grading-form"
             onSubmit={handleSubmit(onSubmit)}
@@ -239,19 +239,10 @@ export default function GroupGradingClient({
               </div>
             )}
           </form>
-
-          {/* Qualitative Group Feedback Section */}
-          <GroupFeedbackSection
-            groupId={group.id}
-            groupName={groupName}
-            userId={userId}
-            profile={profile}
-            initialFeedback={initialFeedback}
-          />
         </div>
 
-        {/* Right Column: Telemetry Scoreboard Panel (4 cols) */}
-        <div className="lg:col-span-4 sticky top-6">
+        {/* Telemetry Scoreboard & Submit Evaluation Panel (Row 2 on Mobile - above feedback, Right Column Rows 1-2 on Desktop) */}
+        <div className="w-full lg:col-span-4 lg:col-start-9 lg:row-start-1 lg:row-span-2 lg:sticky lg:top-6">
           <GradingSummaryPanel
             control={control}
             criteriaList={criteriaList}
@@ -259,6 +250,17 @@ export default function GroupGradingClient({
             maxScore={maxScore}
             isSubmitting={isSubmitting}
             formId="grading-form"
+          />
+        </div>
+
+        {/* Qualitative Group Feedback Section (Row 3 on Mobile - below evaluation, Left Column Row 2 on Desktop) */}
+        <div className="w-full lg:col-span-8 lg:col-start-1 lg:row-start-2">
+          <GroupFeedbackSection
+            groupId={group.id}
+            groupName={groupName}
+            userId={userId}
+            profile={profile}
+            initialFeedback={initialFeedback}
           />
         </div>
       </div>

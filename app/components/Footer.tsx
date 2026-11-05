@@ -64,11 +64,6 @@ export default function Footer() {
                   Events Directory
                 </Link>
               </li>
-              <li>
-                <Link href="/#groups" className={tw.text.footerLink}>
-                  Startups &amp; Groups
-                </Link>
-              </li>
             </ul>
           </div>
 
