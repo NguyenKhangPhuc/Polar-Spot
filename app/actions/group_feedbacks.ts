@@ -1,6 +1,10 @@
 'use server';
 
-import { GroupFeedback, GroupFeedbackInsert } from "../types/group_feedbacks";
+import {
+    GroupFeedback,
+    GroupFeedbackInsert,
+    GroupFeedbackWithGroupAndEvent,
+} from "../types/group_feedbacks";
 import { createClient } from "../utils/supabase/server";
 
 /**
@@ -111,4 +115,112 @@ export async function fetchAllFeedbacksByGroupId(groupId: string) {
 
     return { data: data as GroupFeedback[], error: null };
 }
+
+/**
+ * PURPOSE:
+ * Fetches feedback records submitted by the logged in evaluator/user, joining associated groups and events.
+ *
+ * CONTEXT/PARENT FILE:
+ * Called by app/feedbacks-management/page.tsx Server Component.
+ *
+ * INPUTS / PARAMETERS:
+ * - userId (string, Optional): User ID of the logged in evaluator/user.
+ */
+export async function getEvaluatorFeedbacks(userId?: string) {
+    const supabase = await createClient();
+
+    let query = supabase
+        .from('group_feedbacks')
+        .select(`
+            id,
+            created_at,
+            description,
+            display_name,
+            group_id,
+            user_id,
+            groups:group_id (
+                id,
+                group_name,
+                avatar_url,
+                event_id,
+                events:event_id (
+                    id,
+                    title
+                )
+            )
+        `)
+        .order('created_at', { ascending: false });
+
+    if (userId) {
+        query = query.eq('user_id', userId);
+    }
+
+    const { data, error } = await query;
+
+    if (error) {
+        console.error("Failed to fetch evaluator feedbacks:", error);
+        return { data: null, error: "Failed to fetch evaluator feedbacks" };
+    }
+
+    return { data: data as unknown as GroupFeedbackWithGroupAndEvent[], error: null };
+}
+
+/**
+ * PURPOSE:
+ * Updates description and display name of an existing group feedback record.
+ *
+ * CONTEXT/PARENT FILE:
+ * Called by app/feedbacks-management/components/EditFeedbackModal.tsx.
+ *
+ * INPUTS / PARAMETERS:
+ * - id (string, Required): Unique identifier of target group feedback.
+ * - description (string, Required): Updated feedback description text.
+ * - displayName (string, Optional): Updated sender display name.
+ */
+export async function updateGroupFeedback(
+    id: string,
+    description: string,
+    displayName?: string
+) {
+    const supabase = await createClient();
+
+    const updatePayload: { description: string; display_name?: string } = {
+        description: description.trim(),
+    };
+    if (displayName !== undefined) {
+        updatePayload.display_name = displayName.trim();
+    }
+
+    const { data, error } = await supabase
+        .from('group_feedbacks')
+        .update(updatePayload)
+        .eq('id', id)
+        .select(`
+            id,
+            created_at,
+            description,
+            display_name,
+            group_id,
+            user_id,
+            groups:group_id (
+                id,
+                group_name,
+                avatar_url,
+                event_id,
+                events:event_id (
+                    id,
+                    title
+                )
+            )
+        `)
+        .single();
+
+    if (error || !data) {
+        console.error("Failed to update group feedback:", error);
+        return { data: null, error: "Failed to update group feedback" };
+    }
+
+    return { data: data as unknown as GroupFeedbackWithGroupAndEvent, error: null };
+}
+
 

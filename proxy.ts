@@ -37,6 +37,7 @@ export async function proxy(request: NextRequest): Promise<NextResponse> {
     const isAdminScoresRoute = /^\/events\/[^/]+\/admin\/scores(\/.*)?$/.test(pathname);
     const isEventGroupsRoute = /^\/events\/[^/]+\/groups(\/.*)?$/.test(pathname);
     const isGroupFeedbacksRoute = /^\/groups\/[^/]+\/feedbacks(\/.*)?$/.test(pathname);
+    const isFeedbackManagementRoute = pathname.startsWith("/feedbacks-management");
     if (
         pathname.startsWith("/users-management") ||
         pathname.startsWith("/groups-management") ||
@@ -48,7 +49,8 @@ export async function proxy(request: NextRequest): Promise<NextResponse> {
 
     } else if (
         pathname.startsWith("/events-management") ||
-        isEventGroupsRoute
+        isEventGroupsRoute ||
+        isFeedbackManagementRoute
     ) {
         const result = await nonStudentsRouteProxy({ request, user, supabase });
         if (result.status !== 200) return result;
