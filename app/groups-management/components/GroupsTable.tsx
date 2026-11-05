@@ -118,19 +118,9 @@ export function GroupsTable({
                       </svg>
                     </td>
 
-                    {/* Group Name (Clickable Navigation to /groups/[id]/grading) */}
+                    {/* Group Name */}
                     <td className="p-4 text-[#e8e1df] font-bold max-w-[220px] truncate">
-                      <Link
-                        href={`/groups/${group.id}/grading`}
-                        onClick={(e) => e.stopPropagation()}
-                        className="hover:text-[#00ffec] hover:underline transition-colors flex items-center gap-1.5"
-                        title="Grade Group"
-                      >
-                        <span className="truncate">{group.group_name || "UNTITLED GROUP"}</span>
-                        <svg className="w-3.5 h-3.5 text-[#00ffec] opacity-0 group-hover:opacity-100 transition-opacity shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                        </svg>
-                      </Link>
+                      <span className="truncate">{group.group_name || "UNTITLED GROUP"}</span>
                     </td>
 
                     {/* Event Name */}
