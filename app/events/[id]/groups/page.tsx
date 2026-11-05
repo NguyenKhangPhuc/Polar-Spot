@@ -41,7 +41,7 @@ export default async function EventGroupsPage({ params }: EventGroupsPageProps) 
             </p>
           </div>
           <div className="pt-2 flex justify-center">
-            <BackButton href={`/events/${id}`} label="BACK TO EVENT DETAILS" />
+            <BackButton fallbackHref={`/events/${id}`} label="BACK" />
           </div>
         </div>
       </div>
@@ -68,7 +68,7 @@ export default async function EventGroupsPage({ params }: EventGroupsPageProps) 
             </p>
           </div>
           <div className="pt-2 flex justify-center">
-            <BackButton href={`/events/${id}`} label="BACK TO EVENT DETAILS" />
+            <BackButton fallbackHref={`/events/${id}`} label="BACK" />
           </div>
         </div>
       </div>

@@ -43,8 +43,8 @@ export function AdminResultClient({
       {/* Top Header & Navigation */}
       <div className="flex flex-col gap-2">
         <BackButton
-          href={eventId ? `/events/${eventId}/result` : "/events"}
-          label="BACK TO EVENT RESULTS"
+          fallbackHref={eventId ? `/events/${eventId}/result` : "/events"}
+          label="BACK"
           className="mb-0"
         />
 

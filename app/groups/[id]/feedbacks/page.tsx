@@ -36,7 +36,7 @@ export default async function GroupFeedbacksPage({ params }: GroupFeedbacksPageP
             </p>
           </div>
           <div className="pt-2 flex justify-center">
-            <BackButton href="/events" label="BACK TO EVENTS" />
+            <BackButton fallbackHref="/events" label="BACK" />
           </div>
         </div>
       </div>

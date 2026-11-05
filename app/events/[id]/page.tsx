@@ -48,7 +48,7 @@ export default async function SingleEventPage({ params }: SingleEventPageProps) 
             </p>
           </div>
           <div className="pt-2 flex justify-center">
-            <BackButton label="BACK TO EVENTS" href="/events" />
+            <BackButton fallbackHref="/events" label="BACK" />
           </div>
         </div>
       </div>

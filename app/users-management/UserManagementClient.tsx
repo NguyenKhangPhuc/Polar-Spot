@@ -134,7 +134,7 @@ export function UserManagementClient({
     <div className="w-full flex flex-col gap-8 select-text">
       {/* Header Section */}
       <div className="flex flex-col gap-2">
-        <BackButton href="/" label="BACK TO HOME" className="mb-0" />
+        <BackButton fallbackHref="/" label="BACK" className="mb-0" />
 
         {/* Page Header */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 border-b border-white/5 pb-8 mb-2 select-none">

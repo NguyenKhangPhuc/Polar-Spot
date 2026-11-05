@@ -130,8 +130,8 @@ export default function EditEventClient({ event, criteria }: EditEventClientProp
       {/* Top Header & Navigation */}
       <div className="flex flex-col gap-2">
         <BackButton
-          href={`/events/${event.id}`}
-          label="BACK TO EVENT DETAILS"
+          fallbackHref={`/events/${event.id}`}
+          label="BACK"
           className="mb-0"
         />
 

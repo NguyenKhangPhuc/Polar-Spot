@@ -145,8 +145,8 @@ export function EventResultClient({
       {/* Top Header & Navigation */}
       <div className="flex flex-col gap-2">
         <BackButton
-          href={event ? `/events/${event.id}` : "/events"}
-          label="BACK TO EVENT DETAILS"
+          fallbackHref={event ? `/events/${event.id}` : "/events"}
+          label="BACK"
           className="mb-0"
         />
 

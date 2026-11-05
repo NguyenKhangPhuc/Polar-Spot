@@ -143,7 +143,7 @@ export default function TermsAndConditionsPage() {
       <div className="max-w-4xl mx-auto flex flex-col gap-12">
         {/* Top Back Navigation */}
         <div>
-          <BackButton href="/" label="BACK TO HOME" className="mb-0" />
+          <BackButton fallbackHref="/" label="BACK" className="mb-0" />
         </div>
 
         {/* Page Header Banner */}

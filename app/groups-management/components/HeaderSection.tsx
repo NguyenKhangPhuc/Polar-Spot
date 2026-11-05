@@ -11,7 +11,7 @@ interface HeaderSectionProps {
 export function HeaderSection({ onOpenCreateModal, isAdmin = true }: HeaderSectionProps) {
   return (
     <div className="flex flex-col gap-2">
-      <BackButton href="/" label="BACK TO HOME" className="mb-0" />
+      <BackButton fallbackHref="/" label="BACK" className="mb-0" />
 
       {/* Header Banner */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 border-b border-white/5 pb-8 mb-2 select-none">

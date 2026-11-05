@@ -43,7 +43,7 @@ export function SingleEventClient({ event, isAdmin, isJudge }: SingleEventClient
     <div className="w-full min-h-screen bg-[#151312] text-[#e8e1df] font-montserrat overflow-x-hidden py-24 px-6 md:px-16 select-none">
       <div className="max-w-7xl mx-auto flex flex-col gap-6">
         {/* Top Back Navigation */}
-        <BackButton label="BACK TO EVENTS" href="/events" />
+        <BackButton fallbackHref="/events" label="BACK" />
 
         {/* Full-width Event Hero Banner */}
         <EventHero event={event} posterUrl={posterUrl} />

@@ -86,7 +86,7 @@ const Home = () => {
     <div className="w-full min-h-screen bg-[#151312] text-[#e8e1df] font-mono flex items-center justify-center p-4 sm:p-6 lg:p-8 select-none">
       <div className="w-full max-w-md flex flex-col gap-2">
         {/* Back Button */}
-        <BackButton href="/login" label="BACK TO LOGIN" className="mb-0" />
+        <BackButton fallbackHref="/login" label="BACK" className="mb-0" />
 
         {/* Auth Form Container Card */}
         <form

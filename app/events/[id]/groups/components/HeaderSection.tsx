@@ -25,7 +25,7 @@ export function HeaderSection({ event }: HeaderSectionProps) {
     >
       {/* Back Button Navigation */}
       <div className="flex items-center justify-between gap-3">
-        <BackButton href={`/events/${event.id}`} label="BACK TO EVENT DETAILS" />
+        <BackButton fallbackHref={`/events/${event.id}`} label="BACK" />
       </div>
 
       {/* Main Title Header */}

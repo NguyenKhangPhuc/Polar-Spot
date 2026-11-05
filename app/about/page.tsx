@@ -36,7 +36,7 @@ export default function AboutPage() {
       <div className="max-w-7xl mx-auto flex flex-col gap-16">
         {/* Top Back Navigation */}
         <div>
-          <BackButton href="/" label="BACK TO HOME" className="mb-0" />
+          <BackButton fallbackHref="/" label="BACK" className="mb-0" />
         </div>
 
         {/* Page Header Banner */}

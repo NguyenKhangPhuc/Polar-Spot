@@ -22,7 +22,7 @@ export default async function UserManagementPage() {
             </p>
           </div>
           <div className="pt-2 flex justify-center">
-            <BackButton href="/" label="BACK TO HOME" />
+            <BackButton fallbackHref="/" label="BACK" />
           </div>
         </div>
       </div>

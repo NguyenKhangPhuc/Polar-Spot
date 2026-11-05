@@ -18,7 +18,7 @@ export default function HeaderSection({ totalFound }: HeaderSectionProps) {
   return (
     <div className="max-w-7xl mx-auto mb-12">
       {/* Back to Home Navigation */}
-      <BackButton label="BACK TO HOME" href="/" />
+      <BackButton fallbackHref="/" label="BACK" />
 
       {/* Main Console Header Box */}
       <motion.div

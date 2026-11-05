@@ -109,8 +109,8 @@ export default function GroupGradingClient({
       {/* Header Section */}
       <div className="flex flex-col gap-2">
         <BackButton
-          href={group.event_id ? `/events/${group.event_id}/groups` : "/groups-management"}
-          label="BACK TO EVENT GROUPS"
+          fallbackHref={group.event_id ? `/events/${group.event_id}/groups` : "/groups-management"}
+          label="BACK"
           className="mb-0"
         />
 

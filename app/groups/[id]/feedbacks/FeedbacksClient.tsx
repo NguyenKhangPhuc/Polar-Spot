@@ -99,8 +99,8 @@ export function FeedbacksClient({ feedbacks, group }: FeedbacksClientProps) {
       {/* Header Section */}
       <div className="flex flex-col gap-2">
         <BackButton
-          href={eventId ? `/events/${eventId}/groups` : "/events"}
-          label="BACK TO EVENT GROUPS"
+          fallbackHref={eventId ? `/events/${eventId}/groups` : "/events"}
+          label="BACK"
           className="mb-0"
         />
 
