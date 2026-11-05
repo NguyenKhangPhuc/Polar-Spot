@@ -174,17 +174,17 @@ export function FeedbacksManagementClient({
   };
 
   return (
-    <div className="w-full min-h-screen bg-[#151312] text-[#e8e1df] font-mono py-24 px-6 md:px-16 select-none">
-      <div className="max-w-7xl mx-auto flex flex-col gap-8">
+    <div className="w-full min-h-screen bg-[#151312] text-[#e8e1df] font-mono py-12 md:py-16 px-4 sm:px-6 lg:px-8 select-none">
+      <div className="max-w-5xl mx-auto flex flex-col gap-5">
         {/* Top Header & Navigation */}
-        <div className="flex flex-col gap-2">
+        <div className="flex flex-col gap-1.5">
           <BackButton fallbackHref="/" label="BACK" className="mb-0" />
 
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 border-b border-white/5 pb-8 mb-2 select-none">
-            <div className="flex gap-4 items-stretch">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-white/5 pb-4 mb-1 select-none">
+            <div className="flex gap-3.5 items-stretch">
               <div className={`w-[3px] ${tw.bg.accentBar}`} />
-              <div className="flex flex-col gap-1.5">
-                <h1 className="text-2xl sm:text-3xl font-extrabold text-[#e8e1df] tracking-tight uppercase leading-tight font-mono">
+              <div className="flex flex-col gap-1">
+                <h1 className="text-xl sm:text-2xl font-extrabold text-[#e8e1df] tracking-tight uppercase leading-tight font-mono">
                   FEEDBACKS MANAGEMENT
                 </h1>
                 <div className="text-[9px] font-mono text-[#83958d] uppercase tracking-widest flex items-center gap-2">
@@ -198,10 +198,20 @@ export function FeedbacksManagementClient({
         </div>
 
         {/* Sequential Controls & Search Panel */}
-        <div className="bg-[#1d1b1a] border border-white/5 p-5 rounded-sm flex flex-col gap-4 shadow-xl">
+        <div className="bg-[#1d1b1a] border border-white/5 p-4 sm:p-5 rounded-sm flex flex-col gap-3.5 shadow-xl">
           {/* Top Row: Search input */}
-          <div className="flex flex-col sm:flex-row items-center gap-3">
+          <div className="flex flex-col sm:flex-row items-center gap-2.5">
             <div className="relative flex-1 w-full">
+              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-[#83958d]">
+                <svg
+                  className="w-4 h-4 text-[#00ffec]"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+              </div>
               <input
                 type="text"
                 value={searchQuery}
@@ -210,23 +220,30 @@ export function FeedbacksManagementClient({
                   setCurrentPage(1);
                 }}
                 placeholder="Search by group name, event title, or feedback description..."
-                className="w-full bg-[#151312] text-[#e8e1df] border border-white/10 rounded-sm pl-10 pr-4 py-2.5 text-xs outline-none focus:border-[#00ffec]/50 transition-colors font-mono placeholder:text-[#83958d]/50"
+                className="w-full bg-[#151312] text-[#e8e1df] border border-white/10 rounded-sm pl-9 pr-8 py-2 text-xs outline-none focus:border-[#00ffec]/50 transition-colors font-mono placeholder:text-[#83958d]/50"
               />
-              <svg
-                className="w-4 h-4 absolute left-3 text-[#00ffec] pointer-events-none"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-              </svg>
+              {searchQuery && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setSearchQuery("");
+                    setCurrentPage(1);
+                  }}
+                  className="absolute inset-y-0 right-0 pr-2.5 flex items-center text-[#83958d] hover:text-[#e8e1df] cursor-pointer"
+                  aria-label="Clear search"
+                >
+                  <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              )}
             </div>
 
             {Boolean(searchQuery || selectedEventId !== "ALL" || selectedGroupId !== "ALL" || sortOption !== "name_asc") && (
               <button
                 type="button"
                 onClick={handleResetFilters}
-                className="px-3 py-2 rounded-sm bg-[#151312] hover:bg-[#252220] text-[#00ffec] border border-[#00ffec]/30 text-[10px] font-bold uppercase tracking-wider transition-colors cursor-pointer shrink-0 font-mono"
+                className="px-3 py-2 rounded-sm bg-[#151312] hover:bg-[#00ffec] text-[#00ffec] hover:text-[#00382b] border border-[#00ffec]/40 hover:border-[#00ffec] text-[9.5px] font-bold uppercase tracking-wider transition-all cursor-pointer shrink-0 font-mono shadow-sm"
               >
                 RESET FILTERS
               </button>
@@ -243,7 +260,7 @@ export function FeedbacksManagementClient({
               <select
                 value={selectedEventId}
                 onChange={(e) => handleEventChange(e.target.value)}
-                className="bg-[#151312] text-[#e8e1df] border border-white/10 rounded-sm p-2 text-xs outline-none focus:border-[#00ffec]/50 font-mono cursor-pointer uppercase appearance-none"
+                className="bg-[#151312] text-[#e8e1df] border border-white/10 rounded-sm py-1.5 px-2 text-xs outline-none focus:border-[#00ffec]/50 font-mono cursor-pointer uppercase appearance-none"
               >
                 <option value="ALL">ALL EVENTS ({uniqueEvents.length})</option>
                 {uniqueEvents.map((ev) => (
@@ -273,7 +290,7 @@ export function FeedbacksManagementClient({
                   setSelectedGroupId(e.target.value);
                   setCurrentPage(1);
                 }}
-                className={`bg-[#151312] text-[#e8e1df] border rounded-sm p-2 text-xs outline-none font-mono uppercase appearance-none transition-colors ${
+                className={`bg-[#151312] text-[#e8e1df] border rounded-sm py-1.5 px-2 text-xs outline-none font-mono uppercase appearance-none transition-colors ${
                   selectedEventId === "ALL"
                     ? "border-white/5 opacity-40 cursor-not-allowed text-[#83958d]"
                     : "border-white/10 cursor-pointer focus:border-[#00ffec]/50"
@@ -305,7 +322,7 @@ export function FeedbacksManagementClient({
                   setSortOption(e.target.value as SortOption);
                   setCurrentPage(1);
                 }}
-                className="bg-[#151312] text-[#e8e1df] border border-white/10 rounded-sm p-2 text-xs outline-none focus:border-[#00ffec]/50 font-mono cursor-pointer uppercase appearance-none"
+                className="bg-[#151312] text-[#e8e1df] border border-white/10 rounded-sm py-1.5 px-2 text-xs outline-none focus:border-[#00ffec]/50 font-mono cursor-pointer uppercase appearance-none"
               >
                 <option value="name_asc">NAME: A - Z</option>
                 <option value="name_desc">NAME: Z - A</option>
@@ -317,10 +334,10 @@ export function FeedbacksManagementClient({
         </div>
 
         {/* Feedbacks Listing Container */}
-        <div className="space-y-4">
+        <div className="space-y-3.5">
           {filteredFeedbacks.length === 0 ? (
-            <div className="bg-[#1d1b1a] border border-white/5 rounded-sm p-16 text-center space-y-3 font-mono shadow-xl">
-              <p className="text-base text-[#e8e1df] font-bold font-mono uppercase tracking-wider">
+            <div className="bg-[#1d1b1a] border border-white/5 rounded-sm p-12 text-center space-y-3 font-mono shadow-xl">
+              <p className="text-sm sm:text-base text-[#e8e1df] font-bold font-mono uppercase tracking-wider">
                 No feedback records found matching your filters.
               </p>
               <p className="text-xs text-[#83958d]">
@@ -329,7 +346,7 @@ export function FeedbacksManagementClient({
               <button
                 type="button"
                 onClick={handleResetFilters}
-                className="mt-4 px-4 py-2 bg-[#151312] hover:bg-[#252220] text-[#00ffec] border border-[#00ffec]/30 text-xs font-bold uppercase tracking-wider rounded-sm transition-colors cursor-pointer"
+                className="mt-4 px-3.5 py-1.5 bg-[#151312] hover:bg-[#00ffec] text-[#00ffec] hover:text-[#00382b] border border-[#00ffec]/40 hover:border-[#00ffec] text-xs font-bold uppercase tracking-wider rounded-sm transition-all cursor-pointer shadow-sm"
               >
                 CLEAR ACTIVE FILTERS
               </button>
@@ -340,7 +357,7 @@ export function FeedbacksManagementClient({
               initial={{ opacity: 0, y: 6 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.2, ease: "easeOut" }}
-              className="space-y-4"
+              className="space-y-3.5"
             >
               {paginatedFeedbacks.map((fb) => {
                 const groupName = fb.groups?.group_name || "Startup Team";
@@ -354,13 +371,13 @@ export function FeedbacksManagementClient({
                 return (
                   <div
                     key={fb.id}
-                    className="bg-[#1d1b1a] border border-white/5 hover:border-white/15 rounded-sm p-5 sm:p-6 space-y-4 font-mono shadow-xl transition-colors border-l-4 border-l-[#00ffec]"
+                    className="group bg-[#1d1b1a] hover:bg-[#22201e] border border-white/5 hover:border-[#00ffec]/40 rounded-sm p-4 sm:p-5 space-y-3 font-mono shadow-lg hover:shadow-[0_0_20px_rgba(0,255,236,0.08)] transition-all duration-200 border-l-2 border-l-[#00ffec]"
                   >
                     {/* Header: Group, Event & Meta Info */}
-                    <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-white/5 pb-4">
+                    <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 border-b border-white/5 pb-3">
                       {/* Left: Group Info */}
-                      <div className="flex items-center gap-3.5 min-w-0">
-                        <div className="relative w-11 h-11 rounded-sm overflow-hidden bg-[#151312] border border-white/10 shrink-0 flex items-center justify-center shadow-md">
+                      <div className="flex items-center gap-3 min-w-0">
+                        <div className="relative w-9 h-9 sm:w-10 sm:h-10 rounded-sm overflow-hidden bg-[#151312] border border-white/10 shrink-0 flex items-center justify-center shadow-sm">
                           {fb.groups?.avatar_url ? (
                             <Image
                               src={fb.groups.avatar_url}
@@ -369,7 +386,7 @@ export function FeedbacksManagementClient({
                               className="object-cover"
                             />
                           ) : (
-                            <div className="w-full h-full bg-[#100e0d] text-[#00ffec] font-bold text-base flex items-center justify-center font-mono border border-[#00ffec]/30">
+                            <div className="w-full h-full bg-[#100e0d] text-[#00ffec] font-bold text-sm flex items-center justify-center font-mono border border-[#00ffec]/30">
                               {groupName.charAt(0).toUpperCase()}
                             </div>
                           )}
@@ -377,14 +394,14 @@ export function FeedbacksManagementClient({
 
                         <div className="min-w-0">
                           <div className="flex items-center gap-2 flex-wrap">
-                            <h3 className="text-base sm:text-lg font-bold text-[#e8e1df] tracking-tight truncate font-sans">
+                            <h3 className="text-sm sm:text-base font-bold text-[#e8e1df] group-hover:text-[#00ffec] tracking-tight truncate font-sans transition-colors">
                               {groupName}
                             </h3>
-                            <span className="px-2 py-0.5 rounded-sm bg-[#151312] border border-[#00ffec]/30 text-[9px] font-mono text-[#00ffec] font-bold uppercase tracking-wider">
+                            <span className="px-2 py-0.5 rounded-sm bg-[#151312] group-hover:bg-[#00ffec] border border-[#00ffec]/30 group-hover:border-[#00ffec] text-[9px] font-mono text-[#00ffec] group-hover:text-[#00382b] font-bold uppercase tracking-wider transition-all">
                               {eventTitle}
                             </span>
                           </div>
-                          <div className="text-[9px] font-mono text-[#83958d] uppercase tracking-wider flex items-center gap-2 mt-0.5">
+                          <div className="text-[8.5px] font-mono text-[#83958d] uppercase tracking-wider flex items-center gap-2 mt-0.5">
                             <span>SENDER: <strong className="text-[#b9cbc2]">{fb.display_name || "Anonymous"}</strong></span>
                             {isOwner && (
                               <span className="text-[#00ffec] bg-[#00ffec]/10 px-1.5 py-0.2 rounded-sm border border-[#00ffec]/20 font-bold">
@@ -397,16 +414,16 @@ export function FeedbacksManagementClient({
 
                       {/* Right: Date & Actions */}
                       <div className="flex flex-wrap items-center gap-2 shrink-0">
-                        <span className="text-[10px] font-mono text-[#83958d] uppercase tracking-wider mr-2">
+                        <span className="text-[9.5px] font-mono text-[#83958d] uppercase tracking-wider mr-1">
                           SUBMITTED: <strong className="text-[#b9cbc2] font-semibold">{createdDate}</strong>
                         </span>
 
-                        {/* Edit Button */}
+                        {/* Edit Button: inverts from cyan bg to dark bg on hover */}
                         {(isOwner || isAdmin) && (
                           <button
                             type="button"
                             onClick={() => setEditingFeedback(fb)}
-                            className="px-3 py-1.5 rounded-sm bg-[#00ffec] hover:brightness-110 text-[#00382b] font-bold text-[10px] uppercase tracking-wider transition-all shadow-sm cursor-pointer flex items-center gap-1.5"
+                            className="px-2.5 py-1 rounded-sm bg-[#00ffec] hover:bg-[#151312] text-[#00382b] hover:text-[#00ffec] border border-[#00ffec] font-bold text-[9.5px] uppercase tracking-wider transition-all shadow-sm cursor-pointer flex items-center gap-1"
                           >
                             <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
@@ -415,21 +432,21 @@ export function FeedbacksManagementClient({
                           </button>
                         )}
 
-                        {/* Grade Group Link */}
+                        {/* Grade Group Link: inverts from dark bg to cream bg on hover */}
                         {fb.group_id && (
                           <Link
                             href={`/groups/${fb.group_id}/grading`}
-                            className="px-3 py-1.5 rounded-sm bg-[#151312] hover:bg-[#252220] text-[#e8e1df] border border-white/10 hover:border-white/20 text-[10px] font-bold uppercase tracking-wider transition-all cursor-pointer"
+                            className="px-2.5 py-1 rounded-sm bg-[#151312] hover:bg-[#e8e1df] text-[#e8e1df] hover:text-[#151312] border border-white/10 hover:border-[#e8e1df] text-[9.5px] font-bold uppercase tracking-wider transition-all cursor-pointer shadow-sm"
                           >
                             GRADE
                           </Link>
                         )}
 
-                        {/* Event Groups Link */}
+                        {/* Event Groups Link: inverts from dark bg to cyan bg on hover */}
                         {eventId && (
                           <Link
                             href={`/events/${eventId}/groups`}
-                            className="px-3 py-1.5 rounded-sm bg-[#151312] hover:bg-[#252220] text-[#00ffec] border border-[#00ffec]/30 text-[10px] font-bold uppercase tracking-wider transition-all cursor-pointer"
+                            className="px-2.5 py-1 rounded-sm bg-[#151312] hover:bg-[#00ffec] text-[#00ffec] hover:text-[#00382b] border border-[#00ffec]/30 hover:border-[#00ffec] text-[9.5px] font-bold uppercase tracking-wider transition-all cursor-pointer shadow-sm"
                           >
                             EVENT
                           </Link>
@@ -437,9 +454,13 @@ export function FeedbacksManagementClient({
                       </div>
                     </div>
 
-                    {/* Feedback Description (Scrollable container with max-height) */}
-                    <div className="pl-4 sm:pl-5 border-l-2 border-[#00ffec]/30 py-1 bg-[#151312]/60 p-3 rounded-sm">
-                      <p className="text-xs sm:text-sm text-[#e8e1df] leading-relaxed whitespace-pre-line font-mono font-normal select-text max-h-40 overflow-y-auto pr-2">
+                    {/* Feedback Description Container */}
+                    <div className="bg-[#151312]/80 border border-white/5 rounded-sm p-3 sm:p-3.5 space-y-1.5">
+                      <div className="text-[8.5px] font-mono text-[#00ffec] uppercase tracking-wider font-bold flex items-center gap-1.5">
+                        <span className="w-1.5 h-1.5 rounded-full bg-[#00ffec]/80" />
+                        <span>EVALUATION FEEDBACK</span>
+                      </div>
+                      <p className="text-[13px] sm:text-sm font-sans text-[#e8e1df] leading-relaxed whitespace-pre-line select-text max-h-44 overflow-y-auto pr-2">
                         {fb.description || "No feedback description provided."}
                       </p>
                     </div>
