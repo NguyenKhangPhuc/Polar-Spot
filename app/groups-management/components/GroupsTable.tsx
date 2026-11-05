@@ -70,7 +70,7 @@ export function GroupsTable({
             <th className="p-4 min-w-[200px]">EVENT NAME</th>
             <th className="p-4 text-center w-32">MEMBERS</th>
             <th className="p-4 min-w-[120px]">CREATED AT</th>
-            <th className="p-4 text-center w-48">ACTIONS</th>
+            <th className="p-4 text-center w-60">ACTIONS</th>
           </tr>
         </thead>
         <tbody>
@@ -156,17 +156,27 @@ export function GroupsTable({
                         : "N/A"}
                     </td>
 
-                    {/* Actions: Grade Group, Edit Group, Delete Group */}
-                    <td className="p-4 text-center w-48">
-                      <div className="flex items-center justify-center gap-2">
+                    {/* Actions: Grade Group, Feedbacks, Edit Group, Delete Group */}
+                    <td className="p-4 text-center w-60">
+                      <div className="flex items-center justify-center gap-1.5">
                         {/* Grade Group Link */}
                         <Link
                           href={`/groups/${group.id}/grading`}
                           onClick={(e) => e.stopPropagation()}
                           title="Grade Group"
-                          className="px-2.5 py-1.5 rounded-sm bg-[#00ffec] hover:brightness-110 text-[#00382b] font-bold text-[9px] uppercase tracking-wider transition-all cursor-pointer"
+                          className="px-2 py-1.5 rounded-sm bg-[#00ffec] hover:brightness-110 text-[#00382b] font-bold text-[9px] uppercase tracking-wider transition-all cursor-pointer"
                         >
                           GRADE
+                        </Link>
+
+                        {/* View Feedbacks Link */}
+                        <Link
+                          href={`/groups/${group.id}/feedbacks`}
+                          onClick={(e) => e.stopPropagation()}
+                          title="View Group Feedbacks"
+                          className="px-2 py-1.5 rounded-sm bg-[#151312] hover:bg-[#252220] text-[#00ffec] border border-[#00ffec]/30 font-bold text-[9px] uppercase tracking-wider transition-all cursor-pointer"
+                        >
+                          FEEDBACKS
                         </Link>
 
                         {/* Edit Group Button */}
@@ -178,7 +188,7 @@ export function GroupsTable({
                               onOpenEditModal(group);
                             }}
                             title="Edit Group Details"
-                            className="px-2.5 py-1.5 rounded-sm bg-[#151312] hover:bg-[#252220] text-[#e8e1df] border border-white/10 hover:border-[#00ffec]/40 text-[9px] font-bold uppercase tracking-wider transition-all cursor-pointer"
+                            className="px-2 py-1.5 rounded-sm bg-[#151312] hover:bg-[#252220] text-[#e8e1df] border border-white/10 hover:border-[#00ffec]/40 text-[9px] font-bold uppercase tracking-wider transition-all cursor-pointer"
                           >
                             EDIT
                           </button>
@@ -224,6 +234,19 @@ export function GroupsTable({
                               </span>
 
                               <div className="flex items-center gap-2">
+                                {/* Navigation button to Feedbacks Page */}
+                                <Link
+                                  href={`/groups/${group.id}/feedbacks`}
+                                  onClick={(e) => e.stopPropagation()}
+                                  className="px-2.5 py-1.5 rounded-sm bg-[#151312] hover:bg-[#252220] text-[#00ffec] border border-[#00ffec]/30 text-[9px] font-bold uppercase tracking-wider transition-all cursor-pointer flex items-center gap-1.5 shadow-sm"
+                                >
+                                  <svg className="w-3.5 h-3.5 text-[#00ffec]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                  </svg>
+                                  <span>VIEW FEEDBACKS</span>
+                                </Link>
+
                                 {/* Navigation button to Grading Page */}
                                 <Link
                                   href={`/groups/${group.id}/grading`}

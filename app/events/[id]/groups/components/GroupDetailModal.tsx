@@ -12,6 +12,7 @@ interface GroupDetailModalProps {
   onClose: () => void;
   canGrade?: boolean;
   canGiveFeedback?: boolean;
+  isAdmin?: boolean;
   onOpenGiveFeedback?: (group: GroupWithMembersAndEvent) => void;
 }
 
@@ -21,6 +22,7 @@ export function GroupDetailModal({
   onClose,
   canGrade = true,
   canGiveFeedback = true,
+  isAdmin = false,
   onOpenGiveFeedback,
 }: GroupDetailModalProps) {
   if (!group) return null;
@@ -180,8 +182,8 @@ export function GroupDetailModal({
                   </Link>
                 )}
 
-                {/* View Feedbacks Link */}
-                {(canGrade || canGiveFeedback) && (
+                {/* View Feedbacks Link (Admin Only) */}
+                {isAdmin && (
                   <Link
                     href={`/groups/${group.id}/feedbacks`}
                     className="px-4 py-2.5 rounded-sm bg-[#151312] hover:bg-[#252220] text-[#00ffec] border border-[#00ffec]/40 font-bold text-xs uppercase tracking-wider transition-all cursor-pointer flex items-center gap-1.5"

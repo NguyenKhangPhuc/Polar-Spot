@@ -11,6 +11,7 @@ interface GroupCardProps {
   index?: number;
   canGrade?: boolean;
   canGiveFeedback?: boolean;
+  isAdmin?: boolean;
   onSelectGroup: (group: GroupWithMembersAndEvent) => void;
   onOpenGiveFeedback: (group: GroupWithMembersAndEvent) => void;
 }
@@ -20,6 +21,7 @@ export function GroupCard({
   index = 0,
   canGrade = true,
   canGiveFeedback = true,
+  isAdmin = false,
   onSelectGroup,
   onOpenGiveFeedback,
 }: GroupCardProps) {
@@ -204,18 +206,20 @@ export function GroupCard({
             </button>
           )}
 
-          {/* Row 2: View Group Feedbacks */}
-          <Link
-            href={`/groups/${group.id}/feedbacks`}
-            onClick={(e) => e.stopPropagation()}
-            className="w-full flex items-center justify-center gap-2 px-3 py-2.5 rounded-sm bg-[#151312] hover:bg-[#252220] text-[#00ffec] border border-[#00ffec]/30 font-bold text-xs uppercase tracking-wider transition-colors shadow-sm cursor-pointer text-center"
-          >
-            <svg className="w-3.5 h-3.5 text-[#00ffec] shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-            </svg>
-            <span className="truncate">VIEW GROUP FEEDBACKS</span>
-          </Link>
+          {/* Row 2: View Group Feedbacks (Admin Only) */}
+          {isAdmin && (
+            <Link
+              href={`/groups/${group.id}/feedbacks`}
+              onClick={(e) => e.stopPropagation()}
+              className="w-full flex items-center justify-center gap-2 px-3 py-2.5 rounded-sm bg-[#151312] hover:bg-[#252220] text-[#00ffec] border border-[#00ffec]/30 font-bold text-xs uppercase tracking-wider transition-colors shadow-sm cursor-pointer text-center"
+            >
+              <svg className="w-3.5 h-3.5 text-[#00ffec] shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+              </svg>
+              <span className="truncate">VIEW GROUP FEEDBACKS</span>
+            </Link>
+          )}
         </div>
       )}
     </motion.div>

@@ -5,6 +5,7 @@ import { getUser } from "@/app/actions/authentication";
 import EventGroupsClient from "./components/EventGroupsClient";
 import BackButton from "@/app/components/BackButton";
 import { getProfileById } from "@/app/actions/profile";
+import { PROFILE_ROLE } from "@/app/types/enum";
 
 interface EventGroupsPageProps {
   params: Promise<{ id: string }>;
@@ -75,6 +76,9 @@ export default async function EventGroupsPage({ params }: EventGroupsPageProps) 
     );
   }
 
+  const roleStr = profile?.role ? String(profile.role).toLowerCase() : "";
+  const isAdmin = roleStr === PROFILE_ROLE.ADMIN || roleStr === "admin";
+
   return (
     <div className="w-full min-h-screen bg-[#151312] text-[#e8e1df] font-montserrat overflow-x-hidden py-24 px-6 md:px-16 select-none">
       <div className="max-w-7xl mx-auto flex flex-col">
@@ -83,6 +87,7 @@ export default async function EventGroupsPage({ params }: EventGroupsPageProps) 
           groups={groups || []}
           canGrade={true}
           canGiveFeedback={true}
+          isAdmin={isAdmin}
           profile={profile}
         />
       </div>

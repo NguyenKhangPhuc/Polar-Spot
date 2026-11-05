@@ -5,6 +5,7 @@ import Image from "next/image";
 import * as XLSX from "xlsx";
 import { motion, AnimatePresence } from "framer-motion";
 import BackButton from "@/app/components/BackButton";
+import Pagination from "@/components/Pagination";
 import { GroupFeedback } from "@/app/types/group_feedbacks";
 import { Group } from "@/app/types/groups";
 import { createClient } from "@/app/utils/supabase/client";
@@ -17,10 +18,13 @@ interface FeedbacksClientProps {
   group: Group;
 }
 
+const ITEMS_PER_PAGE = 6;
+
 export function FeedbacksClient({ feedbacks, group }: FeedbacksClientProps) {
   const { setIsOpenLoader } = useLoader();
   const { showNotification } = useNotification();
   const [searchQuery, setSearchQuery] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
   const [isExporting, setIsExporting] = useState(false);
 
   const groupName = group?.group_name || "Startup Group";
@@ -35,6 +39,14 @@ export function FeedbacksClient({ feedbacks, group }: FeedbacksClientProps) {
         (f.description && f.description.toLowerCase().includes(q))
     );
   }, [feedbacks, searchQuery]);
+
+  const totalPages = Math.ceil(filteredFeedbacks.length / ITEMS_PER_PAGE);
+  const safeCurrentPage = Math.min(Math.max(1, currentPage), Math.max(1, totalPages));
+
+  const paginatedFeedbacks = useMemo(() => {
+    const start = (safeCurrentPage - 1) * ITEMS_PER_PAGE;
+    return filteredFeedbacks.slice(start, start + ITEMS_PER_PAGE);
+  }, [filteredFeedbacks, safeCurrentPage]);
 
   const handleExportFeedbacksToExcel = async (): Promise<void> => {
     if (!group?.id || isExporting) return;
@@ -186,7 +198,10 @@ export function FeedbacksClient({ feedbacks, group }: FeedbacksClientProps) {
           <input
             type="text"
             value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
+            onChange={(e) => {
+              setSearchQuery(e.target.value);
+              setCurrentPage(1);
+            }}
             placeholder="Search feedback by sender name or description..."
             className={`w-full ${tw.bg.surfaceInput} ${tw.radius.button} px-4 py-2.5 text-xs outline-none transition-colors font-mono`}
           />
@@ -195,7 +210,10 @@ export function FeedbacksClient({ feedbacks, group }: FeedbacksClientProps) {
         {searchQuery && (
           <button
             type="button"
-            onClick={() => setSearchQuery("")}
+            onClick={() => {
+              setSearchQuery("");
+              setCurrentPage(1);
+            }}
             className={`text-[10px] font-bold ${tw.text.accent} hover:underline uppercase tracking-wider transition-colors cursor-pointer shrink-0 font-mono`}
           >
             CLEAR SEARCH
@@ -219,71 +237,80 @@ export function FeedbacksClient({ feedbacks, group }: FeedbacksClientProps) {
             </p>
           </div>
         ) : (
-          <AnimatePresence mode="popLayout">
-            {filteredFeedbacks.map((fb, index) => {
-              const displayName = fb.display_name || "Anonymous";
-              const createdDate = fb.created_at
-                ? new Date(fb.created_at).toLocaleString()
-                : "N/A";
+          <>
+            <AnimatePresence mode="popLayout">
+              {paginatedFeedbacks.map((fb, index) => {
+                const displayName = fb.display_name || "Anonymous";
+                const createdDate = fb.created_at
+                  ? new Date(fb.created_at).toLocaleString()
+                  : "N/A";
 
-              return (
-                <motion.div
-                  key={fb.id || index}
-                  initial={{ opacity: 0, y: 15 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, scale: 0.95 }}
-                  transition={{
-                    duration: 0.3,
-                    delay: Math.min(index * 0.04, 0.25),
-                  }}
-                  className={`${tw.bg.surfacePanel} ${tw.border.accentLeft} ${tw.radius.card} p-5 sm:p-6 space-y-4 font-mono hover:border-white/10 transition-colors`}
-                >
-                  {/* Feedback Header */}
-                  <div
-                    className={`flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b ${tw.border.whiteSubtle} pb-3`}
+                return (
+                  <motion.div
+                    key={fb.id || index}
+                    initial={{ opacity: 0, y: 15 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, scale: 0.95 }}
+                    transition={{
+                      duration: 0.3,
+                      delay: Math.min(index * 0.04, 0.25),
+                    }}
+                    className={`${tw.bg.surfacePanel} ${tw.border.accentLeft} ${tw.radius.card} p-5 sm:p-6 space-y-4 font-mono hover:border-white/10 transition-colors`}
                   >
-                    <div className="flex items-center gap-2.5 min-w-0">
-                      <div
-                        className={`w-8 h-8 ${tw.radius.avatar} ${tw.bg.avatarFallback} font-bold font-mono text-xs flex items-center justify-center shrink-0`}
+                    {/* Feedback Header */}
+                    <div
+                      className={`flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b ${tw.border.whiteSubtle} pb-3`}
+                    >
+                      <div className="flex items-center gap-2.5 min-w-0">
+                        <div
+                          className={`w-8 h-8 ${tw.radius.avatar} ${tw.bg.avatarFallback} font-bold font-mono text-xs flex items-center justify-center shrink-0`}
+                        >
+                          {displayName.charAt(0).toUpperCase()}
+                        </div>
+                        <div className="min-w-0">
+                          <h4
+                            className={`text-sm font-bold ${tw.text.primary} tracking-tight truncate font-mono`}
+                          >
+                            {displayName}
+                          </h4>
+                          <span
+                            className={`text-[9px] font-mono ${tw.text.subMuted} uppercase tracking-wider block`}
+                          >
+                            FEEDBACK SENDER
+                          </span>
+                        </div>
+                      </div>
+
+                      <span
+                        className={`text-[10px] font-mono ${tw.text.subMuted} uppercase tracking-wider shrink-0`}
                       >
-                        {displayName.charAt(0).toUpperCase()}
-                      </div>
-                      <div className="min-w-0">
-                        <h4
-                          className={`text-sm font-bold ${tw.text.primary} tracking-tight truncate font-mono`}
-                        >
-                          {displayName}
-                        </h4>
-                        <span
-                          className={`text-[9px] font-mono ${tw.text.subMuted} uppercase tracking-wider block`}
-                        >
-                          FEEDBACK SENDER
-                        </span>
-                      </div>
+                        SUBMITTED:{" "}
+                        <strong className={`${tw.text.muted} font-semibold`}>
+                          {createdDate}
+                        </strong>
+                      </span>
                     </div>
 
-                    <span
-                      className={`text-[10px] font-mono ${tw.text.subMuted} uppercase tracking-wider shrink-0`}
-                    >
-                      SUBMITTED:{" "}
-                      <strong className={`${tw.text.muted} font-semibold`}>
-                        {createdDate}
-                      </strong>
-                    </span>
-                  </div>
+                    {/* Feedback Description with Left Border & Padding */}
+                    <div className={`pl-4 sm:pl-5 ${tw.border.quoteLeft} py-1`}>
+                      <p
+                        className={`text-xs sm:text-sm ${tw.text.primary} leading-relaxed whitespace-pre-wrap font-mono font-normal`}
+                      >
+                        {fb.description || "No feedback description provided."}
+                      </p>
+                    </div>
+                  </motion.div>
+                );
+              })}
+            </AnimatePresence>
 
-                  {/* Feedback Description with Left Border & Padding */}
-                  <div className={`pl-4 sm:pl-5 ${tw.border.quoteLeft} py-1`}>
-                    <p
-                      className={`text-xs sm:text-sm ${tw.text.primary} leading-relaxed whitespace-pre-wrap font-mono font-normal`}
-                    >
-                      {fb.description || "No feedback description provided."}
-                    </p>
-                  </div>
-                </motion.div>
-              );
-            })}
-          </AnimatePresence>
+            {/* Dynamic Pagination */}
+            <Pagination
+              currentPage={safeCurrentPage}
+              totalPages={totalPages}
+              onPageChange={(page) => setCurrentPage(page)}
+            />
+          </>
         )}
       </div>
     </div>

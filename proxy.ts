@@ -40,15 +40,15 @@ export async function proxy(request: NextRequest): Promise<NextResponse> {
     if (
         pathname.startsWith("/users-management") ||
         pathname.startsWith("/groups-management") ||
-        isAdminScoresRoute
+        isAdminScoresRoute ||
+        isGroupFeedbacksRoute
     ) {
         const result = await adminRouteProxy({ request, user, supabase });
         if (result.status !== 200) return result;
 
     } else if (
         pathname.startsWith("/events-management") ||
-        isEventGroupsRoute ||
-        isGroupFeedbacksRoute
+        isEventGroupsRoute
     ) {
         const result = await nonStudentsRouteProxy({ request, user, supabase });
         if (result.status !== 200) return result;

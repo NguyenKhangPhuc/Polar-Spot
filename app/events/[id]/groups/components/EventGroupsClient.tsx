@@ -19,6 +19,7 @@ interface EventGroupsClientProps {
   groups: GroupWithMembersAndEvent[];
   canGrade?: boolean;
   canGiveFeedback?: boolean;
+  isAdmin?: boolean;
   profile: ProfileInsert;
 }
 
@@ -29,6 +30,7 @@ export function EventGroupsClient({
   groups,
   canGrade = true,
   canGiveFeedback = true,
+  isAdmin = false,
   profile,
 }: EventGroupsClientProps) {
   const { setIsOpenLoader } = useLoader();
@@ -143,6 +145,7 @@ export function EventGroupsClient({
             onResetFilters={handleResetFilters}
             canGrade={canGrade}
             canGiveFeedback={canGiveFeedback}
+            isAdmin={isAdmin}
             onSelectGroup={(group) => setSelectedGroupForModal(group)}
             onOpenGiveFeedback={handleOpenGiveFeedback}
           />
@@ -163,6 +166,7 @@ export function EventGroupsClient({
         onClose={() => setSelectedGroupForModal(null)}
         canGrade={canGrade}
         canGiveFeedback={canGiveFeedback}
+        isAdmin={isAdmin}
         onOpenGiveFeedback={handleOpenGiveFeedback}
       />
 
