@@ -1,9 +1,10 @@
 "use client";
 
 import React from "react";
-import { AnimatePresence, motion } from "framer-motion";
+import { motion } from "framer-motion";
 import { GroupWithMembersAndEvent } from "@/app/types/groups";
 import GroupCard from "./GroupCard";
+import GroupRow from "./GroupRow";
 
 interface GroupGridProps {
   groups: GroupWithMembersAndEvent[];
@@ -11,6 +12,8 @@ interface GroupGridProps {
   canGrade?: boolean;
   canGiveFeedback?: boolean;
   isAdmin?: boolean;
+  viewMode?: "card" | "row";
+  currentPage?: number;
   onSelectGroup: (group: GroupWithMembersAndEvent) => void;
   onOpenGiveFeedback: (group: GroupWithMembersAndEvent) => void;
 }
@@ -21,6 +24,8 @@ export function GroupGrid({
   canGrade = true,
   canGiveFeedback = true,
   isAdmin = false,
+  viewMode = "card",
+  currentPage = 1,
   onSelectGroup,
   onOpenGiveFeedback,
 }: GroupGridProps) {
@@ -52,22 +57,43 @@ export function GroupGrid({
   }
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2 gap-6 w-full">
-      <AnimatePresence mode="popLayout">
-        {groups.map((group, index) => (
-          <GroupCard
-            key={group.id}
-            group={group}
-            index={index}
-            canGrade={canGrade}
-            canGiveFeedback={canGiveFeedback}
-            isAdmin={isAdmin}
-            onSelectGroup={onSelectGroup}
-            onOpenGiveFeedback={onOpenGiveFeedback}
-          />
-        ))}
-      </AnimatePresence>
-    </div>
+    <motion.div
+      key={`${viewMode}-${currentPage}`}
+      initial={{ opacity: 0, y: 6 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.2, ease: "easeOut" }}
+      className="w-full"
+    >
+      {viewMode === "row" ? (
+        <div className="flex flex-col gap-3 w-full">
+          {groups.map((group) => (
+            <GroupRow
+              key={group.id}
+              group={group}
+              canGrade={canGrade}
+              canGiveFeedback={canGiveFeedback}
+              isAdmin={isAdmin}
+              onSelectGroup={onSelectGroup}
+              onOpenGiveFeedback={onOpenGiveFeedback}
+            />
+          ))}
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2 gap-6 w-full">
+          {groups.map((group) => (
+            <GroupCard
+              key={group.id}
+              group={group}
+              canGrade={canGrade}
+              canGiveFeedback={canGiveFeedback}
+              isAdmin={isAdmin}
+              onSelectGroup={onSelectGroup}
+              onOpenGiveFeedback={onOpenGiveFeedback}
+            />
+          ))}
+        </div>
+      )}
+    </motion.div>
   );
 }
 

@@ -3,12 +3,10 @@
 import React from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { motion } from "framer-motion";
 import { GroupWithMembersAndEvent } from "@/app/types/groups";
 
 interface GroupCardProps {
   group: GroupWithMembersAndEvent;
-  index?: number;
   canGrade?: boolean;
   canGiveFeedback?: boolean;
   isAdmin?: boolean;
@@ -18,7 +16,6 @@ interface GroupCardProps {
 
 export function GroupCard({
   group,
-  index = 0,
   canGrade = true,
   canGiveFeedback = true,
   isAdmin = false,
@@ -36,12 +33,7 @@ export function GroupCard({
     : "N/A";
 
   return (
-    <motion.div
-      layout
-      initial={{ opacity: 0, y: 15 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, scale: 0.95 }}
-      transition={{ duration: 0.3, delay: Math.min(index * 0.04, 0.25), ease: "easeOut" }}
+    <div
       onClick={() => onSelectGroup(group)}
       className="bg-[#1d1b1a] border border-white/5 hover:border-[#00ffec]/40 hover:bg-[#22201e] rounded-sm p-6 flex flex-col justify-between gap-5 shadow-xl transition-all cursor-pointer group select-none relative"
     >
@@ -80,11 +72,16 @@ export function GroupCard({
           </span>
         </div>
 
-        {/* Short Description */}
+        {/* Short Description (Scrollable with max-height) */}
         {group.short_description ? (
-          <p className="text-xs text-[#b9cbc2] leading-relaxed font-sans line-clamp-3 bg-[#151312] p-3.5 rounded-sm border border-white/5">
-            {group.short_description}
-          </p>
+          <div
+            onClick={(e) => e.stopPropagation()}
+            className="max-h-24 overflow-y-auto pr-2 bg-[#151312] p-3.5 rounded-sm border border-white/5"
+          >
+            <p className="text-xs text-[#b9cbc2] leading-relaxed font-sans select-text whitespace-pre-line">
+              {group.short_description}
+            </p>
+          </div>
         ) : (
           <p className="text-xs text-[#83958d] italic bg-[#151312] p-3 rounded-sm border border-white/5">
             No pitch description provided.
@@ -222,7 +219,7 @@ export function GroupCard({
           )}
         </div>
       )}
-    </motion.div>
+    </div>
   );
 }
 

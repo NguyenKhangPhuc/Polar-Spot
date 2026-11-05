@@ -37,6 +37,7 @@ export function EventGroupsClient({
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [sortOrder, setSortOrder] = useState<GroupSortOrder>("newest");
   const [currentPage, setCurrentPage] = useState<number>(1);
+  const [viewMode, setViewMode] = useState<"card" | "row">("card");
   const [selectedGroupForModal, setSelectedGroupForModal] =
     useState<GroupWithMembersAndEvent | null>(null);
   const [feedbackTargetGroup, setFeedbackTargetGroup] =
@@ -128,24 +129,64 @@ export function EventGroupsClient({
 
         {/* Right Column: Groups List Section */}
         <div className="w-full lg:col-span-8 xl:col-span-9 flex flex-col gap-4">
-          {/* Metric Bar */}
-          <div className="flex items-center justify-between select-none">
+          {/* Metric Bar with View Toggle */}
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 select-none pb-1">
             <div className="flex items-center gap-2 text-xs font-mono font-bold text-[#e8e1df] uppercase tracking-wider">
               <div className="w-[3px] h-3 bg-[#00ffec]" />
               <span>01 REGISTERED PITCHING GROUPS</span>
             </div>
-            <span className="font-mono text-[9px] text-[#83958d]">
-              TOTAL GROUPS: {processedGroups.length}
-            </span>
+
+            <div className="flex items-center gap-4">
+              <span className="font-mono text-[9px] text-[#83958d]">
+                TOTAL GROUPS: {processedGroups.length}
+              </span>
+
+              {/* View Mode Toggle: Card vs Row */}
+              <div className="flex items-center bg-[#151312] border border-white/5 rounded-sm p-0.5 font-mono text-[10px]">
+                <button
+                  type="button"
+                  onClick={() => setViewMode("card")}
+                  title="Card View"
+                  className={`flex items-center gap-1.5 px-2.5 py-1 rounded-sm transition-all cursor-pointer font-bold uppercase tracking-wider ${
+                    viewMode === "card"
+                      ? "bg-[#00ffec]/10 text-[#00ffec] border border-[#00ffec]/40 shadow-sm"
+                      : "text-[#83958d] hover:text-[#e8e1df] border border-transparent"
+                  }`}
+                >
+                  <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
+                  </svg>
+                  <span>CARDS</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => setViewMode("row")}
+                  title="Row View"
+                  className={`flex items-center gap-1.5 px-2.5 py-1 rounded-sm transition-all cursor-pointer font-bold uppercase tracking-wider ${
+                    viewMode === "row"
+                      ? "bg-[#00ffec]/10 text-[#00ffec] border border-[#00ffec]/40 shadow-sm"
+                      : "text-[#83958d] hover:text-[#e8e1df] border border-transparent"
+                  }`}
+                >
+                  <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                  </svg>
+                  <span>ROWS</span>
+                </button>
+              </div>
+            </div>
           </div>
 
-          {/* Groups Grid */}
+          {/* Groups Grid / List */}
           <GroupGrid
             groups={paginatedGroups}
             onResetFilters={handleResetFilters}
             canGrade={canGrade}
             canGiveFeedback={canGiveFeedback}
             isAdmin={isAdmin}
+            viewMode={viewMode}
+            currentPage={safeCurrentPage}
             onSelectGroup={(group) => setSelectedGroupForModal(group)}
             onOpenGiveFeedback={handleOpenGiveFeedback}
           />
